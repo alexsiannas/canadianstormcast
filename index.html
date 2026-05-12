@@ -139,10 +139,15 @@
     </div>
   </div>
   <div style="font-size:0.6rem;color:var(--text-muted);flex-shrink:0">v1.5.3</div>
-  <div class="header-right">
-    <div class="update-badge"><span class="dot"></span><span id="lastUpdate">Loading…</span></div>
-    <button class="refresh-btn" id="refreshBtn" onclick="manualRefresh()" disabled>↻ Refresh</button>
+<div class="header-right">
+  <div class="update-badge" id="updateBadge">
+    <span class="dot"></span>
+    <span id="lastUpdate">Loading…</span>
   </div>
+  <button class="refresh-btn" id="refreshBtn" onclick="manualRefresh()" disabled>
+    ↻ Refresh
+  </button>
+</div>
 </header>
 <div class="main-panel" id="mainPanel"></div>
 <script>
