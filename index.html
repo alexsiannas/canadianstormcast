@@ -434,6 +434,7 @@ async function init(){
   setTimeout(()=>{const ld=new Set(Object.keys(state.cityData));const rem=CITIES.filter(c=>!ld.has(c.id));(async()=>{for(let i=0;i<rem.length;i+=4){await Promise.all(rem.slice(i,i+4).map(c=>load(c)));await new Promise(r=>setTimeout(r,200));}})();},500);
   state.refreshTimer=setInterval(async()=>{for(let i=0;i<CITIES.length;i+=4){await Promise.all(CITIES.slice(i,i+4).map(c=>load(c)));}fin();},REFMS);
 }
+  
 init();
 </script>
 </body>
