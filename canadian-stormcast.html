@@ -10,543 +10,284 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.12/css/weather-icons.min.css">
 <style>
   :root {
-    --bg-deep: #070b14; --bg-card: rgba(10,18,35,0.82); --bg-card2: rgba(14,24,46,0.75);
-    --border: rgba(50,120,255,0.18); --border-glow: rgba(50,180,255,0.45);
-    --text-primary: #e8f0ff; --text-secondary: #7da8d8; --text-muted: #3e6a9a;
-    --accent-blue: #3ab4ff; --accent-yellow: #ffe066; --accent-red: #ff4d4d;
-    --risk-none: #2ecc71; --risk-slight: #27ae60; --risk-low: #a3d977;
-    --risk-marginal: #f1c40f; --risk-moderate: #e67e22; --risk-high: #e74c3c;
-    --risk-extreme: #c0392b; --risk-very-high: #9b1a1a; --radius: 14px;
+    --bg-deep:#1a2a45;
+    --bg-card:rgba(35,58,100,0.85);
+    --bg-card2:rgba(40,65,110,0.8);
+    --border:rgba(100,160,255,0.25);
+    --border-glow:rgba(100,200,255,0.55);
+    --text-primary:#eef4ff;
+    --text-secondary:#9bbedd;
+    --text-muted:#6a9cbf;
+    --accent-blue:#5cc8ff;
+    --accent-yellow:#ffe066;
+    --accent-red:#ff5f5f;
+    --risk-none:#2ecc71;
+    --risk-slight:#27ae60;
+    --risk-low:#a3d977;
+    --risk-marginal:#f1c40f;
+    --risk-moderate:#e67e22;
+    --risk-high:#e74c3c;
+    --risk-extreme:#c0392b;
+    --radius:14px;
   }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { font-size: 15px; }
-  body {
-    font-family: 'Inter', sans-serif; background: var(--bg-deep); color: var(--text-primary);
-    min-height: 100vh; overflow-x: hidden;
-    background-image:
-      radial-gradient(ellipse 80% 60% at 20% 0%, rgba(20,60,140,0.35) 0%, transparent 70%),
-      radial-gradient(ellipse 60% 40% at 80% 100%, rgba(10,40,100,0.3) 0%, transparent 70%);
-  }
-  .header {
-    position: sticky; top: 0; z-index: 100; background: rgba(7,11,20,0.95);
-    backdrop-filter: blur(20px); border-bottom: 1px solid var(--border);
-    padding: 0 1.5rem; height: 64px; display: flex; align-items: center; gap: 1.5rem;
-  }
-  .logo { font-family: 'Orbitron', sans-serif; font-size: 1.25rem; font-weight: 900; color: var(--accent-blue); text-shadow: 0 0 20px rgba(58,180,255,0.6); white-space: nowrap; letter-spacing: 0.05em; }
-  .logo span { color: var(--accent-yellow); }
-  .header-center { flex: 1; display: flex; align-items: center; gap: 0.75rem; max-width: 500px; }
-  .search-wrap { position: relative; flex: 1; }
-  .search-input { width: 100%; background: rgba(20,40,80,0.7); border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem 0.75rem 0.5rem 2.4rem; color: var(--text-primary); font-size: 0.875rem; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.2s; }
-  .search-input::placeholder { color: var(--text-muted); }
-  .search-input:focus { border-color: var(--accent-blue); }
-  .search-icon { position: absolute; left: 0.65rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 1rem; pointer-events: none; }
-  .search-results { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: rgba(10,20,45,0.97); border: 1px solid var(--border); border-radius: 8px; z-index: 200; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.5); display: none; }
-  .search-results.show { display: block; }
-  .search-result-item { padding: 0.6rem 0.9rem; cursor: pointer; font-size: 0.875rem; transition: background 0.15s; display: flex; align-items: center; gap: 0.5rem; }
-  .search-result-item:hover { background: rgba(50,120,255,0.2); }
-  .res-province { color: var(--text-muted); font-size: 0.75rem; }
-  .header-right { margin-left: auto; display: flex; align-items: center; gap: 1rem; }
-  .update-badge { font-size: 0.7rem; color: var(--text-muted); background: rgba(20,40,80,0.5); border: 1px solid var(--border); padding: 0.25rem 0.6rem; border-radius: 20px; white-space: nowrap; display: flex; align-items: center; gap: 0.4rem; }
-  .update-badge .dot { display: inline-block; width: 6px; height: 6px; background: var(--risk-none); border-radius: 50%; flex-shrink: 0; animation: pulse 2s infinite; }
-  .update-badge.updating .dot { background: var(--accent-yellow); }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-  .refresh-btn { background: rgba(20,40,80,0.6); border: 1px solid var(--border); color: var(--text-secondary); border-radius: 8px; padding: 0.3rem 0.7rem; font-size: 0.75rem; font-family: 'Inter', sans-serif; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 0.35rem; white-space: nowrap; }
-  .refresh-btn:hover { border-color: var(--border-glow); color: var(--text-primary); background: rgba(30,60,120,0.5); }
-  .refresh-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-  .refresh-btn .spin { display: inline-block; }
-  .refresh-btn.loading .spin { animation: spin 0.7s linear infinite; }
-  .countdown-text { font-size: 0.65rem; color: var(--text-muted); }
-  .app-layout { display: grid; grid-template-columns: 300px 1fr; min-height: calc(100vh - 64px); }
-  @media (max-width: 900px) { .app-layout { grid-template-columns: 1fr; } .city-sidebar { max-height: 280px; overflow-y: auto; } }
-  .city-sidebar { border-right: 1px solid var(--border); background: rgba(7,11,20,0.6); overflow-y: auto; display: flex; flex-direction: column; }
-  .sidebar-header { padding: 0.75rem 0.75rem 0.6rem; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10; background: rgba(7,11,20,0.97); backdrop-filter: blur(10px); }
-  .sidebar-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; }
-  .sidebar-title { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.15em; color: var(--text-muted); text-transform: uppercase; }
-  .pin-filter-btn { font-size: 0.65rem; padding: 0.25rem 0.55rem; border-radius: 6px; border: 1px solid var(--border); background: rgba(20,40,80,0.5); color: var(--text-muted); cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; display: flex; align-items: center; gap: 0.3rem; white-space: nowrap; }
-  .pin-filter-btn:hover { border-color: var(--accent-yellow); color: var(--accent-yellow); }
-  .pin-filter-btn.active { border-color: var(--accent-yellow); color: var(--accent-yellow); background: rgba(255,224,102,0.1); }
-  .pin-count-badge { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 50%; background: var(--accent-yellow); color: #070b14; font-size: 0.6rem; font-weight: 700; }
-  .pin-slots { display: flex; gap: 6px; flex-wrap: wrap; min-height: 22px; align-items: center; }
-  .pin-slot { display: flex; align-items: center; gap: 4px; background: rgba(255,224,102,0.08); border: 1px solid rgba(255,224,102,0.25); border-radius: 20px; padding: 2px 8px 2px 5px; font-size: 0.65rem; color: var(--accent-yellow); font-weight: 500; }
-  .pin-slot-remove { cursor: pointer; color: var(--text-muted); font-size: 0.75rem; margin-left: 2px; line-height: 1; }
-  .pin-slot-remove:hover { color: var(--accent-red); }
-  .pin-empty-hint { font-size: 0.63rem; color: var(--text-muted); font-style: italic; }
-  .city-list-wrap { padding: 0.6rem 0.75rem; flex: 1; }
-  .city-hidden { display: none !important; }
-  .city-card { border-radius: 10px; padding: 0.65rem 0.75rem; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.75rem; position: relative; }
-  .city-card:hover { background: rgba(30,60,120,0.3); border-color: var(--border); }
-  .city-card.active { background: rgba(30,80,160,0.35); border-color: var(--border-glow); box-shadow: 0 0 12px rgba(50,180,255,0.12); }
-  .city-card.pinned { border-color: rgba(255,224,102,0.3); }
-  .city-card-icon { font-size: 1.6rem; width: 2rem; text-align: center; flex-shrink: 0; line-height:1; }
-  .city-card-icon .wi { font-size: 1.5rem; color: #fff; filter: drop-shadow(0 0 4px rgba(255,255,255,0.35)); }
-  .city-card-info { flex: 1; min-width: 0; }
-  .city-card-name { font-size: 0.8rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .city-card-sub { font-size: 0.68rem; color: var(--text-muted); }
-  .city-card-temp { font-size: 1.1rem; font-weight: 700; font-family: 'Roboto', sans-serif; color: var(--accent-blue); white-space: nowrap; }
-  .city-card-risks { display: flex; gap: 3px; margin-top: 2px; }
-  .mini-risk { font-size: 0.6rem; padding: 1px 5px; border-radius: 4px; font-weight: 600; }
-  .pin-btn { background: none; border: none; cursor: pointer; font-size: 0.85rem; padding: 2px 4px; border-radius: 4px; opacity: 0.3; transition: all 0.15s; line-height: 1; flex-shrink: 0; }
-  .pin-btn:hover { opacity: 0.9; transform: scale(1.2); }
-  .pin-btn.pinned { opacity: 1; }
-  .city-skeleton { height: 58px; background: rgba(20,40,80,0.3); border-radius: 10px; margin-bottom: 0.4rem; animation: shimmer 1.5s infinite; }
-  @keyframes shimmer { 0%,100%{opacity:0.4} 50%{opacity:0.8} }
-  .main-panel { padding: 1.5rem; overflow-y: auto; }
-  .current-hero { background: var(--bg-card); backdrop-filter: blur(16px); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.75rem; margin-bottom: 1.25rem; position: relative; overflow: hidden; }
-  .current-hero::before { content:''; position:absolute; top:-40px; right:-40px; width:200px; height:200px; background:radial-gradient(circle,rgba(50,180,255,0.08) 0%,transparent 70%); border-radius:50%; pointer-events:none; }
-  .city-title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
-  .city-title { font-family: 'Orbitron', sans-serif; font-size: 1.6rem; font-weight: 700; color: var(--text-primary); }
-  .city-province { font-size: 0.875rem; color: var(--text-muted); margin-top: 2px; }
-  .city-time { font-size: 0.75rem; color: var(--text-muted); text-align: right; }
-  .conditions-grid { display: grid; grid-template-columns: auto 1fr 1fr 1fr; gap: 1.25rem; align-items: center; }
-  @media (max-width:700px) { .conditions-grid { grid-template-columns: auto 1fr; } }
-  .big-temp { font-family: 'Roboto', sans-serif; font-size: 3.5rem; font-weight: 900; color: var(--text-primary); line-height: 1; }
-  .big-temp-unit { font-size: 1.2rem; vertical-align: super; color: var(--text-muted); }
-  .weather-icon-big { font-size: 3.5rem; text-align: center; line-height:1; }
-  .weather-icon-big .wi { font-size: 3.2rem; color: #fff; filter: drop-shadow(0 0 12px rgba(255,255,255,0.45)); }
-  .condition-block { display: flex; flex-direction: column; gap: 2px; }
-  .condition-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; }
-  .condition-value { font-size: 0.95rem; font-weight: 600; color: var(--text-primary); }
-  .weather-desc { font-size: 1rem; color: var(--accent-blue); font-weight: 500; margin: 0.75rem 0 0; }
-  .risk-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem; }
-  @media (max-width:600px) { .risk-row { grid-template-columns: 1fr; } }
-  .risk-panel { background: var(--bg-card); backdrop-filter: blur(16px); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; }
-  .risk-panel-title { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.15em; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.9rem; display: flex; align-items: center; gap: 0.4rem; }
-  .risk-value { font-family: 'Roboto', sans-serif; font-size: 2.2rem; font-weight: 900; line-height: 1; }
-  .risk-label { font-size: 0.8rem; font-weight: 700; margin-top: 0.3rem; text-transform: uppercase; letter-spacing: 0.05em; }
-  .risk-bar-wrap { margin-top: 0.75rem; height: 8px; background: rgba(30,60,120,0.4); border-radius: 4px; overflow: hidden; }
-  .risk-bar { height: 100%; border-radius: 4px; transition: width 1s ease; }
-  .risk-scale { display: flex; gap: 4px; margin-top: 0.6rem; flex-wrap: wrap; }
-  .risk-scale-item { font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; font-weight: 600; border: 1px solid rgba(255,255,255,0.1); }
-  .forecast-section { margin-bottom: 1.25rem; }
-  .section-title { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.15em; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.4rem; }
-  .forecast-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 0.75rem; }
-  @media (max-width:700px) { .forecast-grid { grid-template-columns: repeat(3,1fr); } }
-  .forecast-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 0.85rem 0.65rem; text-align: center; transition: all 0.2s; }
-  .forecast-card:hover { border-color: var(--border-glow); transform: translateY(-2px); }
-  .forecast-day { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem; }
-  .forecast-icon { font-size: 2rem; margin-bottom: 0.4rem; line-height:1; }
-  .forecast-icon .wi { font-size: 1.9rem; color: #fff; filter: drop-shadow(0 0 6px rgba(255,255,255,0.3)); }
-  .forecast-temps { font-size: 0.9rem; font-weight: 700; font-family: 'Roboto', sans-serif; margin-bottom: 0.6rem; }
-  .forecast-hi { color: var(--text-primary); }
-  .forecast-lo { color: var(--text-muted); }
-  .forecast-precip { font-size: 0.68rem; color: var(--accent-blue); margin-bottom: 0.5rem; }
-  .forecast-risks { display: flex; flex-direction: column; gap: 3px; }
-  .forecast-risk-row { display: flex; align-items: center; justify-content: space-between; font-size: 0.6rem; }
-  .forecast-risk-row .label { color: var(--text-muted); }
-  .risk-chip { font-size: 0.58rem; padding: 1px 5px; border-radius: 4px; font-weight: 700; text-transform: uppercase; }
-  .conditions-strip { display: grid; grid-template-columns: repeat(auto-fit,minmax(110px,1fr)); gap: 0.75rem; margin-bottom: 1.25rem; }
-  .cond-tile { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 0.85rem 0.75rem; display: flex; flex-direction: column; gap: 4px; }
-  .cond-tile-icon { font-size: 1.3rem; }
-  .cond-tile-label { font-size: 0.62rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; }
-  .cond-tile-value { font-size: 1rem; font-weight: 700; color: var(--text-primary); }
-  .risk-color-slight{color:var(--risk-slight)} .risk-color-low{color:var(--risk-low)} .risk-color-marginal{color:var(--risk-marginal)} .risk-color-moderate{color:#f39c12} .risk-color-high{color:var(--risk-high)} .risk-color-extreme{color:#c0392b} .risk-color-very-high{color:#ff6b35} .risk-color-none{color:var(--risk-none)}
-  .bg-slight{background:rgba(39,174,96,0.25);color:#2ecc71} .bg-low{background:rgba(163,217,119,0.2);color:#a3d977} .bg-marginal{background:rgba(241,196,15,0.2);color:#f1c40f} .bg-moderate{background:rgba(230,126,34,0.25);color:#e67e22} .bg-high{background:rgba(231,76,60,0.25);color:#e74c3c} .bg-extreme{background:rgba(192,57,43,0.3);color:#e74c3c} .bg-very-high{background:rgba(255,107,53,0.25);color:#ff6b35} .bg-none{background:rgba(46,204,113,0.2);color:#2ecc71}
-  .alert-banner { background: rgba(231,76,60,0.15); border: 1px solid rgba(231,76,60,0.4); border-radius: 10px; padding: 0.75rem 1rem; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem; }
-  .loading-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem 2rem; gap: 1rem; }
-  .spinner { width: 48px; height: 48px; border: 3px solid rgba(50,180,255,0.2); border-top-color: var(--accent-blue); border-radius: 50%; animation: spin 0.8s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: rgba(50,100,200,0.3); border-radius: 3px; }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{font-size:15px;}
+  body{font-family:'Inter',sans-serif;background:var(--bg-deep);color:var(--text-primary);min-height:100vh;overflow-x:hidden;
+    background-image:radial-gradient(ellipse 80% 60% at 20% 0%,rgba(50,100,200,0.3) 0%,transparent 70%),radial-gradient(ellipse 60% 40% at 80% 100%,rgba(30,80,160,0.25) 0%,transparent 70%);}
+  .version-banner{background:#ffe066;color:#07111e;text-align:center;padding:6px;font-family:'Inter',sans-serif;font-size:0.8rem;font-weight:700;letter-spacing:0.05em;}
+  .header{position:sticky;top:0;z-index:100;background:rgba(22,38,68,0.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 1.25rem;height:64px;display:flex;align-items:center;gap:1rem;}
+  .logo{font-family:'Orbitron',sans-serif;font-size:1.1rem;font-weight:900;color:var(--accent-blue);text-shadow:0 0 20px rgba(92,200,255,0.6);white-space:nowrap;letter-spacing:0.05em;flex-shrink:0;}
+  .logo span{color:var(--accent-yellow);}
+  .pin-pills{display:flex;align-items:center;gap:0.4rem;flex-shrink:0;}
+  .pin-pill{display:flex;align-items:center;gap:0.35rem;background:rgba(35,60,110,0.7);border:1px solid rgba(255,224,102,0.35);border-radius:20px;padding:0.28rem 0.7rem 0.28rem 0.5rem;cursor:pointer;transition:all 0.18s;white-space:nowrap;font-size:0.72rem;}
+  .pin-pill:hover,.pin-pill.active{border-color:var(--accent-yellow);background:rgba(255,224,102,0.12);}
+  .pin-pill .pp-name{font-weight:600;color:var(--text-primary);}
+  .pin-pill .pp-temp{font-family:'Roboto',sans-serif;font-weight:700;color:var(--accent-yellow);font-size:0.78rem;}
+  .pin-pill .pp-sep{color:var(--text-muted);}
+  .no-pins-hint{font-size:0.65rem;color:var(--text-muted);font-style:italic;white-space:nowrap;}
+  .header-divider{width:1px;height:28px;background:var(--border);flex-shrink:0;margin:0 0.1rem;}
+  .cities-dropdown-wrap{position:relative;flex-shrink:0;}
+  .cities-btn{display:flex;align-items:center;gap:0.4rem;background:rgba(35,60,110,0.65);border:1px solid var(--border);border-radius:8px;padding:0.35rem 0.75rem;font-size:0.75rem;font-family:'Inter',sans-serif;color:var(--text-secondary);cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+  .cities-btn:hover,.cities-btn.open{border-color:var(--border-glow);color:var(--text-primary);}
+  .cities-btn .caret{font-size:0.6rem;transition:transform 0.2s;}
+  .cities-btn.open .caret{transform:rotate(180deg);}
+  .cities-menu{position:absolute;top:calc(100%+6px);left:0;width:260px;background:rgba(22,40,78,0.99);border:1px solid var(--border);border-radius:10px;z-index:300;box-shadow:0 12px 40px rgba(0,0,0,0.5);overflow:hidden;display:none;max-height:420px;overflow-y:auto;}
+  .cities-menu.open{display:block;}
+  .cities-menu-search{padding:0.5rem 0.65rem;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(22,40,78,0.99);}
+  .cities-menu-search input{width:100%;background:rgba(35,60,110,0.7);border:1px solid var(--border);border-radius:6px;padding:0.35rem 0.6rem;color:var(--text-primary);font-size:0.8rem;font-family:'Inter',sans-serif;outline:none;}
+  .cities-menu-search input:focus{border-color:var(--accent-blue);}
+  .cities-group-label{font-size:0.58rem;font-weight:700;letter-spacing:0.15em;color:var(--text-muted);text-transform:uppercase;padding:0.55rem 0.75rem 0.2rem;background:rgba(22,40,78,0.99);}
+  .city-menu-item{padding:0.5rem 0.75rem;cursor:pointer;font-size:0.82rem;transition:background 0.15s;display:flex;align-items:center;justify-content:space-between;gap:0.5rem;}
+  .city-menu-item:hover{background:rgba(80,140,255,0.15);}
+  .city-menu-item.active{background:rgba(80,180,255,0.12);color:var(--accent-blue);}
+  .city-menu-item.pinned-item{color:var(--accent-yellow);}
+  .city-menu-item .cmi-temp{font-family:'Roboto',sans-serif;font-size:0.75rem;color:var(--accent-blue);font-weight:700;}
+  .header-right{margin-left:auto;display:flex;align-items:center;gap:0.75rem;flex-shrink:0;}
+  .update-badge{font-size:0.68rem;color:var(--text-muted);background:rgba(35,60,110,0.5);border:1px solid var(--border);padding:0.22rem 0.55rem;border-radius:20px;white-space:nowrap;display:flex;align-items:center;gap:0.35rem;}
+  .update-badge .dot{display:inline-block;width:6px;height:6px;background:var(--risk-none);border-radius:50%;flex-shrink:0;animation:pulse 2s infinite;}
+  .update-badge.updating .dot{background:var(--accent-yellow);}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+  .countdown-text{font-size:0.62rem;color:var(--text-muted);}
+  .refresh-btn{background:rgba(35,60,110,0.65);border:1px solid var(--border);color:var(--text-secondary);border-radius:8px;padding:0.28rem 0.6rem;font-size:0.72rem;font-family:'Inter',sans-serif;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:0.3rem;white-space:nowrap;}
+  .refresh-btn:hover{border-color:var(--border-glow);color:var(--text-primary);}
+  .refresh-btn:disabled{opacity:0.4;cursor:not-allowed;}
+  .refresh-btn .spin{display:inline-block;}
+  .refresh-btn.loading .spin{animation:spin 0.7s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .main-panel{padding:1.5rem;max-width:1100px;margin:0 auto;}
+  .welcome-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 2rem;gap:1rem;text-align:center;}
+  .welcome-state .big-leaf{font-size:4rem;}
+  .welcome-state h2{font-family:'Orbitron',sans-serif;font-size:1.2rem;color:var(--accent-blue);}
+  .welcome-state p{font-size:0.85rem;color:var(--text-muted);max-width:360px;line-height:1.6;}
+  .pin-manager{background:var(--bg-card);border:1px solid rgba(255,224,102,0.25);border-radius:var(--radius);padding:1.25rem 1.5rem;width:100%;max-width:420px;margin-top:0.5rem;text-align:left;}
+  .pin-manager-title{font-size:0.65rem;font-weight:700;letter-spacing:0.15em;color:var(--accent-yellow);text-transform:uppercase;margin-bottom:0.85rem;}
+  .pin-manager-row{display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0.6rem;border-radius:8px;background:rgba(255,224,102,0.06);border:1px solid rgba(255,224,102,0.15);margin-bottom:0.45rem;cursor:pointer;transition:all 0.15s;}
+  .pin-manager-row:hover{background:rgba(255,224,102,0.12);}
+  .pin-manager-row .pmr-left{display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;font-weight:600;color:var(--text-primary);}
+  .pin-manager-row .pmr-temp{font-family:'Roboto',sans-serif;font-size:0.8rem;color:var(--accent-blue);font-weight:700;}
+  .pin-manager-row .pmr-remove{background:none;border:none;color:var(--text-muted);font-size:0.95rem;cursor:pointer;padding:2px 5px;border-radius:4px;transition:all 0.15s;line-height:1;}
+  .pin-manager-row .pmr-remove:hover{color:var(--accent-red);}
+  .pin-manager-empty{font-size:0.8rem;color:var(--text-muted);font-style:italic;}
+  .pin-manager-hint{font-size:0.7rem;color:var(--text-muted);margin-top:0.75rem;line-height:1.5;}
+  .loading-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4rem 2rem;gap:1rem;}
+  .spinner{width:48px;height:48px;border:3px solid rgba(92,200,255,0.2);border-top-color:var(--accent-blue);border-radius:50%;animation:spin 0.8s linear infinite;}
+  .current-hero{background:var(--bg-card);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:var(--radius);padding:1.75rem;margin-bottom:1.25rem;position:relative;overflow:hidden;}
+  .current-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;background:radial-gradient(circle,rgba(92,200,255,0.1) 0%,transparent 70%);border-radius:50%;pointer-events:none;}
+  .city-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1rem;flex-wrap:wrap;}
+  .city-title{font-family:'Orbitron',sans-serif;font-size:1.6rem;font-weight:700;color:var(--text-primary);}
+  .city-province{font-size:0.875rem;color:var(--text-muted);margin-top:2px;}
+  .city-time{font-size:0.75rem;color:var(--text-muted);text-align:right;}
+  .conditions-grid{display:grid;grid-template-columns:auto 1fr 1fr 1fr;gap:1.25rem;align-items:center;}
+  .big-temp{font-family:'Roboto',sans-serif;font-size:3.5rem;font-weight:900;color:var(--text-primary);line-height:1;}
+  .big-temp-unit{font-size:1.2rem;vertical-align:super;color:var(--text-muted);}
+  .weather-icon-big{font-size:3.5rem;text-align:center;line-height:1;}
+  .weather-icon-big .wi{font-size:3.2rem;color:#fff;filter:drop-shadow(0 0 12px rgba(255,255,255,0.45));}
+  .condition-block{display:flex;flex-direction:column;gap:2px;}
+  .condition-label{font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;}
+  .condition-value{font-size:0.95rem;font-weight:600;color:var(--text-primary);}
+  .weather-desc{font-size:1rem;color:var(--accent-blue);font-weight:500;margin:0.75rem 0 0;}
+  .risk-row{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem;}
+  .risk-panel{background:var(--bg-card);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;}
+  .risk-panel-title{font-size:0.65rem;font-weight:700;letter-spacing:0.15em;color:var(--text-muted);text-transform:uppercase;margin-bottom:0.9rem;}
+  .risk-value{font-family:'Roboto',sans-serif;font-size:2.2rem;font-weight:900;line-height:1;}
+  .risk-label{font-size:0.8rem;font-weight:700;margin-top:0.3rem;text-transform:uppercase;letter-spacing:0.05em;}
+  .risk-bar-wrap{margin-top:0.75rem;height:8px;background:rgba(50,80,150,0.4);border-radius:4px;overflow:hidden;}
+  .risk-bar{height:100%;border-radius:4px;transition:width 1s ease;}
+  .risk-scale{display:flex;gap:4px;margin-top:0.6rem;flex-wrap:wrap;}
+  .risk-scale-item{font-size:0.6rem;padding:2px 6px;border-radius:4px;font-weight:600;border:1px solid rgba(255,255,255,0.1);}
+  .forecast-section{margin-bottom:1.25rem;}
+  .section-title{font-size:0.65rem;font-weight:700;letter-spacing:0.15em;color:var(--text-muted);text-transform:uppercase;margin-bottom:0.75rem;}
+  .forecast-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:0.75rem;}
+  .forecast-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:0.85rem 0.65rem;text-align:center;transition:all 0.2s;}
+  .forecast-card:hover{border-color:var(--border-glow);transform:translateY(-2px);}
+  .forecast-day{font-size:0.7rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.5rem;}
+  .forecast-icon .wi{font-size:1.9rem;color:#fff;filter:drop-shadow(0 0 6px rgba(255,255,255,0.3));}
+  .forecast-temps{font-size:0.9rem;font-weight:700;font-family:'Roboto',sans-serif;margin-bottom:0.6rem;}
+  .forecast-hi{color:var(--text-primary);}
+  .forecast-lo{color:var(--text-muted);}
+  .forecast-precip{font-size:0.68rem;color:var(--accent-blue);margin-bottom:0.5rem;}
+  .forecast-risks{display:flex;flex-direction:column;gap:3px;}
+  .forecast-risk-row{display:flex;align-items:center;justify-content:space-between;font-size:0.6rem;}
+  .forecast-risk-row .label{color:var(--text-muted);}
+  .risk-chip{font-size:0.58rem;padding:1px 5px;border-radius:4px;font-weight:700;text-transform:uppercase;}
+  .conditions-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:0.75rem;margin-bottom:1.25rem;}
+  .cond-tile{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:0.85rem 0.75rem;display:flex;flex-direction:column;gap:4px;}
+  .cond-tile-icon{font-size:1.3rem;}
+  .cond-tile-label{font-size:0.62rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;}
+  .cond-tile-value{font-size:1rem;font-weight:700;color:var(--text-primary);}
+  .alert-banner{background:rgba(231,76,60,0.15);border:1px solid rgba(231,76,60,0.4);border-radius:10px;padding:0.75rem 1rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:0.75rem;font-size:0.85rem;}
+  .risk-color-none{color:#2ecc71}.risk-color-slight{color:#27ae60}.risk-color-low{color:#a3d977}.risk-color-marginal{color:#f1c40f}.risk-color-moderate{color:#f39c12}.risk-color-high{color:#e74c3c}.risk-color-extreme{color:#c0392b}.risk-color-very-high{color:#ff6b35}
+  .bg-none{background:rgba(46,204,113,0.2);color:#2ecc71}.bg-slight{background:rgba(39,174,96,0.25);color:#2ecc71}.bg-low{background:rgba(163,217,119,0.2);color:#a3d977}.bg-marginal{background:rgba(241,196,15,0.2);color:#f1c40f}.bg-moderate{background:rgba(230,126,34,0.25);color:#e67e22}.bg-high{background:rgba(231,76,60,0.25);color:#e74c3c}.bg-extreme{background:rgba(192,57,43,0.3);color:#e74c3c}.bg-very-high{background:rgba(255,107,53,0.25);color:#ff6b35}
+  ::-webkit-scrollbar{width:5px;} ::-webkit-scrollbar-track{background:transparent;} ::-webkit-scrollbar-thumb{background:rgba(80,140,255,0.3);border-radius:3px;}
 </style>
 </head>
 <body>
+<div class="version-banner">✅ YOU HAVE THE CORRECT FILE — Canadian StormCast v1.4.5 <button onclick="this.parentElement.style.display='none'" style="margin-left:1rem;background:rgba(0,0,0,0.15);border:none;border-radius:4px;padding:2px 8px;cursor:pointer;font-size:0.75rem">✕ dismiss</button></div>
 <header class="header">
   <div class="logo">🍁 Canadian <span>Storm</span>Cast</div>
-  <div class="header-center">
-    <div class="search-wrap">
-      <span class="search-icon">🔍</span>
-      <input class="search-input" id="searchInput" type="text" placeholder="Search city…" autocomplete="off">
-      <div class="search-results" id="searchResults"></div>
+  <div class="pin-pills" id="pinPills"><span class="no-pins-hint" id="noPinsHint">Pin cities to see them here</span></div>
+  <div class="header-divider"></div>
+  <div class="cities-dropdown-wrap">
+    <button class="cities-btn" id="citiesBtn" onclick="toggleCitiesMenu()">🌍 All Cities <span class="caret">▼</span></button>
+    <div class="cities-menu" id="citiesMenu">
+      <div class="cities-menu-search"><input id="menuSearch" type="text" placeholder="Search cities…" oninput="filterMenu(this.value)" autocomplete="off"></div>
+      <div id="menuList"></div>
     </div>
   </div>
+  <div style="font-size:0.6rem;color:var(--text-muted);white-space:nowrap;flex-shrink:0">v1.4.5</div>
   <div class="header-right">
     <div class="update-badge" id="updateBadge"><span class="dot"></span><span id="lastUpdate">Loading…</span></div>
     <span class="countdown-text" id="countdownText"></span>
-    <button class="refresh-btn" id="refreshBtn" onclick="manualRefresh()" disabled>
-      <span class="spin">↻</span> Refresh
-    </button>
+    <button class="refresh-btn" id="refreshBtn" onclick="manualRefresh()" disabled><span class="spin">↻</span> Refresh</button>
   </div>
 </header>
-<div class="app-layout">
-  <aside class="city-sidebar">
-    <div class="sidebar-header">
-      <div class="sidebar-title-row">
-        <span class="sidebar-title">🍁 Canadian Cities (30)</span>
-        <button class="pin-filter-btn" id="pinFilterBtn" onclick="togglePinFilter()">
-          📌 Pinned <span class="pin-count-badge" id="pinCountBadge">0</span>
-        </button>
-      </div>
-      <div class="pin-slots" id="pinSlots">
-        <span class="pin-empty-hint">Pin up to 3 cities with the 📌 button</span>
-      </div>
-    </div>
-    <div class="city-list-wrap" id="cityList">
-      <div class="city-skeleton"></div><div class="city-skeleton"></div>
-      <div class="city-skeleton"></div><div class="city-skeleton"></div>
-      <div class="city-skeleton"></div>
-    </div>
-  </aside>
-  <main class="main-panel" id="mainPanel">
-    <div class="loading-state"><div class="spinner"></div><div style="color:var(--text-muted);font-size:0.85rem;">Fetching live weather data…</div></div>
-  </main>
+<div class="main-panel" id="mainPanel">
+  <div class="loading-state"><div class="spinner"></div><div style="color:var(--text-muted);font-size:0.85rem;">Fetching live weather data…</div></div>
 </div>
 <script>
 'use strict';
-const CITIES = [
-  {id:'vancouver',    name:'Vancouver',      province:'BC', lat:49.2827,  lon:-123.1207, region:'west_coast',  tz:'America/Vancouver'},
-  {id:'victoria',     name:'Victoria',       province:'BC', lat:48.4284,  lon:-123.3656, region:'west_coast',  tz:'America/Vancouver'},
-  {id:'kelowna',      name:'Kelowna',        province:'BC', lat:49.8880,  lon:-119.4960, region:'interior_bc', tz:'America/Vancouver'},
-  {id:'kamloops',     name:'Kamloops',       province:'BC', lat:50.6745,  lon:-120.3273, region:'interior_bc', tz:'America/Vancouver'},
-  {id:'calgary',      name:'Calgary',        province:'AB', lat:51.0447,  lon:-114.0719, region:'prairies',    tz:'America/Edmonton'},
-  {id:'edmonton',     name:'Edmonton',       province:'AB', lat:53.5461,  lon:-113.4938, region:'prairies',    tz:'America/Edmonton'},
-  {id:'reddeer',      name:'Red Deer',       province:'AB', lat:52.2681,  lon:-113.8112, region:'prairies',    tz:'America/Edmonton'},
-  {id:'lethbridge',   name:'Lethbridge',     province:'AB', lat:49.6956,  lon:-112.8451, region:'prairies',    tz:'America/Edmonton'},
-  {id:'banff',        name:'Banff',          province:'AB', lat:51.1784,  lon:-115.5708, region:'prairies',    tz:'America/Edmonton'},
-  {id:'saskatoon',    name:'Saskatoon',      province:'SK', lat:52.1332,  lon:-106.6700, region:'prairies',    tz:'America/Regina'},
-  {id:'regina',       name:'Regina',         province:'SK', lat:50.4452,  lon:-104.6189, region:'prairies',    tz:'America/Regina'},
-  {id:'swiftcurrent', name:'Swift Current',  province:'SK', lat:50.2881,  lon:-107.7939, region:'prairies',    tz:'America/Regina'},
-  {id:'winnipeg',     name:'Winnipeg',       province:'MB', lat:49.8951,  lon:-97.1384,  region:'prairies',    tz:'America/Winnipeg'},
-  {id:'brandon',      name:'Brandon',        province:'MB', lat:49.8485,  lon:-99.9501,  region:'prairies',    tz:'America/Winnipeg'},
-  {id:'toronto',      name:'Toronto',        province:'ON', lat:43.6532,  lon:-79.3832,  region:'ontario',     tz:'America/Toronto'},
-  {id:'ottawa',       name:'Ottawa',         province:'ON', lat:45.4215,  lon:-75.6972,  region:'ontario',     tz:'America/Toronto'},
-  {id:'london',       name:'London',         province:'ON', lat:42.9849,  lon:-81.2453,  region:'ontario',     tz:'America/Toronto'},
-  {id:'hamilton',     name:'Hamilton',       province:'ON', lat:43.2557,  lon:-79.8711,  region:'ontario',     tz:'America/Toronto'},
-  {id:'kitchener',    name:'Kitchener',      province:'ON', lat:43.4516,  lon:-80.4925,  region:'ontario',     tz:'America/Toronto'},
-  {id:'niagarafalls', name:'Niagara Falls',  province:'ON', lat:43.0896,  lon:-79.0849,  region:'ontario',     tz:'America/Toronto'},
-  {id:'windsor',      name:'Windsor',        province:'ON', lat:42.3149,  lon:-83.0364,  region:'ontario',     tz:'America/Toronto'},
-  {id:'thunderbay',   name:'Thunder Bay',    province:'ON', lat:48.3809,  lon:-89.2477,  region:'ontario',     tz:'America/Toronto'},
-  {id:'kingston',     name:'Kingston',       province:'ON', lat:44.2312,  lon:-76.4860,  region:'ontario',     tz:'America/Toronto'},
-  {id:'belleville',   name:'Belleville',     province:'ON', lat:44.1628,  lon:-77.3832,  region:'ontario',     tz:'America/Toronto'},
-  {id:'kenora',       name:'Kenora',         province:'ON', lat:49.7667,  lon:-94.4889,  region:'ontario',     tz:'America/Winnipeg'},
-  {id:'montreal',     name:'Montréal',       province:'QC', lat:45.5017,  lon:-73.5673,  region:'quebec',      tz:'America/Toronto'},
-  {id:'quebeccity',   name:'Québec City',    province:'QC', lat:46.8139,  lon:-71.2080,  region:'quebec',      tz:'America/Toronto'},
-  {id:'fredericton',  name:'Fredericton',    province:'NB', lat:45.9636,  lon:-66.6431,  region:'maritimes',   tz:'America/Moncton'},
-  {id:'moncton',      name:'Moncton',        province:'NB', lat:46.0878,  lon:-64.7782,  region:'maritimes',   tz:'America/Moncton'},
-  {id:'halifax',      name:'Halifax',        province:'NS', lat:44.6488,  lon:-63.5752,  region:'maritimes',   tz:'America/Halifax'},
+const CITIES=[
+  {id:'vancouver',name:'Vancouver',province:'BC',lat:49.2827,lon:-123.1207,region:'west_coast',tz:'America/Vancouver'},
+  {id:'victoria',name:'Victoria',province:'BC',lat:48.4284,lon:-123.3656,region:'west_coast',tz:'America/Vancouver'},
+  {id:'kelowna',name:'Kelowna',province:'BC',lat:49.8880,lon:-119.4960,region:'interior_bc',tz:'America/Vancouver'},
+  {id:'kamloops',name:'Kamloops',province:'BC',lat:50.6745,lon:-120.3273,region:'interior_bc',tz:'America/Vancouver'},
+  {id:'calgary',name:'Calgary',province:'AB',lat:51.0447,lon:-114.0719,region:'prairies',tz:'America/Edmonton'},
+  {id:'edmonton',name:'Edmonton',province:'AB',lat:53.5461,lon:-113.4938,region:'prairies',tz:'America/Edmonton'},
+  {id:'reddeer',name:'Red Deer',province:'AB',lat:52.2681,lon:-113.8112,region:'prairies',tz:'America/Edmonton'},
+  {id:'lethbridge',name:'Lethbridge',province:'AB',lat:49.6956,lon:-112.8451,region:'prairies',tz:'America/Edmonton'},
+  {id:'banff',name:'Banff',province:'AB',lat:51.1784,lon:-115.5708,region:'prairies',tz:'America/Edmonton'},
+  {id:'saskatoon',name:'Saskatoon',province:'SK',lat:52.1332,lon:-106.6700,region:'prairies',tz:'America/Regina'},
+  {id:'regina',name:'Regina',province:'SK',lat:50.4452,lon:-104.6189,region:'prairies',tz:'America/Regina'},
+  {id:'swiftcurrent',name:'Swift Current',province:'SK',lat:50.2881,lon:-107.7939,region:'prairies',tz:'America/Regina'},
+  {id:'winnipeg',name:'Winnipeg',province:'MB',lat:49.8951,lon:-97.1384,region:'prairies',tz:'America/Winnipeg'},
+  {id:'brandon',name:'Brandon',province:'MB',lat:49.8485,lon:-99.9501,region:'prairies',tz:'America/Winnipeg'},
+  {id:'toronto',name:'Toronto',province:'ON',lat:43.6532,lon:-79.3832,region:'ontario',tz:'America/Toronto'},
+  {id:'ottawa',name:'Ottawa',province:'ON',lat:45.4215,lon:-75.6972,region:'ontario',tz:'America/Toronto'},
+  {id:'london',name:'London',province:'ON',lat:42.9849,lon:-81.2453,region:'ontario',tz:'America/Toronto'},
+  {id:'hamilton',name:'Hamilton',province:'ON',lat:43.2557,lon:-79.8711,region:'ontario',tz:'America/Toronto'},
+  {id:'kitchener',name:'Kitchener',province:'ON',lat:43.4516,lon:-80.4925,region:'ontario',tz:'America/Toronto'},
+  {id:'niagarafalls',name:'Niagara Falls',province:'ON',lat:43.0896,lon:-79.0849,region:'ontario',tz:'America/Toronto'},
+  {id:'windsor',name:'Windsor',province:'ON',lat:42.3149,lon:-83.0364,region:'ontario',tz:'America/Toronto'},
+  {id:'thunderbay',name:'Thunder Bay',province:'ON',lat:48.3809,lon:-89.2477,region:'ontario',tz:'America/Toronto'},
+  {id:'kingston',name:'Kingston',province:'ON',lat:44.2312,lon:-76.4860,region:'ontario',tz:'America/Toronto'},
+  {id:'belleville',name:'Belleville',province:'ON',lat:44.1628,lon:-77.3832,region:'ontario',tz:'America/Toronto'},
+  {id:'kenora',name:'Kenora',province:'ON',lat:49.7667,lon:-94.4889,region:'ontario',tz:'America/Winnipeg'},
+  {id:'montreal',name:'Montréal',province:'QC',lat:45.5017,lon:-73.5673,region:'quebec',tz:'America/Toronto'},
+  {id:'quebeccity',name:'Québec City',province:'QC',lat:46.8139,lon:-71.2080,region:'quebec',tz:'America/Toronto'},
+  {id:'fredericton',name:'Fredericton',province:'NB',lat:45.9636,lon:-66.6431,region:'maritimes',tz:'America/Moncton'},
+  {id:'moncton',name:'Moncton',province:'NB',lat:46.0878,lon:-64.7782,region:'maritimes',tz:'America/Moncton'},
+  {id:'halifax',name:'Halifax',province:'NS',lat:44.6488,lon:-63.5752,region:'maritimes',tz:'America/Halifax'},
 ];
-const MAX_PINS = 3;
-const state = { cityData:{}, selectedCity:null, pinnedCities:[], pinFilterOn:false, refreshTimer:null };
-try { const s = JSON.parse(localStorage.getItem('stormcast_pins')||'[]'); state.pinnedCities = s.filter(id=>CITIES.some(c=>c.id===id)).slice(0,MAX_PINS); } catch(e){}
-function savePins() { try{localStorage.setItem('stormcast_pins',JSON.stringify(state.pinnedCities));}catch(e){} }
-
-function togglePin(cityId, e) {
-  e.stopPropagation();
-  const idx = state.pinnedCities.indexOf(cityId);
-  if (idx >= 0) { state.pinnedCities.splice(idx,1); }
-  else {
-    if (state.pinnedCities.length >= MAX_PINS) { alert('You can only pin up to '+MAX_PINS+' cities. Remove a pin first.'); return; }
-    state.pinnedCities.push(cityId);
-  }
-  savePins(); renderSidebar();
-}
-function removePin(cityId) {
-  const idx = state.pinnedCities.indexOf(cityId);
-  if (idx>=0) state.pinnedCities.splice(idx,1);
-  savePins();
-  if (state.pinFilterOn && state.pinnedCities.length===0) state.pinFilterOn = false;
-  renderSidebar();
-}
-function togglePinFilter() {
-  if (state.pinnedCities.length===0) { alert('Pin some cities first using the 📌 button on each city card.'); return; }
-  state.pinFilterOn = !state.pinFilterOn;
-  renderSidebar();
-}
-
-function wmoInfo(code, isDay=1) {
-  const d = isDay ? 'day' : 'night';
-  const map = {
-    0:{desc:'Clear Sky',wiClass:d==='day'?'wi-day-sunny':'wi-night-clear'},
-    1:{desc:'Mainly Clear',wiClass:d==='day'?'wi-day-sunny-overcast':'wi-night-alt-partly-cloudy'},
-    2:{desc:'Partly Cloudy',wiClass:d==='day'?'wi-day-cloudy':'wi-night-alt-cloudy'},
-    3:{desc:'Overcast',wiClass:'wi-cloud'},45:{desc:'Foggy',wiClass:'wi-fog'},48:{desc:'Icy Fog',wiClass:'wi-fog'},
-    51:{desc:'Light Drizzle',wiClass:'wi-sprinkle'},53:{desc:'Drizzle',wiClass:'wi-showers'},55:{desc:'Heavy Drizzle',wiClass:'wi-rain'},
-    56:{desc:'Freezing Drizzle',wiClass:'wi-rain-mix'},57:{desc:'Heavy Freezing Drizzle',wiClass:'wi-rain-mix'},
-    61:{desc:'Light Rain',wiClass:d==='day'?'wi-day-rain':'wi-night-alt-rain'},63:{desc:'Moderate Rain',wiClass:'wi-rain'},65:{desc:'Heavy Rain',wiClass:'wi-rain'},
-    66:{desc:'Freezing Rain',wiClass:'wi-rain-mix'},67:{desc:'Heavy Freezing Rain',wiClass:'wi-rain-mix'},
-    71:{desc:'Light Snow',wiClass:d==='day'?'wi-day-snow':'wi-night-alt-snow'},73:{desc:'Moderate Snow',wiClass:'wi-snow'},75:{desc:'Heavy Snow',wiClass:'wi-snow-wind'},
-    77:{desc:'Snow Grains',wiClass:'wi-snowflake-cold'},80:{desc:'Light Showers',wiClass:d==='day'?'wi-day-showers':'wi-night-alt-showers'},
-    81:{desc:'Moderate Showers',wiClass:'wi-showers'},82:{desc:'Violent Showers',wiClass:'wi-storm-showers'},
-    85:{desc:'Snow Showers',wiClass:'wi-snow'},86:{desc:'Heavy Snow Showers',wiClass:'wi-snow-wind'},
-    95:{desc:'Thunderstorm',wiClass:d==='day'?'wi-day-thunderstorm':'wi-night-alt-thunderstorm'},
-    96:{desc:'Thunderstorm w/ Hail',wiClass:'wi-thunderstorm'},99:{desc:'Severe Thunderstorm',wiClass:'wi-thunderstorm'},
-  };
-  return map[code]||{desc:'Unknown',wiClass:'wi-na'};
-}
-function wiIcon(c){return '<i class="wi '+c+'"></i>';}
-
+const PROVINCE_ORDER=['BC','AB','SK','MB','ON','QC','NB','NS'];
+const MAX_PINS=3;
+const state={cityData:{},selectedCity:null,pinnedCities:[],refreshTimer:null};
+try{const s=JSON.parse(localStorage.getItem('stormcast_pins')||'[]');state.pinnedCities=s.filter(id=>CITIES.some(c=>c.id===id)).slice(0,MAX_PINS);}catch(e){}
+function savePins(){try{localStorage.setItem('stormcast_pins',JSON.stringify(state.pinnedCities));}catch(e){}}
 const RT={prairies:1.0,ontario:0.55,quebec:0.35,maritimes:0.18,west_coast:0.04,interior_bc:0.12};
 const RS={prairies:1.0,ontario:0.85,quebec:0.75,maritimes:0.6,west_coast:0.35,interior_bc:0.5};
-function sf(m){return [0.08,0.08,0.15,0.35,0.65,1.0,1.0,0.85,0.5,0.25,0.1,0.08][Math.max(0,Math.min(11,m-1))];}
-function tornadoRisk(cape,li,gust,region,month){
-  cape=cape||0;li=(li===null||li===undefined)?2:li;
-  let b=0;
-  if(cape>2500&&li<-6)b=55;else if(cape>2000&&li<-5)b=38;else if(cape>1500&&li<-4)b=24;
-  else if(cape>1000&&li<-3)b=15;else if(cape>700&&li<-2)b=9;else if(cape>400&&li<-1)b=5;
-  else if(cape>200&&li<0)b=2.5;else if(cape>50)b=0.8;
-  if(gust>80)b*=1.3;else if(gust>60)b*=1.15;
-  return Math.max(0,Math.min(Math.round(b*sf(month)*(RT[region]||0.3)),85));
-}
-function thunderRisk(cape,li,pp,wc,gust,region,month){
-  cape=cape||0;li=(li===null||li===undefined)?2:li;pp=pp||0;
-  let b=0;
-  if([95,96,99].includes(wc))b=Math.max(b,55+Math.min(pp*0.25,25));
-  if(cape>2000&&li<-5)b=Math.max(b,60);else if(cape>1500&&li<-4)b=Math.max(b,48);
-  else if(cape>1000&&li<-3)b=Math.max(b,36);else if(cape>700&&li<-2)b=Math.max(b,26);
-  else if(cape>400&&li<-1)b=Math.max(b,18);else if(cape>200&&li<0)b=Math.max(b,10);else if(cape>50)b=Math.max(b,4);
-  b+=pp*0.18;if(gust>80)b*=1.2;
-  return Math.max(0,Math.min(Math.round(b*sf(month)*(RS[region]||0.6)),90));
-}
+function sf(m){return[0.08,0.08,0.15,0.35,0.65,1.0,1.0,0.85,0.5,0.25,0.1,0.08][Math.max(0,Math.min(11,m-1))];}
+function tornadoRisk(cape,li,gust,region,month){cape=cape||0;li=(li==null)?2:li;let b=0;if(cape>2500&&li<-6)b=55;else if(cape>2000&&li<-5)b=38;else if(cape>1500&&li<-4)b=24;else if(cape>1000&&li<-3)b=15;else if(cape>700&&li<-2)b=9;else if(cape>400&&li<-1)b=5;else if(cape>200&&li<0)b=2.5;else if(cape>50)b=0.8;if(gust>80)b*=1.3;else if(gust>60)b*=1.15;return Math.max(0,Math.min(Math.round(b*sf(month)*(RT[region]||0.3)),85));}
+function thunderRisk(cape,li,pp,wc,gust,region,month){cape=cape||0;li=(li==null)?2:li;pp=pp||0;let b=0;if([95,96,99].includes(wc))b=Math.max(b,55+Math.min(pp*0.25,25));if(cape>2000&&li<-5)b=Math.max(b,60);else if(cape>1500&&li<-4)b=Math.max(b,48);else if(cape>1000&&li<-3)b=Math.max(b,36);else if(cape>700&&li<-2)b=Math.max(b,26);else if(cape>400&&li<-1)b=Math.max(b,18);else if(cape>200&&li<0)b=Math.max(b,10);else if(cape>50)b=Math.max(b,4);b+=pp*0.18;if(gust>80)b*=1.2;return Math.max(0,Math.min(Math.round(b*sf(month)*(RS[region]||0.6)),90));}
 function tLbl(p){if(p===0)return{label:'None',cls:'none'};if(p<=2)return{label:'Slight',cls:'slight'};if(p<=10)return{label:'Low',cls:'low'};if(p<=25)return{label:'Marginal',cls:'marginal'};if(p<=49)return{label:'Moderate',cls:'moderate'};if(p<=75)return{label:'High',cls:'high'};return{label:'Extreme',cls:'extreme'};}
 function sLbl(p){if(p===0)return{label:'None',cls:'none'};if(p<=5)return{label:'Slight',cls:'slight'};if(p<=15)return{label:'Low',cls:'low'};if(p<=25)return{label:'Marginal',cls:'marginal'};if(p<=49)return{label:'Moderate',cls:'moderate'};if(p<=75)return{label:'High',cls:'high'};return{label:'Very High',cls:'very-high'};}
-function rbc(cls){return{none:'#2ecc71',slight:'#27ae60',low:'#a3d977',marginal:'#f1c40f',moderate:'#e67e22',high:'#e74c3c',extreme:'#c0392b','very-high':'#ff6b35'}[cls]||'#3ab4ff';}
-function windDir(deg){if(deg===null||deg===undefined)return'N/A';return['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'][Math.round(deg/22.5)%16];}
-
-async function fetchCityWeather(city) {
-  const url = 'https://api.open-meteo.com/v1/forecast?latitude='+city.lat+'&longitude='+city.lon
-    +'&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,precipitation,surface_pressure,is_day'
-    +'&hourly=cape,lifted_index,precipitation_probability&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,wind_speed_10m_max,wind_gusts_10m_max'
-    +'&timezone='+encodeURIComponent(city.tz)+'&forecast_days=5&wind_speed_unit=kmh&temperature_unit=celsius&precipitation_unit=mm';
-  const res = await fetch(url);
-  if(!res.ok) throw new Error('HTTP '+res.status);
-  const data = await res.json();
-  const now = new Date(data.current.time);
-  const hi = Math.max(0,data.hourly.time.findIndex(t=>new Date(t)>=now));
+function rbc(cls){return{none:'#2ecc71',slight:'#27ae60',low:'#a3d977',marginal:'#f1c40f',moderate:'#e67e22',high:'#e74c3c',extreme:'#c0392b','very-high':'#ff6b35'}[cls]||'#5cc8ff';}
+function windDir(deg){if(deg==null)return'N/A';return['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'][Math.round(deg/22.5)%16];}
+function wmoInfo(code,isDay=1){const d=isDay?'day':'night';const map={0:{desc:'Clear Sky',wiClass:d==='day'?'wi-day-sunny':'wi-night-clear'},1:{desc:'Mainly Clear',wiClass:d==='day'?'wi-day-sunny-overcast':'wi-night-alt-partly-cloudy'},2:{desc:'Partly Cloudy',wiClass:d==='day'?'wi-day-cloudy':'wi-night-alt-cloudy'},3:{desc:'Overcast',wiClass:'wi-cloud'},45:{desc:'Foggy',wiClass:'wi-fog'},48:{desc:'Icy Fog',wiClass:'wi-fog'},51:{desc:'Light Drizzle',wiClass:'wi-sprinkle'},53:{desc:'Drizzle',wiClass:'wi-showers'},55:{desc:'Heavy Drizzle',wiClass:'wi-rain'},61:{desc:'Light Rain',wiClass:d==='day'?'wi-day-rain':'wi-night-alt-rain'},63:{desc:'Moderate Rain',wiClass:'wi-rain'},65:{desc:'Heavy Rain',wiClass:'wi-rain'},66:{desc:'Freezing Rain',wiClass:'wi-rain-mix'},71:{desc:'Light Snow',wiClass:d==='day'?'wi-day-snow':'wi-night-alt-snow'},73:{desc:'Moderate Snow',wiClass:'wi-snow'},75:{desc:'Heavy Snow',wiClass:'wi-snow-wind'},80:{desc:'Light Showers',wiClass:d==='day'?'wi-day-showers':'wi-night-alt-showers'},81:{desc:'Moderate Showers',wiClass:'wi-showers'},95:{desc:'Thunderstorm',wiClass:d==='day'?'wi-day-thunderstorm':'wi-night-alt-thunderstorm'},96:{desc:'Thunderstorm w/ Hail',wiClass:'wi-thunderstorm'},99:{desc:'Severe Thunderstorm',wiClass:'wi-thunderstorm'}};return map[code]||{desc:'Unknown',wiClass:'wi-na'};}
+function wiIcon(c){return'<i class="wi '+c+'"></i>';}
+async function fetchCityWeather(city){
+  const url='https://api.open-meteo.com/v1/forecast?latitude='+city.lat+'&longitude='+city.lon+'&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,precipitation,surface_pressure,is_day&hourly=cape,lifted_index,precipitation_probability&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,wind_speed_10m_max,wind_gusts_10m_max&timezone='+encodeURIComponent(city.tz)+'&forecast_days=5&wind_speed_unit=kmh&temperature_unit=celsius&precipitation_unit=mm';
+  const res=await Promise.race([fetch(url),new Promise((_,r)=>setTimeout(()=>r(new Error('Timeout')),8000))]);
+  if(!res.ok)throw new Error('HTTP '+res.status);
+  const data=await res.json();
+  const now=new Date(data.current.time);
+  const hi=Math.max(0,data.hourly.time.findIndex(t=>new Date(t)>=now));
   const dailyCape=[],dailyLi=[];
-  for(let d=0;d<5;d++){
-    const s=d*24,e=s+24;
-    const ca=data.hourly.cape.slice(s,e).filter(v=>v!==null);
-    const li=data.hourly.lifted_index.slice(s,e).filter(v=>v!==null);
-    dailyCape.push(ca.length?Math.max(...ca):0);
-    dailyLi.push(li.length?Math.min(...li):2);
-  }
+  for(let d=0;d<5;d++){const s=d*24,e=s+24;const ca=data.hourly.cape.slice(s,e).filter(v=>v!==null);const li=data.hourly.lifted_index.slice(s,e).filter(v=>v!==null);dailyCape.push(ca.length?Math.max(...ca):0);dailyLi.push(li.length?Math.min(...li):2);}
   const cur=data.current,gust=cur.wind_gusts_10m||cur.wind_speed_10m;
-  return {
-    city,month:now.getMonth()+1,
-    current:{
-      temp:Math.round(cur.temperature_2m),feels:Math.round(cur.apparent_temperature),
-      humidity:cur.relative_humidity_2m,wCode:cur.weather_code,
-      wind:Math.round(cur.wind_speed_10m),windDir:cur.wind_direction_10m,
-      windGust:Math.round(gust),precip:cur.precipitation,pressure:Math.round(cur.surface_pressure),
-      isDay:cur.is_day,time:cur.time,
-      cape:Math.round(data.hourly.cape[hi]??0),
-      li:data.hourly.lifted_index[hi]!==null?Math.round((data.hourly.lifted_index[hi]??2)*10)/10:null,
-      precipProb:data.hourly.precipitation_probability[hi]??0,
-    },
-    daily:data.daily,dailyCape,dailyLi,
-  };
+  return{city,month:now.getMonth()+1,current:{temp:Math.round(cur.temperature_2m),feels:Math.round(cur.apparent_temperature),humidity:cur.relative_humidity_2m,wCode:cur.weather_code,wind:Math.round(cur.wind_speed_10m),windDir:cur.wind_direction_10m,windGust:Math.round(gust),precip:cur.precipitation,pressure:Math.round(cur.surface_pressure),isDay:cur.is_day,time:cur.time,cape:Math.round(data.hourly.cape[hi]??0),li:data.hourly.lifted_index[hi]!=null?Math.round((data.hourly.lifted_index[hi]??2)*10)/10:null,precipProb:data.hourly.precipitation_probability[hi]??0},daily:data.daily,dailyCape,dailyLi};
 }
-
-let searchTimeout=null;
-document.getElementById('searchInput').addEventListener('input',e=>{
-  clearTimeout(searchTimeout);const q=e.target.value.trim();
-  if(q.length<2){closeSearch();return;}
-  searchTimeout=setTimeout(()=>{
-    const res=CITIES.filter(c=>c.name.toLowerCase().includes(q.toLowerCase())||c.province.toLowerCase()===q.toLowerCase());
-    if(res.length)showSearch(res);else closeSearch();
-  },200);
-});
-function showSearch(results){
-  const box=document.getElementById('searchResults');
-  box.innerHTML=results.map(r=>`<div class="search-result-item" data-id="${r.id}"><span>${r.name}</span><span class="res-province">${r.province}</span></div>`).join('');
-  box.classList.add('show');
-  box.querySelectorAll('.search-result-item').forEach(item=>item.addEventListener('click',()=>{
-    selectCity(item.dataset.id);closeSearch();document.getElementById('searchInput').value='';
-    if(state.pinFilterOn&&!state.pinnedCities.includes(item.dataset.id)){state.pinFilterOn=false;renderSidebar();}
-  }));
+let menuOpen=false;
+function toggleCitiesMenu(){menuOpen=!menuOpen;document.getElementById('citiesMenu').classList.toggle('open',menuOpen);document.getElementById('citiesBtn').classList.toggle('open',menuOpen);if(menuOpen){buildMenuList('');document.getElementById('menuSearch').value='';setTimeout(()=>document.getElementById('menuSearch').focus(),50);}}
+function closeCitiesMenu(){menuOpen=false;document.getElementById('citiesMenu').classList.remove('open');document.getElementById('citiesBtn').classList.remove('open');}
+document.addEventListener('click',e=>{if(!e.target.closest('.cities-dropdown-wrap'))closeCitiesMenu();});
+function filterMenu(q){buildMenuList(q);}
+function buildMenuList(q){
+  const list=document.getElementById('menuList');const lq=q.toLowerCase();
+  const filtered=CITIES.filter(c=>!lq||c.name.toLowerCase().includes(lq)||c.province.toLowerCase().includes(lq));
+  const groups={};PROVINCE_ORDER.forEach(p=>{groups[p]=[];});
+  filtered.forEach(c=>{if(groups[c.province])groups[c.province].push(c);});
+  let html='';
+  for(const prov of PROVINCE_ORDER){const cities=groups[prov];if(!cities||!cities.length)continue;html+='<div class="cities-group-label">'+prov+'</div>';cities.forEach(city=>{const d=state.cityData[city.id];const isPinned=state.pinnedCities.includes(city.id);const isActive=state.selectedCity===city.id;const tempHtml=d?'<span class="cmi-temp">'+d.current.temp+'°</span>':'';const pinHtml=isPinned?'<span style="font-size:0.7rem">📌</span>':'';html+='<div class="city-menu-item'+(isActive?' active':'')+(isPinned?' pinned-item':'')+'" onclick="selectCity(\''+city.id+'\');closeCitiesMenu()"><span>'+city.name+'</span><span style="display:flex;align-items:center;gap:4px">'+tempHtml+pinHtml+'</span></div>';});}
+  if(!html)html='<div style="padding:1rem;color:var(--text-muted);font-size:0.8rem;text-align:center">No cities found</div>';
+  list.innerHTML=html;
 }
-function closeSearch(){document.getElementById('searchResults').classList.remove('show');}
-document.addEventListener('click',e=>{if(!e.target.closest('.search-wrap'))closeSearch();});
-
-function renderSidebar(){
-  const filterBtn=document.getElementById('pinFilterBtn');
-  document.getElementById('pinCountBadge').textContent=state.pinnedCities.length;
-  filterBtn.classList.toggle('active',state.pinFilterOn);
-  const slotsEl=document.getElementById('pinSlots');
-  if(state.pinnedCities.length===0){
-    slotsEl.innerHTML='<span class="pin-empty-hint">Pin up to 3 cities with the 📌 button</span>';
-  } else {
-    slotsEl.innerHTML=state.pinnedCities.map(id=>{
-      const city=CITIES.find(c=>c.id===id);
-      return '<span class="pin-slot">📌 '+(city?city.name:id)+' <span class="pin-slot-remove" onclick="removePin(\''+id+'\')">✕</span></span>';
-    }).join('');
-  }
-  const list=document.getElementById('cityList');
-  list.innerHTML=CITIES.map(city=>{
-    const isPinned=state.pinnedCities.includes(city.id);
-    const isHidden=state.pinFilterOn&&!isPinned;
-    const d=state.cityData[city.id];
-    const isActive=state.selectedCity===city.id;
-    let inner;
-    if(!d){
-      inner='<div class="city-card-icon"><i class="wi wi-thermometer"></i></div>'
-        +'<div class="city-card-info"><div class="city-card-name">'+city.name+'</div>'
-        +'<div class="city-card-sub">'+city.province+' · Loading…</div></div>';
-    } else {
-      const cur=d.current,w=wmoInfo(cur.wCode,cur.isDay);
-      const tr=tornadoRisk(cur.cape,cur.li,cur.windGust,city.region,d.month);
-      const sr=thunderRisk(cur.cape,cur.li,cur.precipProb,cur.wCode,cur.windGust,city.region,d.month);
-      const tl=tLbl(tr),sl=sLbl(sr);
-      inner='<div class="city-card-icon">'+wiIcon(w.wiClass)+'</div>'
-        +'<div class="city-card-info"><div class="city-card-name">'+city.name+'</div>'
-        +'<div class="city-card-sub">'+city.province+' · '+w.desc+'</div>'
-        +'<div class="city-card-risks">'
-        +'<span class="mini-risk bg-'+tl.cls+'" title="Tornado: '+tr+'%">🌪 '+tr+'%</span>'
-        +'<span class="mini-risk bg-'+sl.cls+'" title="T-Storm: '+sr+'%">⚡ '+sr+'%</span>'
-        +'</div></div>'
-        +'<div class="city-card-temp">'+cur.temp+'°</div>';
-    }
-    return '<div class="city-card'+(isActive?' active':'')+(isPinned?' pinned':'')+(isHidden?' city-hidden':'')+'" '
-      +'data-id="'+city.id+'" onclick="selectCity(\''+city.id+'\')">'
-      +inner
-      +'<button class="pin-btn'+(isPinned?' pinned':'')+'" title="'+(isPinned?'Unpin':'Pin')+' '+city.name+'" onclick="togglePin(\''+city.id+'\',event)">📌</button>'
-      +'</div>';
-  }).join('');
+function renderPinnedPills(){
+  const wrap=document.getElementById('pinPills');const hint=document.getElementById('noPinsHint');
+  wrap.querySelectorAll('.pin-pill').forEach(el=>el.remove());
+  if(state.pinnedCities.length===0){hint.style.display='';return;}
+  hint.style.display='none';
+  state.pinnedCities.forEach(id=>{const city=CITIES.find(c=>c.id===id);if(!city)return;const d=state.cityData[id];const isActive=state.selectedCity===id;const pill=document.createElement('div');pill.className='pin-pill'+(isActive?' active':'');let iconHtml='<span>🍁</span>';let tempHtml='<span class="pp-sep">·</span><span class="pp-temp">--°</span>';if(d){const w=wmoInfo(d.current.wCode,d.current.isDay);iconHtml='<span class="pp-icon">'+wiIcon(w.wiClass)+'</span>';tempHtml='<span class="pp-sep">·</span><span class="pp-temp">'+d.current.temp+'°</span>';}pill.innerHTML=iconHtml+'<span class="pp-name">'+city.name+'</span>'+tempHtml;pill.onclick=()=>selectCity(id);wrap.appendChild(pill);});
 }
-
-function selectCity(cityId){state.selectedCity=cityId;renderSidebar();renderMain();}
-
+function selectCity(id){state.selectedCity=id;renderPinnedPills();renderMain();}
+function buildPinManager(){
+  let rows='';
+  if(state.pinnedCities.length===0){rows='<div class="pin-manager-empty">No cities pinned yet.</div>';}
+  else{state.pinnedCities.forEach((id,i)=>{const city=CITIES.find(c=>c.id===id);if(!city)return;const d=state.cityData[id];const tempHtml=d?'<span class="pmr-temp">'+d.current.temp+'°C</span>':'';const label=i===0?' <span style="font-size:0.65rem;color:var(--accent-yellow);margin-left:4px">(opens first)</span>':'';rows+='<div class="pin-manager-row" onclick="selectCity(\''+id+'\')"><span class="pmr-left">📌 '+city.name+label+'</span><span style="display:flex;align-items:center;gap:8px">'+tempHtml+'<button class="pmr-remove" onclick="event.stopPropagation();removePinFromManager(\''+id+'\')">✕</button></span></div>';});}
+  return'<div class="pin-manager"><div class="pin-manager-title">📌 Your Pinned Cities</div>'+rows+'<div class="pin-manager-hint">The <strong>first pinned city</strong> always opens on load &amp; refresh.<br>Remove with ✕ then re-pin via <em>All Cities ▼</em>.</div></div>';
+}
+function removePinFromManager(id){const idx=state.pinnedCities.indexOf(id);if(idx>=0)state.pinnedCities.splice(idx,1);savePins();renderPinnedPills();renderMain();}
+function openPinDialog(){const id=state.selectedCity;if(!id)return;const idx=state.pinnedCities.indexOf(id);if(idx>=0){state.pinnedCities.splice(idx,1);savePins();renderPinnedPills();renderMain();}else{if(state.pinnedCities.length>=MAX_PINS){alert('You can only pin up to 3 cities. Remove a pin first.');return;}state.pinnedCities.push(id);savePins();renderPinnedPills();renderMain();}}
 function renderMain(){
-  const panel=document.getElementById('mainPanel');
-  const cityId=state.selectedCity;
-  if(!cityId){panel.innerHTML='<div class="loading-state"><div style="font-size:3rem">🍁</div><div style="color:var(--text-muted)">Select a city to view detailed weather</div></div>';return;}
+  const panel=document.getElementById('mainPanel');const cityId=state.selectedCity;
+  if(!cityId){panel.innerHTML='<div class="welcome-state"><div class="big-leaf">🍁</div><h2>Canadian StormCast</h2><p>Select a city from <strong>All Cities ▼</strong> above, or pin up to 3 favourites.</p>'+buildPinManager()+'</div>';return;}
   const d=state.cityData[cityId];
-  if(!d){panel.innerHTML='<div class="loading-state"><div class="spinner"></div><div style="color:var(--text-muted)">Loading…</div></div>';return;}
+  if(!d){panel.innerHTML='<div class="loading-state"><div class="spinner"></div><div style="color:var(--text-primary);font-size:1rem;font-weight:600">Loading weather…</div></div>';return;}
   const city=d.city,cur=d.current,w=wmoInfo(cur.wCode,cur.isDay),month=d.month;
-  const tr=tornadoRisk(cur.cape,cur.li,cur.windGust,city.region,month);
-  const sr=thunderRisk(cur.cape,cur.li,cur.precipProb,cur.wCode,cur.windGust,city.region,month);
-  const tl=tLbl(tr),sl=sLbl(sr);
-  const isPinned=state.pinnedCities.includes(cityId);
-  const alertHTML=(tr>=26||sr>=51)?'<div class="alert-banner"><span>⚠️</span><span>'
-    +(tr>=26?'<strong>Tornado Risk Alert:</strong> '+tl.label+' risk ('+tr+'%) in '+city.name+'. ':'')
-    +(sr>=51?'<strong>Severe Thunderstorm:</strong> '+sl.label+' risk ('+sr+'%) of thunderstorms. ':'')
-    +'Stay weather-aware.</span></div>':'';
+  const tr=tornadoRisk(cur.cape,cur.li,cur.windGust,city.region,month);const sr=thunderRisk(cur.cape,cur.li,cur.precipProb,cur.wCode,cur.windGust,city.region,month);
+  const tl=tLbl(tr),sl=sLbl(sr);const isPinned=state.pinnedCities.includes(cityId);
+  const alertHTML=(tr>=26||sr>=51)?'<div class="alert-banner"><span>⚠️</span><span>'+(tr>=26?'<strong>Tornado Risk:</strong> '+tl.label+' ('+tr+'%) in '+city.name+'. ':'' )+(sr>=51?'<strong>Thunderstorm:</strong> '+sl.label+' ('+sr+'%). ':'')+'Stay weather-aware.</span></div>':'';
   const localTime=new Date(cur.time+':00').toLocaleString('en-CA',{timeZone:city.tz,weekday:'long',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
-  const dew=Math.round(cur.temp-((100-cur.humidity)/5));
-  const vis=cur.wCode>=45&&cur.wCode<=48?'< 1 km':cur.wCode<=1?'> 20 km':'5-15 km';
-  const forecHtml=buildForecast(d,city,month);
-  panel.innerHTML=alertHTML+
-    '<div class="current-hero">'
-    +'<div class="city-title-row"><div>'
-    +'<div class="city-title">'+city.name+(isPinned?' 📌':'')+'</div>'
-    +'<div class="city-province">'+city.province+' · Canada</div>'
-    +'</div><div class="city-time">📅 '+localTime+'</div></div>'
-    +'<div class="conditions-grid">'
-    +'<div><div class="big-temp">'+cur.temp+'<span class="big-temp-unit">°C</span></div><div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px">Feels like '+cur.feels+'°C</div></div>'
-    +'<div class="weather-icon-big">'+wiIcon(w.wiClass)+'</div>'
-    +'<div class="condition-block"><div class="condition-label">💧 Humidity</div><div class="condition-value">'+cur.humidity+'%</div><div class="condition-label" style="margin-top:8px">🌡️ Dew Point</div><div class="condition-value">'+dew+'°C</div></div>'
-    +'<div class="condition-block"><div class="condition-label">💨 Wind</div><div class="condition-value">'+cur.wind+' km/h '+windDir(cur.windDir)+'</div><div class="condition-label" style="margin-top:8px">⚡ Gusts</div><div class="condition-value">'+cur.windGust+' km/h</div></div>'
-    +'</div><div class="weather-desc">'+w.desc+'</div></div>'
-    +'<div class="conditions-strip">'
-    +'<div class="cond-tile"><div class="cond-tile-icon">🌧️</div><div class="cond-tile-label">Precip</div><div class="cond-tile-value">'+cur.precip.toFixed(1)+' mm</div></div>'
-    +'<div class="cond-tile"><div class="cond-tile-icon">⏱️</div><div class="cond-tile-label">Pressure</div><div class="cond-tile-value">'+cur.pressure+' hPa</div></div>'
-    +'<div class="cond-tile"><div class="cond-tile-icon">👁️</div><div class="cond-tile-label">Visibility</div><div class="cond-tile-value">'+vis+'</div></div>'
-    +'<div class="cond-tile"><div class="cond-tile-icon">☔</div><div class="cond-tile-label">Precip Prob.</div><div class="cond-tile-value">'+Math.round(cur.precipProb)+'%</div></div>'
-    +'</div>'
-    +'<div class="risk-row">'+buildRiskPanel('tornado',tr,tl)+buildRiskPanel('thunder',sr,sl)+'</div>'
-    +'<div class="forecast-section"><div class="section-title">📅 5-Day Forecast</div><div class="forecast-grid">'+forecHtml+'</div></div>'
-    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1.25rem">'+buildLegend('tornado')+buildLegend('thunder')+'</div>'
-    +'<div style="text-align:center;font-size:0.65rem;color:var(--text-muted);padding-bottom:1rem">Data: Open-Meteo API · Risk from CAPE, Lifted Index, seasonal & regional factors · Updates every 15 min</div>';
+  const dew=Math.round(cur.temp-((100-cur.humidity)/5));const vis=cur.wCode>=45&&cur.wCode<=48?'< 1 km':cur.wCode<=1?'> 20 km':'5-15 km';
+  const daily=d.daily;const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const forecastHtml=daily.time.slice(0,5).map((dateStr,i)=>{const date=new Date(dateStr+'T12:00:00');const dayLabel=i===0?'Today':days[date.getDay()];const wc=daily.weather_code[i];const fw=wmoInfo(wc,1);const hi=Math.round(daily.temperature_2m_max[i]);const lo=Math.round(daily.temperature_2m_min[i]);const precip=(daily.precipitation_sum[i]||0).toFixed(1);const pp=daily.precipitation_probability_max[i]||0;const gust=Math.round(daily.wind_gusts_10m_max[i]||daily.wind_speed_10m_max[i]||0);const ftr=tornadoRisk(d.dailyCape[i]||0,d.dailyLi[i]??2,gust,city.region,date.getMonth()+1);const fsr=thunderRisk(d.dailyCape[i]||0,d.dailyLi[i]??2,pp,wc,gust,city.region,date.getMonth()+1);const ftl=tLbl(ftr),fsl=sLbl(fsr);return'<div class="forecast-card"><div class="forecast-day">'+dayLabel+'</div><div style="font-size:0.65rem;color:var(--text-muted);margin-bottom:4px">'+dateStr.slice(5).replace('-','/')+'</div><div class="forecast-icon" style="font-size:2rem;margin-bottom:0.4rem;line-height:1">'+wiIcon(fw.wiClass)+'</div><div class="forecast-temps"><span class="forecast-hi">'+hi+'°</span><span style="color:var(--text-muted)"> / </span><span class="forecast-lo">'+lo+'°</span></div><div class="forecast-precip">💧 '+precip+'mm · '+pp+'%</div><div class="forecast-risks"><div class="forecast-risk-row"><span class="label">🌪</span><span class="risk-chip bg-'+ftl.cls+'">'+ftr+'% '+ftl.label+'</span></div><div class="forecast-risk-row"><span class="label">⛈</span><span class="risk-chip bg-'+fsl.cls+'">'+fsr+'% '+fsl.label+'</span></div></div></div>';}).join('');
+  panel.innerHTML=alertHTML+'<div class="current-hero"><div class="city-title-row"><div><div class="city-title">'+city.name+(isPinned?' 📌':'')+'</div><div class="city-province">'+city.province+' · Canada</div></div><div class="city-time">📅 '+localTime+'</div></div><div class="conditions-grid"><div><div class="big-temp">'+cur.temp+'<span class="big-temp-unit">°C</span></div><div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px">Feels like '+cur.feels+'°C</div></div><div class="weather-icon-big">'+wiIcon(w.wiClass)+'</div><div class="condition-block"><div class="condition-label">💧 Humidity</div><div class="condition-value">'+cur.humidity+'%</div><div class="condition-label" style="margin-top:8px">🌡️ Dew Point</div><div class="condition-value">'+dew+'°C</div></div><div class="condition-block"><div class="condition-label">💨 Wind</div><div class="condition-value">'+cur.wind+' km/h '+windDir(cur.windDir)+'</div><div class="condition-label" style="margin-top:8px">⚡ Gusts</div><div class="condition-value">'+cur.windGust+' km/h</div></div></div><div class="weather-desc">'+w.desc+'</div></div><div class="conditions-strip"><div class="cond-tile"><div class="cond-tile-icon">🌧️</div><div class="cond-tile-label">Precip</div><div class="cond-tile-value">'+cur.precip.toFixed(1)+' mm</div></div><div class="cond-tile"><div class="cond-tile-icon">⏱️</div><div class="cond-tile-label">Pressure</div><div class="cond-tile-value">'+cur.pressure+' hPa</div></div><div class="cond-tile"><div class="cond-tile-icon">👁️</div><div class="cond-tile-label">Visibility</div><div class="cond-tile-value">'+vis+'</div></div><div class="cond-tile"><div class="cond-tile-icon">☔</div><div class="cond-tile-label">Precip Prob.</div><div class="cond-tile-value">'+Math.round(cur.precipProb)+'%</div></div></div><div class="risk-row">'+buildRP('tornado',tr,tl)+buildRP('thunder',sr,sl)+'</div><div class="forecast-section"><div class="section-title">📅 5-Day Forecast</div><div class="forecast-grid">'+forecastHtml+'</div></div><div style="text-align:center;font-size:0.65rem;color:var(--text-muted);padding:0.5rem 0 1rem"><button onclick="openPinDialog()" style="background:none;border:none;color:var(--accent-yellow);cursor:pointer;font-size:0.65rem;font-family:inherit">📌 '+(isPinned?'Unpin this city':'Pin this city')+'</button></div>';
 }
-
-function buildRiskPanel(type,risk,lbl){
-  const isTornado=type==='tornado';
-  const title=isTornado?'🌪️ Tornado Risk':'⛈️ Thunderstorm Risk';
-  const maxR=isTornado?85:90;
-  const pct=Math.min((risk/maxR)*100,100);
-  const color=rbc(lbl.cls);
-  const items=isTornado
-    ?[{r:'0-2%',l:'Slight',c:'slight'},{r:'3-10%',l:'Low',c:'low'},{r:'11-25%',l:'Marginal',c:'marginal'},{r:'26-49%',l:'Moderate',c:'moderate'},{r:'51-75%',l:'High',c:'high'},{r:'76-85%',l:'Extreme',c:'extreme'}]
-    :[{r:'0-5%',l:'Slight',c:'slight'},{r:'6-15%',l:'Low',c:'low'},{r:'16-25%',l:'Marginal',c:'marginal'},{r:'26-49%',l:'Moderate',c:'moderate'},{r:'51-75%',l:'High',c:'high'},{r:'76-90%',l:'Very High',c:'very-high'}];
-  return '<div class="risk-panel"><div class="risk-panel-title">'+title+'</div>'
-    +'<div class="risk-value risk-color-'+lbl.cls+'">'+risk+'%</div>'
-    +'<div class="risk-label risk-color-'+lbl.cls+'">'+lbl.label+' Risk</div>'
-    +'<div class="risk-bar-wrap"><div class="risk-bar" style="width:'+pct+'%;background:'+color+'"></div></div>'
-    +'<div class="risk-scale">'+items.map(s=>'<span class="risk-scale-item bg-'+s.c+'" title="'+s.r+'">'+s.l+'</span>').join('')+'</div></div>';
-}
-
-function buildLegend(type){
-  const isTornado=type==='tornado';
-  const title=isTornado?'🌪️ Tornado Risk Scale':'⛈️ Thunderstorm Risk Scale';
-  const items=isTornado
-    ?[{l:'Slight',c:'slight',n:'Isolated, non-threatening'},{l:'Low',c:'low',n:'Possible in unstable areas'},{l:'Marginal',c:'marginal',n:'Elevated, monitor conditions'},{l:'Moderate',c:'moderate',n:'Significant threat, prepare'},{l:'High',c:'high',n:'Dangerous conditions likely'},{l:'Extreme',c:'extreme',n:'Life-threatening situation'}]
-    :[{l:'Slight',c:'slight',n:'Isolated chance'},{l:'Low',c:'low',n:'Scattered storms possible'},{l:'Marginal',c:'marginal',n:'Storms likely in region'},{l:'Moderate',c:'moderate',n:'Widespread storm activity'},{l:'High',c:'high',n:'Severe storms expected'},{l:'Very High',c:'very-high',n:'Dangerous, widespread severe'}];
-  return '<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:1rem">'
-    +'<div class="section-title">'+title+'</div>'
-    +'<div style="display:flex;flex-direction:column;gap:5px">'
-    +items.map(i=>'<div style="display:flex;align-items:center;gap:8px;font-size:0.7rem"><strong class="risk-color-'+i.c+'" style="min-width:80px">'+i.l+'</strong><span style="color:var(--text-muted)">'+i.n+'</span></div>').join('')
-    +'</div></div>';
-}
-
-function buildForecast(d,city,month){
-  const daily=d.daily;
-  const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  return daily.time.slice(0,5).map((dateStr,i)=>{
-    const date=new Date(dateStr+'T12:00:00');
-    const dayLabel=i===0?'Today':days[date.getDay()];
-    const wc=daily.weather_code[i];
-    const w=wmoInfo(wc,1);
-    const hi=Math.round(daily.temperature_2m_max[i]);
-    const lo=Math.round(daily.temperature_2m_min[i]);
-    const precip=(daily.precipitation_sum[i]||0).toFixed(1);
-    const pp=daily.precipitation_probability_max[i]||0;
-    const gust=Math.round(daily.wind_gusts_10m_max[i]||daily.wind_speed_10m_max[i]||0);
-    const tr=tornadoRisk(d.dailyCape[i]||0,d.dailyLi[i]??2,gust,city.region,date.getMonth()+1);
-    const sr=thunderRisk(d.dailyCape[i]||0,d.dailyLi[i]??2,pp,wc,gust,city.region,date.getMonth()+1);
-    const tl=tLbl(tr),sl=sLbl(sr);
-    return '<div class="forecast-card">'
-      +'<div class="forecast-day">'+dayLabel+'</div>'
-      +'<div style="font-size:0.65rem;color:var(--text-muted);margin-bottom:4px">'+dateStr.slice(5).replace('-','/')+'</div>'
-      +'<div class="forecast-icon">'+wiIcon(w.wiClass)+'</div>'
-      +'<div class="forecast-temps"><span class="forecast-hi">'+hi+'°</span><span style="color:var(--text-muted)"> / </span><span class="forecast-lo">'+lo+'°</span></div>'
-      +'<div class="forecast-precip">💧 '+precip+'mm · '+pp+'%</div>'
-      +'<div class="forecast-risks">'
-      +'<div class="forecast-risk-row"><span class="label">🌪</span><span class="risk-chip bg-'+tl.cls+'">'+tr+'% '+tl.label+'</span></div>'
-      +'<div class="forecast-risk-row"><span class="label">⛈</span><span class="risk-chip bg-'+sl.cls+'">'+sr+'% '+sl.label+'</span></div>'
-      +'</div></div>';
-  }).join('');
-}
-
-const REFRESH_MS=15*60*1000;
-let nextRefreshAt=null,countdownTimer=null;
-function updateCountdown(){
-  if(!nextRefreshAt)return;
-  const ms=nextRefreshAt-Date.now();
-  if(ms<=0){document.getElementById('countdownText').textContent='';return;}
-  const m=Math.floor(ms/60000),s=Math.floor((ms%60000)/1000);
-  document.getElementById('countdownText').textContent='Next update in '+m+':'+String(s).padStart(2,'0');
-}
-async function loadAllCities(){
-  const badge=document.getElementById('updateBadge'),btn=document.getElementById('refreshBtn');
-  badge.classList.add('updating');btn.disabled=true;btn.classList.add('loading');
-  document.getElementById('lastUpdate').textContent='Updating…';
-  clearInterval(countdownTimer);
-  const batch=5;
-  for(let i=0;i<CITIES.length;i+=batch){
-    await Promise.all(CITIES.slice(i,i+batch).map(async city=>{
-      try{
-        const data=await fetchCityWeather(city);
-        state.cityData[city.id]=data;
-        renderSidebar();
-        if(state.selectedCity===city.id)renderMain();
-      }catch(err){console.warn('Failed:',city.name,err);}
-    }));
-  }
-  const now=new Date();
-  document.getElementById('lastUpdate').textContent='Updated '+now.toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  badge.classList.remove('updating');btn.disabled=false;btn.classList.remove('loading');
-  nextRefreshAt=Date.now()+REFRESH_MS;
-  countdownTimer=setInterval(updateCountdown,1000);
-  updateCountdown();
-}
-async function manualRefresh(){
-  clearInterval(state.refreshTimer);clearInterval(countdownTimer);
-  await loadAllCities();
-  state.refreshTimer=setInterval(loadAllCities,REFRESH_MS);
-}
+function buildRP(type,risk,lbl){const isTornado=type==='tornado';const title=isTornado?'🌪️ Tornado Risk':'⛈️ Thunderstorm Risk';const maxR=isTornado?85:90;const pct=Math.min((risk/maxR)*100,100);const color=rbc(lbl.cls);const items=isTornado?[{r:'0-2%',l:'Slight',c:'slight'},{r:'3-10%',l:'Low',c:'low'},{r:'11-25%',l:'Marginal',c:'marginal'},{r:'26-49%',l:'Moderate',c:'moderate'},{r:'51-75%',l:'High',c:'high'},{r:'76-85%',l:'Extreme',c:'extreme'}]:[{r:'0-5%',l:'Slight',c:'slight'},{r:'6-15%',l:'Low',c:'low'},{r:'16-25%',l:'Marginal',c:'marginal'},{r:'26-49%',l:'Moderate',c:'moderate'},{r:'51-75%',l:'High',c:'high'},{r:'76-90%',l:'Very High',c:'very-high'}];return'<div class="risk-panel"><div class="risk-panel-title">'+title+'</div><div class="risk-value risk-color-'+lbl.cls+'">'+risk+'%</div><div class="risk-label risk-color-'+lbl.cls+'">'+lbl.label+' Risk</div><div class="risk-bar-wrap"><div class="risk-bar" style="width:'+pct+'%;background:'+color+'"></div></div><div class="risk-scale">'+items.map(s=>'<span class="risk-scale-item bg-'+s.c+'" title="'+s.r+'">'+s.l+'</span>').join('')+'</div></div>';}
+const REFRESH_MS=15*60*1000;let nextRefreshAt=null,countdownTimer=null;
+function updateCountdown(){if(!nextRefreshAt)return;const ms=nextRefreshAt-Date.now();if(ms<=0){document.getElementById('countdownText').textContent='';return;}const m=Math.floor(ms/60000),s=Math.floor((ms%60000)/1000);document.getElementById('countdownText').textContent='Next: '+m+':'+String(s).padStart(2,'0');}
+function finishLoading(){const now=new Date();document.getElementById('lastUpdate').textContent='Updated '+now.toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit',second:'2-digit'});document.getElementById('refreshBtn').disabled=false;document.getElementById('refreshBtn').classList.remove('loading');document.getElementById('updateBadge').classList.remove('updating');nextRefreshAt=Date.now()+REFRESH_MS;clearInterval(countdownTimer);countdownTimer=setInterval(updateCountdown,1000);updateCountdown();}
+async function loadOneCity(city){try{const data=await fetchCityWeather(city);state.cityData[city.id]=data;if(state.pinnedCities.includes(city.id))renderPinnedPills();if(state.selectedCity===city.id)renderMain();return true;}catch(err){console.warn('Failed:',city.name,err.message);if(state.selectedCity===city.id){document.getElementById('mainPanel').innerHTML='<div class="loading-state"><div style="font-size:2rem">⚠️</div><div style="color:var(--accent-red);font-weight:600">Could not load '+city.name+'</div><div style="color:var(--text-muted);font-size:0.8rem">Check your internet and try again.</div><button onclick="manualRefresh()" style="margin-top:0.5rem;background:rgba(50,120,255,0.2);border:1px solid var(--border-glow);color:var(--accent-blue);border-radius:8px;padding:0.5rem 1.25rem;font-size:0.85rem;font-family:inherit;cursor:pointer">↻ Try Again</button></div>';}return false;}}
+async function loadSelectedCity(){const id=state.selectedCity;if(!id)return;if(state.cityData[id]){renderMain();return;}const city=CITIES.find(c=>c.id===id);if(city)await loadOneCity(city);}
+async function loadAllCities(){const badge=document.getElementById('updateBadge'),btn=document.getElementById('refreshBtn');badge.classList.add('updating');btn.disabled=true;btn.classList.add('loading');document.getElementById('lastUpdate').textContent='Updating…';for(let i=0;i<CITIES.length;i+=4){await Promise.all(CITIES.slice(i,i+4).map(c=>loadOneCity(c)));await new Promise(r=>setTimeout(r,100));}finishLoading();}
+async function manualRefresh(){clearInterval(state.refreshTimer);clearInterval(countdownTimer);const selCity=CITIES.find(c=>c.id===state.selectedCity);if(selCity){delete state.cityData[selCity.id];renderMain();await loadOneCity(selCity);}for(let i=0;i<CITIES.length;i+=4){await Promise.all(CITIES.slice(i,i+4).map(c=>loadOneCity(c)));await new Promise(r=>setTimeout(r,100));}finishLoading();state.refreshTimer=setInterval(loadAllCities,REFRESH_MS);}
 async function init(){
-  state.selectedCity='calgary';
-  renderSidebar();renderMain();
-  await loadAllCities();
-  renderMain();
+  state.selectedCity=state.pinnedCities.length>0?state.pinnedCities[0]:null;
+  renderPinnedPills();renderMain();
+  await loadSelectedCity();
+  const pinned=CITIES.filter(c=>state.pinnedCities.includes(c.id)&&c.id!==state.selectedCity);
+  await Promise.all(pinned.map(c=>loadOneCity(c)));
+  renderPinnedPills();finishLoading();
+  setTimeout(()=>{const loaded=new Set(Object.keys(state.cityData));const remaining=CITIES.filter(c=>!loaded.has(c.id));(async()=>{for(let i=0;i<remaining.length;i+=4){await Promise.all(remaining.slice(i,i+4).map(c=>loadOneCity(c)));await new Promise(r=>setTimeout(r,200));}})();},500);
   state.refreshTimer=setInterval(loadAllCities,REFRESH_MS);
 }
 init();
