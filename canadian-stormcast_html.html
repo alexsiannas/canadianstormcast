@@ -1,0 +1,2406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="https://d16ilfvy4mv02r.cloudfront.net/workspaces/rRSxeisp2lTfUfZcWfmdZn59S74Gqivk/5e7be2ef-b4fc-4266-95d8-e2124ceb2de9/files/">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Canadian StormCast ⚡</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@300;400;500;600;700&family=Roboto:wght@700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.12/css/weather-icons.min.css">
+<style>
+  :root {
+    --bg-deep:#162d52; --bg-card:rgba(28,58,108,0.85); --border:rgba(80,150,255,0.22);
+    --border-glow:rgba(80,190,255,0.5); --text-primary:#ddeeff; --text-secondary:#8ab8d8;
+    --text-muted:#5a88b0; --accent-blue:#4dc4ff; --accent-yellow:#ffe066; --accent-red:#ff5f5f;
+    --risk-none:#2ecc71; --risk-slight:#27ae60; --risk-low:#a3d977; --risk-marginal:#f1c40f;
+    --risk-moderate:#e67e22; --risk-high:#e74c3c; --risk-extreme:#c0392b; --radius:14px;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{font-size:15px;}
+  body{font-family:'Inter',sans-serif;background:var(--bg-deep);color:var(--text-primary);min-height:100vh;overflow-x:hidden;
+    background-image:radial-gradient(ellipse 80% 60% at 20% 0%,rgba(30,80,180,0.45) 0%,transparent 70%),radial-gradient(ellipse 60% 40% at 80% 100%,rgba(20,60,140,0.4) 0%,transparent 70%);}
+
+  /* ── HEADER ── */
+  .header{position:sticky;top:0;z-index:100;background:rgba(18,40,82,0.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 0.75rem;height:64px;display:flex;align-items:center;gap:0.5rem;overflow:visible;}
+  @media(max-width:768px){.header{gap:0.35rem;padding:0 0.5rem;}}
+  .logo{font-family:'Orbitron',sans-serif;font-size:1.1rem;font-weight:900;color:var(--accent-blue);text-shadow:0 0 20px rgba(58,180,255,0.6);white-space:nowrap;letter-spacing:0.05em;flex-shrink:0;}
+  .logo span{color:var(--accent-yellow);}
+
+  /* pinned pills */
+  .pin-pills{display:flex;align-items:center;gap:0.4rem;flex-shrink:1;overflow-x:auto;scrollbar-width:none;min-width:0;}
+  .pin-pills::-webkit-scrollbar{display:none;}
+  .pin-pill{display:flex;align-items:center;gap:0.3rem;background:rgba(20,40,80,0.65);border:1px solid rgba(255,224,102,0.3);border-radius:20px;padding:0.22rem 0.55rem 0.22rem 0.4rem;cursor:pointer;transition:all 0.18s;white-space:nowrap;font-size:0.68rem;}
+  @media(max-width:768px){.pin-pill .pp-temp{display:none;}.logo{font-size:0.9rem !important;}}
+  .pin-pill:hover{border-color:var(--accent-yellow);background:rgba(255,224,102,0.1);}
+  .pin-pill.active{border-color:var(--accent-yellow);background:rgba(255,224,102,0.15);box-shadow:0 0 8px rgba(255,224,102,0.25);}
+  .pin-pill .pp-icon .wi{font-size:0.9rem;color:#fff;filter:drop-shadow(0 0 3px rgba(255,255,255,0.4));}
+  .pin-pill .pp-name{font-weight:600;color:var(--text-primary);}
+  .pin-pill .pp-temp{font-family:'Roboto',sans-serif;font-weight:700;color:var(--accent-yellow);font-size:0.78rem;}
+  .pin-pill .pp-sep{color:var(--text-muted);}
+  .no-pins-hint{font-size:0.65rem;color:var(--text-muted);font-style:italic;white-space:nowrap;}
+
+  /* all-cities dropdown */
+  .header-divider{width:1px;height:28px;background:var(--border);flex-shrink:0;margin:0 0.1rem;}
+  .cities-dropdown-wrap{position:relative;flex-shrink:0;}
+  .cities-btn{display:flex;align-items:center;gap:0.4rem;background:rgba(20,40,80,0.6);border:1px solid var(--border);border-radius:8px;padding:0.35rem 0.75rem;font-size:0.75rem;font-family:'Inter',sans-serif;color:var(--text-secondary);cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+  .cities-btn:hover{border-color:var(--border-glow);color:var(--text-primary);background:rgba(30,60,120,0.5);}
+  .cities-btn.open{border-color:var(--accent-blue);color:var(--text-primary);}
+  .cities-btn .caret{font-size:0.6rem;transition:transform 0.2s;}
+  .cities-btn.open .caret{transform:rotate(180deg);}
+  .cities-menu{position:absolute;top:calc(100%+6px);left:0;width:260px;background:rgba(20,46,92,0.99);border:1px solid var(--border);border-radius:10px;z-index:9999;box-shadow:0 12px 40px rgba(0,0,0,0.7);display:none;max-height:60vh;overflow-y:auto;}
+  @media(max-width:600px){.cities-menu{position:fixed;top:70px;left:8px;right:8px;width:auto;max-height:70vh;}}
+  .cities-menu.open{display:block;}
+  .cities-menu-search{padding:0.5rem 0.65rem;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(20,46,92,0.99);}
+  .cities-menu-search input{width:100%;background:rgba(20,40,80,0.7);border:1px solid var(--border);border-radius:6px;padding:0.35rem 0.6rem;color:var(--text-primary);font-size:0.8rem;font-family:'Inter',sans-serif;outline:none;}
+  .cities-menu-search input:focus{border-color:var(--accent-blue);}
+  .cities-group-label{font-size:0.58rem;font-weight:700;letter-spacing:0.15em;color:var(--text-muted);text-transform:uppercase;padding:0.55rem 0.75rem 0.2rem;background:rgba(20,46,92,0.99);}
+  .city-menu-item{padding:0.5rem 0.75rem;cursor:pointer;font-size:0.82rem;transition:background 0.15s;display:flex;align-items:center;justify-content:space-between;gap:0.5rem;}
+  .city-menu-item:hover{background:rgba(50,120,255,0.15);}
+  .city-menu-item.active{background:rgba(50,180,255,0.1);color:var(--accent-blue);}
+  .city-menu-item.pinned-item{color:var(--accent-yellow);}
+  .city-menu-item .cmi-temp{font-family:'Roboto',sans-serif;font-size:0.75rem;color:var(--accent-blue);font-weight:700;}
+  .city-menu-item .cmi-pin{font-size:0.7rem;opacity:0.6;}
+
+  /* right side of header */
+  .header-right{margin-left:auto;display:flex;align-items:center;gap:0.75rem;flex-shrink:0;}
+  .update-badge{font-size:0.68rem;color:var(--text-muted);background:rgba(20,40,80,0.5);border:1px solid var(--border);padding:0.22rem 0.55rem;border-radius:20px;white-space:nowrap;display:flex;align-items:center;gap:0.35rem;}
+  .update-badge .dot{display:inline-block;width:6px;height:6px;background:var(--risk-none);border-radius:50%;flex-shrink:0;animation:pulse 2s infinite;}
+  .update-badge.updating .dot{background:var(--accent-yellow);}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+  .countdown-text{font-size:0.62rem;color:var(--text-muted);}
+  .refresh-btn{background:rgba(20,40,80,0.6);border:1px solid var(--border);color:var(--text-secondary);border-radius:8px;padding:0.28rem 0.6rem;font-size:0.72rem;font-family:'Inter',sans-serif;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:0.3rem;white-space:nowrap;}
+  .refresh-btn:hover{border-color:var(--border-glow);color:var(--text-primary);}
+  .refresh-btn:disabled{opacity:0.4;cursor:not-allowed;}
+  .refresh-btn .spin{display:inline-block;}
+  .refresh-btn.loading .spin{animation:spin 0.7s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  /* ── MAIN ── */
+  .main-panel{padding:1.5rem;max-width:1100px;margin:0 auto;}
+
+  /* welcome / no-selection */
+  .welcome-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 2rem;gap:1rem;text-align:center;}
+  .welcome-state .big-leaf{font-size:4rem;}
+  .welcome-state h2{font-family:'Orbitron',sans-serif;font-size:1.2rem;color:var(--accent-blue);}
+  .welcome-state p{font-size:0.85rem;color:var(--text-muted);max-width:360px;line-height:1.6;}
+  .pin-manager{background:var(--bg-card);border:1px solid rgba(255,224,102,0.25);border-radius:var(--radius);padding:1.25rem 1.5rem;width:100%;max-width:420px;margin-top:0.5rem;text-align:left;}
+  .pin-manager-title{font-size:0.65rem;font-weight:700;letter-spacing:0.15em;color:var(--accent-yellow);text-transform:uppercase;margin-bottom:0.85rem;}
+  .pin-manager-row{display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0.6rem;border-radius:8px;background:rgba(255,224,102,0.06);border:1px solid rgba(255,224,102,0.15);margin-bottom:0.45rem;cursor:pointer;transition:all 0.15s;}
+  .pin-manager-row:hover{background:rgba(255,224,102,0.12);}
+  .pin-manager-row .pmr-left{display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;font-weight:600;color:var(--text-primary);}
+  .pin-manager-row .pmr-temp{font-family:'Roboto',sans-serif;font-size:0.8rem;color:var(--accent-blue);font-weight:700;}
+  .pin-manager-row .pmr-remove{background:none;border:none;color:var(--text-muted);font-size:0.95rem;cursor:pointer;padding:2px 5px;border-radius:4px;transition:all 0.15s;line-height:1;}
+  .pin-manager-row .pmr-remove:hover{color:var(--accent-red);background:rgba(255,77,77,0.1);}
+  .pin-manager-empty{font-size:0.8rem;color:var(--text-muted);font-style:italic;}
+  .pin-manager-hint{font-size:0.7rem;color:var(--text-muted);margin-top:0.75rem;line-height:1.5;}
+
+  /* loading */
+  .loading-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4rem 2rem;gap:1rem;}
+  .spinner{width:48px;height:48px;border:3px solid rgba(50,180,255,0.2);border-top-color:var(--accent-blue);border-radius:50%;animation:spin 0.8s linear infinite;}
+
+  /* current hero */
+  .current-hero{background:var(--bg-card);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:var(--radius);padding:1.75rem;margin-bottom:1.25rem;position:relative;overflow:hidden;}
+  .current-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;background:radial-gradient(circle,rgba(50,180,255,0.08) 0%,transparent 70%);border-radius:50%;pointer-events:none;}
+  .city-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1rem;flex-wrap:wrap;}
+  .city-title{font-family:'Orbitron',sans-serif;font-size:1.6rem;font-weight:700;color:var(--text-primary);display:flex;align-items:center;gap:0.6rem;}
+  .city-province{font-size:0.875rem;color:var(--text-muted);margin-top:2px;}
+  .city-time{font-size:0.75rem;color:var(--text-muted);text-align:right;}
+  .hero-pin-btn{display:inline-flex;align-items:center;gap:0.35rem;background:rgba(255,224,102,0.08);border:1px solid rgba(255,224,102,0.25);border-radius:20px;padding:0.25rem 0.7rem;font-size:0.72rem;font-family:'Inter',sans-serif;font-weight:600;color:var(--accent-yellow);cursor:pointer;transition:all 0.2s;white-space:nowrap;vertical-align:middle;}
+  .hero-pin-btn:hover{background:rgba(255,224,102,0.18);border-color:var(--accent-yellow);transform:scale(1.04);}
+  .hero-pin-btn.pinned{background:rgba(255,224,102,0.15);border-color:var(--accent-yellow);}
+  .hero-pin-btn.pinned:hover{background:rgba(255,77,77,0.12);border-color:var(--accent-red);color:var(--accent-red);}
+  .conditions-grid{display:grid;grid-template-columns:auto 1fr 1fr 1fr;gap:1.25rem;align-items:center;}
+  @media(max-width:700px){.conditions-grid{grid-template-columns:auto 1fr;}}
+  .big-temp{font-family:'Roboto',sans-serif;font-size:3.5rem;font-weight:900;color:var(--text-primary);line-height:1;}
+  .big-temp-unit{font-size:1.2rem;vertical-align:super;color:var(--text-muted);}
+  .weather-icon-big{font-size:3.5rem;text-align:center;line-height:1;}
+  .weather-icon-big .wi{font-size:3.2rem;filter:drop-shadow(0 0 8px rgba(0,0,0,0.3));}
+  .condition-block{display:flex;flex-direction:column;gap:2px;}
+  .condition-label{font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;}
+  .condition-value{font-size:0.95rem;font-weight:600;color:var(--text-primary);}
+  .weather-desc{font-size:1rem;color:var(--accent-blue);font-weight:500;margin:0.75rem 0 0;}
+  .risk-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem;}
+  @media(max-width:600px){.risk-row{grid-template-columns:1fr;}}
+  .risk-panel{background:var(--bg-card);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;}
+  .risk-panel-title{font-size:0.65rem;font-weight:700;letter-spacing:0.15em;color:var(--text-muted);text-transform:uppercase;margin-bottom:0.9rem;}
+  .risk-value{font-family:'Roboto',sans-serif;font-size:2.2rem;font-weight:900;line-height:1;}
+  .risk-label{font-size:0.8rem;font-weight:700;margin-top:0.3rem;text-transform:uppercase;letter-spacing:0.05em;}
+  .risk-bar-wrap{margin-top:0.75rem;height:8px;background:rgba(30,60,120,0.4);border-radius:4px;overflow:hidden;}
+  .risk-bar{height:100%;border-radius:4px;transition:width 1s ease;}
+  .risk-scale{display:flex;gap:4px;margin-top:0.6rem;flex-wrap:wrap;}
+  .risk-scale-item{font-size:0.6rem;padding:2px 6px;border-radius:4px;font-weight:600;border:1px solid rgba(255,255,255,0.1);}
+  .forecast-section{margin-bottom:1.25rem;}
+  .section-title{font-size:0.65rem;font-weight:700;letter-spacing:0.15em;color:var(--text-muted);text-transform:uppercase;margin-bottom:0.75rem;}
+  .forecast-grid{display:grid;grid-template-columns:repeat(6,minmax(100px,1fr));gap:0.6rem;}
+  @media(max-width:900px){.forecast-grid{grid-template-columns:repeat(3,minmax(90px,1fr));gap:0.5rem;}}
+  @media(max-width:600px){.forecast-grid{grid-template-columns:repeat(2,minmax(85px,1fr));gap:0.4rem;}}
+  .forecast-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:1rem 0.7rem 0.9rem;text-align:center;transition:all 0.2s;overflow:visible;}
+  .forecast-card:hover{border-color:var(--border-glow);transform:translateY(-2px);}
+  .forecast-day{font-size:0.7rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.5rem;}
+  .forecast-icon{font-size:2.2rem;margin-bottom:0.5rem;line-height:1.4;overflow:visible;}
+  .forecast-icon .wi{font-size:1.9rem;filter:drop-shadow(0 0 4px rgba(0,0,0,0.25));}
+  .forecast-temps{font-size:0.9rem;font-weight:700;font-family:'Roboto',sans-serif;margin-bottom:0.6rem;}
+  .forecast-hi{color:var(--text-primary);}
+  .forecast-lo{color:var(--text-muted);}
+  .forecast-precip{font-size:0.68rem;color:var(--accent-blue);margin-bottom:0.5rem;}
+  .forecast-risks{display:flex;flex-direction:column;gap:3px;}
+  .forecast-risk-row{display:flex;align-items:center;justify-content:space-between;font-size:0.6rem;}
+  .forecast-risk-row .label{color:var(--text-muted);}
+  .risk-chip{font-size:0.58rem;padding:1px 5px;border-radius:4px;font-weight:700;text-transform:uppercase;}
+  .conditions-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:0.75rem;margin-bottom:1.25rem;}
+  .cond-tile{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:0.85rem 0.75rem;display:flex;flex-direction:column;gap:4px;}
+  .cond-tile-icon{font-size:1.3rem;} .cond-tile-label{font-size:0.62rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;} .cond-tile-value{font-size:1rem;font-weight:700;color:var(--text-primary);}
+  .alert-banner{background:rgba(231,76,60,0.15);border:1px solid rgba(231,76,60,0.4);border-radius:10px;padding:0.75rem 1rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:0.75rem;font-size:0.85rem;}
+  /* hourly strip */
+  .hourly-strip{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem 1rem 1rem;margin-bottom:1.6rem;overflow:visible;}
+  .hourly-strip-title{font-size:0.65rem;font-weight:700;letter-spacing:0.15em;color:var(--text-muted);text-transform:uppercase;margin-bottom:0.8rem;}
+  .hourly-scroll{display:flex;gap:0;overflow-x:auto;scrollbar-width:thin;padding-bottom:2px;}
+  .hourly-feels{font-size:0.63rem;color:var(--text-muted);}
+  .hourly-strip{position:relative;}
+  .hourly-strip::after{content:'';position:absolute;right:0;top:0;bottom:0;width:40px;background:linear-gradient(to right,transparent,rgba(22,45,82,0.95));pointer-events:none;border-radius:0 var(--radius) var(--radius) 0;}
+  .hourly-scroll::-webkit-scrollbar{height:4px;}
+  .hourly-scroll::-webkit-scrollbar-thumb{background:rgba(80,140,255,0.3);border-radius:2px;}
+  .hourly-item{display:flex;flex-direction:column;align-items:center;gap:10px;padding:1.1rem 1.25rem;flex-shrink:0;border-right:1px solid var(--border);min-width:85px;}
+  .hourly-item:last-child{border-right:none;}
+  .hourly-item:first-child{padding-left:0.5rem;}
+  .hourly-time{font-size:0.74rem;color:var(--text-muted);font-weight:700;white-space:nowrap;letter-spacing:0.03em;}
+  .hourly-icon{line-height:1;}
+  .hourly-icon .wi{font-size:1.5rem;}
+  .hourly-temp{font-family:'Roboto',sans-serif;font-size:1.1rem;font-weight:900;color:var(--text-primary);}
+  .hourly-feels{font-size:0.63rem;color:var(--text-muted);}
+  .hourly-precip{font-size:0.68rem;color:var(--accent-blue);font-weight:600;}
+  /* ── TWO-COLUMN ROWS ── */
+  /* Row 1: current hero (left) + hourly strip (right) */
+  .hero-hourly-row{display:grid;grid-template-columns:1.1fr 1fr;gap:1.25rem;margin-bottom:1.25rem;align-items:start;}
+  @media(max-width:900px){.hero-hourly-row{grid-template-columns:1fr;}}
+  /* Row 2: conditions tiles (left) + EC alerts (right) */
+  .conds-alerts-row{display:grid;grid-template-columns:1fr 310px;gap:1.25rem;margin-bottom:1.25rem;align-items:start;}
+  @media(max-width:900px){.conds-alerts-row{grid-template-columns:1fr;}}
+  .conditions-col{display:grid;grid-template-columns:repeat(2,1fr);gap:0.75rem;}
+  /* EC alerts panel */
+  .ec-alerts-panel{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;}
+  .ec-alerts-title{font-size:0.65rem;font-weight:700;letter-spacing:0.15em;color:var(--text-muted);text-transform:uppercase;margin-bottom:0.75rem;display:flex;align-items:center;gap:0.4rem;}
+  .ec-alert-item{background:rgba(231,76,60,0.1);border:1px solid rgba(231,76,60,0.3);border-radius:8px;padding:0.65rem 0.75rem;margin-bottom:0.5rem;font-size:0.78rem;}
+  .ec-alert-item.warning{background:rgba(231,76,60,0.12);border-color:rgba(231,76,60,0.4);}
+  .ec-alert-item.watch{background:rgba(230,126,34,0.12);border-color:rgba(230,126,34,0.4);}
+  .ec-alert-item.advisory{background:rgba(241,196,15,0.1);border-color:rgba(241,196,15,0.35);}
+  .ec-alert-type{font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px;}
+  .ec-alert-type.warning{color:#e74c3c;}
+  .ec-alert-type.watch{color:#e67e22;}
+  .ec-alert-type.advisory{color:#f1c40f;}
+  .ec-alert-headline{font-weight:600;color:var(--text-primary);line-height:1.4;}
+  .ec-alert-none{font-size:0.8rem;color:var(--text-muted);display:flex;align-items:center;gap:0.5rem;padding:0.5rem 0;}
+  .ec-alert-link{font-size:0.68rem;color:var(--accent-blue);text-decoration:none;display:block;margin-top:0.6rem;}
+  .ec-alert-link:hover{text-decoration:underline;}
+  .ec-loading{font-size:0.75rem;color:var(--text-muted);animation:pulse 1.5s infinite;}
+
+  /* risk colours */
+  .risk-color-none{color:#2ecc71} .risk-color-slight{color:#27ae60} .risk-color-low{color:#a3d977} .risk-color-marginal{color:#f1c40f} .risk-color-moderate{color:#f39c12} .risk-color-high{color:#e74c3c} .risk-color-extreme{color:#c0392b} .risk-color-very-high{color:#ff6b35}
+  .bg-none{background:rgba(46,204,113,0.2);color:#2ecc71} .bg-slight{background:rgba(39,174,96,0.25);color:#2ecc71} .bg-low{background:rgba(163,217,119,0.2);color:#a3d977} .bg-marginal{background:rgba(241,196,15,0.2);color:#f1c40f} .bg-moderate{background:rgba(230,126,34,0.25);color:#e67e22} .bg-high{background:rgba(231,76,60,0.25);color:#e74c3c} .bg-extreme{background:rgba(192,57,43,0.3);color:#e74c3c} .bg-very-high{background:rgba(255,107,53,0.25);color:#ff6b35} .bg-unhealthy{background:rgba(231,76,60,0.28);color:#e74c3c} .bg-hazardous{background:rgba(142,26,75,0.3);color:#8e1a4b}
+
+  @media(max-width:768px){.hide-mobile{display:none!important;}.countdown-text{display:none;}}
+
+  /* ── BOTTOM NAVIGATION ─────────────────────────────────────────────── */
+  .bottom-nav{position:fixed;bottom:0;left:0;right:0;height:64px;background:rgba(12,28,68,0.98);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-around;z-index:300;padding:0 0.5rem;padding-bottom:env(safe-area-inset-bottom,0);}
+  .bottom-nav button{display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;color:var(--text-muted);cursor:pointer;padding:0.4rem 1rem;border-radius:10px;transition:all 0.2s;font-family:'Inter',sans-serif;font-size:0.6rem;font-weight:600;letter-spacing:0.05em;min-width:70px;}
+  .bottom-nav button .nav-icon{width:28px;height:28px;display:flex;align-items:center;justify-content:center;}
+  .bottom-nav button.active{color:var(--accent-blue);background:rgba(77,196,255,0.12);}
+  .bottom-nav button:hover{color:var(--text-primary);background:rgba(80,150,255,0.1);}
+  body{padding-bottom:72px;} /* space for fixed nav */
+
+  /* ── TAB VIEWS ──────────────────────────────────────────────────────── */
+  .tab-view{display:none;}
+  .tab-view.active{display:block;}
+  #viewRadar{height:calc(100vh - 128px);}
+  #radarMap{width:100%;height:calc(100vh - 200px);border-radius:var(--radius);overflow:hidden;}
+  .radar-controls{background:rgba(18,40,82,0.97);border-bottom:1px solid var(--border);padding:0.6rem 1rem;display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;}
+  .radar-btn{background:rgba(30,60,120,0.5);border:1px solid var(--border);color:var(--text-secondary);border-radius:8px;padding:0.28rem 0.75rem;font-size:0.72rem;font-family:'Inter',sans-serif;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+  .radar-btn.active{background:rgba(77,196,255,0.2);border-color:var(--accent-blue);color:var(--accent-blue);}
+  .radar-legend{display:flex;gap:0.6rem;align-items:center;margin-left:auto;font-size:0.62rem;}
+  .radar-legend span{display:flex;align-items:center;gap:3px;}
+  .radar-legend .dot{width:10px;height:10px;border-radius:50%;}
+  .radar-time{font-size:0.68rem;color:var(--accent-yellow);font-weight:700;white-space:nowrap;}
+  .radar-play-bar{display:flex;align-items:center;gap:0.5rem;width:100%;padding:0.4rem 1rem;background:rgba(12,28,68,0.9);}
+  .radar-slider{flex:1;accent-color:var(--accent-blue);}
+
+  /* ── ALERTS VIEW ────────────────────────────────────────────────────── */
+  #viewAlerts{max-height:calc(100vh - 128px);overflow-y:auto;}
+  .alerts-header{position:sticky;top:0;background:rgba(18,40,82,0.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0.75rem 1rem;z-index:10;}
+  .alert-city-group{margin-bottom:0.75rem;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);}
+  .alert-city-header{background:rgba(28,58,108,0.7);padding:0.6rem 1rem;font-weight:700;font-size:0.82rem;display:flex;align-items:center;gap:0.5rem;}
+
+  /* ── SEARCH VIEW ─────────────────────────────────────────────────────── */
+  #viewSearch{max-height:calc(100vh - 128px);overflow-y:auto;}
+  .search-header{position:sticky;top:0;background:rgba(18,40,82,0.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0.75rem 1rem;z-index:10;}
+  .search-input-wrap{display:flex;gap:0.5rem;align-items:center;}
+  #citySearchInput{flex:1;background:rgba(20,40,80,0.7);border:1px solid var(--border);border-radius:10px;padding:0.55rem 0.9rem;color:var(--text-primary);font-size:0.9rem;font-family:'Inter',sans-serif;outline:none;}
+  #citySearchInput:focus{border-color:var(--accent-blue);}
+  .search-result-item{padding:0.6rem 1rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(80,130,200,0.15);cursor:pointer;transition:background 0.15s;}
+  .search-result-item:hover{background:rgba(50,120,255,0.1);}
+  .search-result-item .city-info{display:flex;flex-direction:column;gap:2px;}
+  .search-result-item .city-name{font-weight:600;color:var(--text-primary);font-size:0.88rem;}
+  .search-result-item .city-meta{font-size:0.65rem;color:var(--text-muted);}
+  .pin-btn-sm{background:rgba(255,224,102,0.1);border:1px solid rgba(255,224,102,0.3);color:var(--accent-yellow);border-radius:8px;padding:0.25rem 0.65rem;font-size:0.7rem;cursor:pointer;font-family:'Inter',sans-serif;font-weight:600;white-space:nowrap;}
+  .pin-btn-sm.pinned{background:rgba(255,224,102,0.2);border-color:var(--accent-yellow);}
+  .pinned-section{padding:0.75rem 1rem;border-bottom:1px solid var(--border);background:rgba(20,50,110,0.3);}
+  .pinned-section-title{font-size:0.6rem;font-weight:700;letter-spacing:0.12em;color:var(--accent-yellow);text-transform:uppercase;margin-bottom:0.5rem;}
+  .pinned-chips{display:flex;flex-wrap:wrap;gap:0.4rem;}
+  .pinned-chip{display:flex;align-items:center;gap:0.3rem;background:rgba(255,224,102,0.1);border:1px solid rgba(255,224,102,0.3);border-radius:20px;padding:0.2rem 0.55rem;font-size:0.72rem;cursor:pointer;}
+  .pinned-chip .remove-pin{margin-left:2px;color:var(--text-muted);cursor:pointer;font-size:0.9rem;line-height:1;}
+  .pinned-chip .remove-pin:hover{color:var(--accent-red);}
+
+  /* ══ ANIMATED WEATHER BACKGROUNDS ══════════════════════════════════════ */
+  #weatherBg{position:fixed;top:0;left:0;right:0;bottom:0;z-index:0;transition:background 2s ease,filter 2s ease;pointer-events:none;}
+  #weatherBgDarken{position:absolute;top:0;left:0;right:0;z-index:0;pointer-events:none;background:linear-gradient(to bottom,rgba(0,0,0,0) 0%,rgba(0,0,0,0.08) 20%,rgba(0,0,0,0.22) 45%,rgba(0,0,0,0.4) 70%,rgba(0,0,0,0.58) 100%);}
+  body>*:not(#weatherBg):not(#weatherBgDarken){position:relative;z-index:1;}
+
+  /* ── CLEAR DAY: blue sky + animated sun glare ── */
+  .wx-clear-day{background:linear-gradient(180deg,#0d47a1 0%,#1976d2 25%,#42a5f5 55%,#90caf9 80%,#e3f2fd 100%);}
+  .wx-clear-day::after{content:'';position:fixed;top:-80px;right:-80px;width:360px;height:360px;border-radius:50%;background:radial-gradient(circle,rgba(255,230,100,0.55) 0%,rgba(255,200,50,0.25) 40%,transparent 72%);animation:sunPulse 5s ease-in-out infinite;}
+  @keyframes sunPulse{0%,100%{transform:scale(1);opacity:0.7;}50%{transform:scale(1.18);opacity:1;}}
+
+  /* ── CLEAR NIGHT: deep dark + stars + shooting star ── */
+  .wx-clear-night{background:linear-gradient(180deg,#020408 0%,#060d24 40%,#0a1535 100%);}
+  .wx-clear-night::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background-image:radial-gradient(1px 1px at 10% 15%,#fff 0%,transparent 100%),radial-gradient(1px 1px at 25% 8%,#fff 0%,transparent 100%),radial-gradient(1.5px 1.5px at 40% 22%,rgba(255,255,255,0.8) 0%,transparent 100%),radial-gradient(1px 1px at 60% 5%,#fff 0%,transparent 100%),radial-gradient(1px 1px at 75% 18%,rgba(255,255,255,0.9) 0%,transparent 100%),radial-gradient(1px 1px at 85% 10%,#fff 0%,transparent 100%),radial-gradient(1px 1px at 15% 35%,rgba(255,255,255,0.7) 0%,transparent 100%),radial-gradient(1px 1px at 55% 40%,#fff 0%,transparent 100%),radial-gradient(1px 1px at 90% 30%,rgba(255,255,255,0.8) 0%,transparent 100%),radial-gradient(1px 1px at 30% 50%,#fff 0%,transparent 100%),radial-gradient(1px 1px at 70% 45%,rgba(255,255,255,0.6) 0%,transparent 100%),radial-gradient(1px 1px at 5% 60%,#fff 0%,transparent 100%),radial-gradient(1px 1px at 45% 65%,rgba(255,255,255,0.9) 0%,transparent 100%),radial-gradient(2px 2px at 80% 55%,rgba(255,255,230,0.8) 0%,transparent 100%),radial-gradient(1px 1px at 20% 80%,#fff 0%,transparent 100%);animation:twinkle 4s ease-in-out infinite alternate;}
+  .wx-clear-night::after{content:'';position:fixed;top:15%;left:-5%;width:180px;height:2px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.9),transparent);border-radius:1px;animation:shootingStar 8s linear infinite;}
+  @keyframes twinkle{0%{opacity:0.5;}100%{opacity:1;}}
+  @keyframes shootingStar{0%{transform:translateX(0) translateY(0) rotate(25deg);opacity:0;}10%{opacity:1;}40%{transform:translateX(120vw) translateY(30vh) rotate(25deg);opacity:0;}100%{transform:translateX(120vw) translateY(30vh) rotate(25deg);opacity:0;}}
+
+  /* ── THUNDERSTORM: very dark + lightning flash ── */
+  .wx-thunderstorm{background:linear-gradient(180deg,#080808 0%,#0d0d1a 35%,#12122a 100%);}
+  .wx-thunderstorm::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse 80% 40% at 50% 0%,rgba(30,30,60,0.8) 0%,transparent 100%);animation:stormFlash 6s ease-in-out infinite;}
+  @keyframes stormFlash{0%,85%,100%{filter:brightness(1);}87%{filter:brightness(4);}88%{filter:brightness(1);}91%{filter:brightness(3.5);}92%{filter:brightness(1);}}
+
+  /* ── RAIN/SHOWERS/DRIZZLE: animated falling drops (no cloud) ── */
+  .wx-rain{background:linear-gradient(180deg,#263238 0%,#37474f 40%,#546e7a 100%);}
+  .wx-rain::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background-image:repeating-linear-gradient(180deg,transparent 0px,transparent 14px,rgba(174,214,241,0.35) 14px,rgba(174,214,241,0.35) 16px),repeating-linear-gradient(180deg,transparent 0px,transparent 8px,rgba(144,202,249,0.2) 8px,rgba(144,202,249,0.2) 10px);background-size:18px 20px,11px 14px;animation:rainFall 0.55s linear infinite;}
+  @keyframes rainFall{from{background-position:0 -20px,0 -14px;}to{background-position:0 0,0 0;}}
+
+  /* ── HAZY/FOG: drifting fog patches ── */
+  .wx-hazy{background:linear-gradient(180deg,#607d8b 0%,#78909c 45%,#90a4ae 100%);}
+  .wx-hazy::before{content:'';position:fixed;top:0;left:-50%;right:0;bottom:0;background:radial-gradient(ellipse 60% 30% at 20% 50%,rgba(207,216,220,0.55) 0%,transparent 70%),radial-gradient(ellipse 50% 25% at 70% 30%,rgba(220,226,229,0.45) 0%,transparent 70%),radial-gradient(ellipse 40% 20% at 50% 70%,rgba(200,210,215,0.4) 0%,transparent 70%);animation:fogDrift 12s ease-in-out infinite alternate;}
+  @keyframes fogDrift{0%{transform:translateX(0);}100%{transform:translateX(15%);}}
+
+  /* ── OVERCAST/CLOUDY ── */
+  .wx-overcast{background:linear-gradient(180deg,#1c2833 0%,#2c3e50 40%,#34495e 100%);}
+  .wx-overcast::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse 90% 35% at 30% 0%,rgba(60,70,80,0.6) 0%,transparent 100%),radial-gradient(ellipse 70% 25% at 80% 10%,rgba(50,60,70,0.5) 0%,transparent 100%);animation:cloudDrift 20s ease-in-out infinite alternate;}
+  @keyframes cloudDrift{0%{transform:translateX(0);}100%{transform:translateX(5%);}}
+
+  /* ── SNOW ── */
+  .wx-snow{background:linear-gradient(180deg,#455a64 0%,#607d8b 40%,#78909c 100%);}
+  .wx-snow::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background-image:radial-gradient(2px 2px at 5% 0%,rgba(255,255,255,0.9) 0%,transparent 100%),radial-gradient(2px 2px at 20% 0%,rgba(255,255,255,0.8) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 35% 0%,rgba(255,255,255,0.9) 0%,transparent 100%),radial-gradient(2px 2px at 50% 0%,rgba(255,255,255,0.7) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 65% 0%,rgba(255,255,255,0.9) 0%,transparent 100%),radial-gradient(2px 2px at 80% 0%,rgba(255,255,255,0.8) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 95% 0%,rgba(255,255,255,0.9) 0%,transparent 100%);background-size:100% 80px;animation:snowFall 3s linear infinite;}
+  @keyframes snowFall{from{background-position:0 -80px;}to{background-position:0 100vh;}}
+
+  /* ── PARTLY CLOUDY ── */
+  .wx-partly-cloudy{background:linear-gradient(180deg,#0d47a1 0%,#1976d2 30%,#42a5f5 60%,#90caf9 100%);}
+  .wx-partly-cloudy::before{content:'';position:fixed;top:5%;left:-10%;right:0;bottom:0;background:radial-gradient(ellipse 25% 10% at 30% 8%,rgba(255,255,255,0.5) 0%,transparent 100%),radial-gradient(ellipse 35% 12% at 70% 5%,rgba(255,255,255,0.4) 0%,transparent 100%);animation:cloudDrift 25s ease-in-out infinite alternate;}
+  ::-webkit-scrollbar{width:5px;} ::-webkit-scrollbar-track{background:transparent;} ::-webkit-scrollbar-thumb{background:rgba(50,100,200,0.3);border-radius:3px;}
+
+  /* ── MOBILE ──────────────────────────────────────────────────────── */
+  @media(max-width:768px){
+    html{font-size:13px;}.main-panel{padding:0.6rem 0.5rem;}
+    .header{height:54px;padding:0 0.5rem;}
+    .current-hero{padding:1rem 0.9rem;margin-bottom:0.9rem;}
+    .city-title{font-size:1.25rem;}.big-temp{font-size:2.6rem;}
+    .conditions-grid{grid-template-columns:auto 1fr;gap:0.75rem;}
+    .conditions-strip{grid-template-columns:repeat(2,1fr) !important;gap:0.5rem;}
+    .cond-tile{padding:0.65rem 0.55rem;}.cond-tile-value{font-size:0.88rem;}
+    .hourly-item{padding:0.6rem 0.65rem;gap:4px;min-width:60px;}
+    .hourly-time{font-size:0.66rem;}.hourly-icon .wi{font-size:1.3rem;}
+    .hourly-temp{font-size:0.92rem;}.hourly-precip{font-size:0.62rem;}
+    .hourly-scroll{scrollbar-width:auto;padding-bottom:4px;}
+    .hourly-scroll::-webkit-scrollbar{height:5px;display:block;}
+    .hourly-scroll::-webkit-scrollbar-thumb{background:rgba(77,196,255,0.45);border-radius:3px;}
+    .risk-panel{padding:0.9rem 0.85rem;}.risk-value{font-size:1.8rem;}
+    .forecast-grid{grid-template-columns:repeat(3,1fr) !important;gap:0.5rem;}
+    .forecast-card{padding:0.65rem 0.45rem;}.forecast-temps{font-size:0.8rem;}
+    .risk-row{gap:0.65rem;margin-bottom:0.9rem;}
+    .hourly-strip-title::after{content:' ← swipe →';font-size:0.55rem;color:var(--accent-blue);opacity:0.7;font-weight:400;}
+  }
+  @media(min-width:769px) and (max-width:1024px){
+    html{font-size:14px;}.main-panel{padding:1rem 0.75rem;}
+    .forecast-grid{grid-template-columns:repeat(4,1fr);}
+    .conditions-strip{grid-template-columns:repeat(2,1fr);}
+  }
+  #ecTopBanner{background:rgba(200,40,40,0.72);border-bottom:2px solid rgba(231,76,60,0.95);padding:7px 1rem;font-size:0.82rem;display:flex;align-items:center;gap:0.75rem;font-family:'Inter',sans-serif;}
+  #ecTopBanner.watch{background:rgba(130,70,0,0.82);border-color:rgba(200,120,0,0.95);}
+  .version-footer{text-align:center;padding:0.6rem 1rem;font-size:0.62rem;color:var(--text-muted);border-top:1px solid var(--border);margin-top:0.5rem;}
+</style>
+</head>
+<body>
+
+<!-- VERSION BANNER -->
+<div id="weatherBg" class="wx-overcast"></div>
+<div id="weatherBgDarken"></div>
+<div id="ecTopBanner" style="display:none"></div>
+
+<!-- ── RADAR VIEW ── -->
+<div id="viewRadar" class="tab-view">
+  <div class="radar-controls">
+    <button class="radar-btn active" id="rBtnPast" onclick="radarMode('past')">⏪ Past</button>
+    <button class="radar-btn" id="rBtnLive" onclick="radarMode('live')">🔴 Live</button>
+    <button class="radar-btn" id="rBtnForecast" onclick="radarMode('forecast')">⏩ Forecast</button>
+    <span class="radar-time" id="radarTimeLabel">Loading…</span>
+    <div style="display:flex;flex-direction:column;gap:5px;align-items:flex-start;background:rgba(10,20,50,0.85);border:1px solid rgba(80,150,255,0.3);border-radius:10px;padding:8px 12px;backdrop-filter:blur(10px)">
+      <!-- Labels row -->
+      <div style="display:grid;grid-template-columns:40px 1fr;gap:0 8px;width:220px">
+        <div></div>
+        <div style="display:flex;justify-content:space-between;font-size:0.55rem;color:rgba(255,255,255,0.6);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:2px">
+          <span>Light</span><span>Moderate</span><span>Heavy</span>
+        </div>
+        <!-- Rain row -->
+        <span style="font-size:0.7rem;color:#fff;font-weight:600;align-self:center">Rain:</span>
+        <div style="height:12px;border-radius:6px;background:linear-gradient(to right,#00ff80,#00cc00,#88ee00,#ffee00,#ff8800,#ff2200,#cc0000)"></div>
+        <!-- Mix row -->
+        <span style="font-size:0.7rem;color:#fff;font-weight:600;align-self:center">Mix:</span>
+        <div style="height:12px;border-radius:6px;background:linear-gradient(to right,#ffb3dd,#ff55aa,#dd00aa,#880088)"></div>
+        <!-- Snow row -->
+        <span style="font-size:0.7rem;color:#fff;font-weight:600;align-self:center">Snow:</span>
+        <div style="height:12px;border-radius:6px;background:linear-gradient(to right,#aaeeff,#44bbff,#0066ff,#0000cc)"></div>
+      </div>
+    </div>
+  </div>
+  <div id="radarMap"></div>
+  <div class="radar-play-bar">
+    <button class="radar-btn" id="radarPlayBtn" onclick="toggleRadarPlay()">▶ Play</button>
+    <input type="range" class="radar-slider" id="radarSlider" min="0" max="10" value="10" oninput="onRadarSlider(this.value)">
+    <span style="font-size:0.65rem;color:var(--text-muted)" id="radarFrameCount">— frames</span>
+  </div>
+</div>
+
+<!-- ── ALERTS VIEW ── -->
+<div id="viewAlerts" class="tab-view">
+  <div class="alerts-header">
+    <div style="font-family:'Orbitron',sans-serif;font-size:0.9rem;font-weight:900;color:var(--accent-blue)">✨ Weather Conditions</div>
+    <div style="font-size:0.65rem;color:var(--text-muted);margin-top:2px" id="featuresCityName">Loading city…</div>
+  </div>
+  <div id="featuresContent" style="padding:0.75rem 1rem">
+    <div style="text-align:center;padding:2rem;color:var(--text-muted)">Loading weather conditions…</div>
+  </div>
+</div>
+
+<!-- ── SEARCH VIEW ── -->
+<div id="viewSearch" class="tab-view">
+  <div class="search-header">
+    <div class="pinned-section" id="pinnedChipsSection"></div>
+    <div class="search-input-wrap">
+      <input id="citySearchInput" type="text" placeholder="Search cities…" oninput="searchCities(this.value)" autocomplete="off">
+    </div>
+    <div style="font-size:0.62rem;color:var(--text-muted);margin-top:0.4rem;padding:0 0.1rem">Tap a city to view weather · Pin up to 5 cities</div>
+  </div>
+  <div id="searchResultsList"></div>
+</div>
+
+
+<!-- ── HEADER ── -->
+<div id="viewWeather" class="tab-view active">
+<header class="header">
+  <div class="logo">🍁 Canadian <span>Storm</span>Cast</div>
+
+  <!-- Pinned city pills -->
+  <div class="pin-pills" id="pinPills">
+    <span class="no-pins-hint" id="noPinsHint">Pin cities to see them here</span>
+  </div>
+
+
+
+  <div style="font-size:0.6rem;color:var(--text-muted);white-space:nowrap;flex-shrink:0">v2.3</div>
+  <div class="header-right">
+    <div class="update-badge" id="updateBadge"><span class="dot"></span><span id="lastUpdate">Loading…</span></div>
+    <span class="countdown-text" id="countdownText"></span>
+    <button class="refresh-btn" id="refreshBtn" onclick="manualRefresh()" disabled style="white-space:nowrap">
+      <span class="spin">↻</span><span class="hide-mobile"> Refresh</span>
+    </button>
+  </div>
+</header>
+
+<!-- ── MAIN ── -->
+<div class="main-panel" id="mainPanel"></div>
+</div><!-- /viewWeather -->
+
+<script>
+'use strict';
+let fetchMethod = 'unknown'; // tracks which fetch path succeeded
+const CITIES=[
+  {id:'vancouver',    name:'Vancouver',     province:'BC', lat:49.2827, lon:-123.1207,region:'west_coast', tz:'America/Vancouver'},
+  {id:'victoria',     name:'Victoria',      province:'BC', lat:48.4284, lon:-123.3656,region:'west_coast', tz:'America/Vancouver'},
+  {id:'kelowna',      name:'Kelowna',       province:'BC', lat:49.8880, lon:-119.4960,region:'interior_bc',tz:'America/Vancouver'},
+  {id:'kamloops',     name:'Kamloops',      province:'BC', lat:50.6745, lon:-120.3273,region:'interior_bc',tz:'America/Vancouver'},
+  {id:'calgary',      name:'Calgary',       province:'AB', lat:51.0447, lon:-114.0719,region:'prairies',   tz:'America/Edmonton'},
+  {id:'edmonton',     name:'Edmonton',      province:'AB', lat:53.5461, lon:-113.4938,region:'prairies',   tz:'America/Edmonton'},
+  {id:'reddeer',      name:'Red Deer',      province:'AB', lat:52.2681, lon:-113.8112,region:'prairies',   tz:'America/Edmonton'},
+  {id:'lethbridge',   name:'Lethbridge',    province:'AB', lat:49.6956, lon:-112.8451,region:'prairies',   tz:'America/Edmonton'},
+  {id:'banff',        name:'Banff',         province:'AB', lat:51.1784, lon:-115.5708,region:'prairies',   tz:'America/Edmonton'},
+  {id:'saskatoon',    name:'Saskatoon',     province:'SK', lat:52.1332, lon:-106.6700,region:'prairies',   tz:'America/Regina'},
+  {id:'regina',       name:'Regina',        province:'SK', lat:50.4452, lon:-104.6189,region:'prairies',   tz:'America/Regina'},
+  {id:'swiftcurrent', name:'Swift Current', province:'SK', lat:50.2881, lon:-107.7939,region:'prairies',   tz:'America/Regina'},
+  {id:'winnipeg',     name:'Winnipeg',      province:'MB', lat:49.8951, lon:-97.1384, region:'prairies',   tz:'America/Winnipeg'},
+  {id:'brandon',      name:'Brandon',       province:'MB', lat:49.8485, lon:-99.9501, region:'prairies',   tz:'America/Winnipeg'},
+  {id:'toronto',      name:'Toronto',       province:'ON', lat:43.6532, lon:-79.3832, region:'ontario',    tz:'America/Toronto'},
+  {id:'ottawa',       name:'Ottawa',        province:'ON', lat:45.4215, lon:-75.6972, region:'ontario',    tz:'America/Toronto'},
+  {id:'london',       name:'London',        province:'ON', lat:42.9849, lon:-81.2453, region:'ontario',    tz:'America/Toronto'},
+  {id:'hamilton',     name:'Hamilton',      province:'ON', lat:43.2557, lon:-79.8711, region:'ontario',    tz:'America/Toronto'},
+  {id:'kitchener',    name:'Kitchener',     province:'ON', lat:43.4516, lon:-80.4925, region:'ontario',    tz:'America/Toronto'},
+  {id:'niagarafalls', name:'Niagara Falls', province:'ON', lat:43.0896, lon:-79.0849, region:'ontario',    tz:'America/Toronto'},
+  {id:'windsor',      name:'Windsor',       province:'ON', lat:42.3149, lon:-83.0364, region:'ontario',    tz:'America/Toronto'},
+  {id:'thunderbay',   name:'Thunder Bay',   province:'ON', lat:48.3809, lon:-89.2477, region:'ontario',    tz:'America/Toronto'},
+  {id:'kingston',     name:'Kingston',      province:'ON', lat:44.2312, lon:-76.4860, region:'ontario',    tz:'America/Toronto'},
+  {id:'belleville',   name:'Belleville',    province:'ON', lat:44.1628, lon:-77.3832, region:'ontario',    tz:'America/Toronto'},
+  {id:'kenora',       name:'Kenora',        province:'ON', lat:49.7667, lon:-94.4889, region:'ontario',    tz:'America/Winnipeg'},
+  {id:'montreal',     name:'Montréal',      province:'QC', lat:45.5017, lon:-73.5673, region:'quebec',     tz:'America/Toronto'},
+  {id:'quebeccity',   name:'Québec City',   province:'QC', lat:46.8139, lon:-71.2080, region:'quebec',     tz:'America/Toronto'},
+  {id:'fredericton',  name:'Fredericton',   province:'NB', lat:45.9636, lon:-66.6431, region:'maritimes',  tz:'America/Moncton'},
+  {id:'moncton',      name:'Moncton',       province:'NB', lat:46.0878, lon:-64.7782, region:'maritimes',  tz:'America/Moncton'},
+  {id:'halifax',      name:'Halifax',       province:'NS', lat:44.6488, lon:-63.5752, region:'maritimes',  tz:'America/Halifax'},
+  // New cities
+  {id:'princegeorge',  name:'Prince George',  province:'BC', lat:53.9171, lon:-122.7497,region:'interior_bc', tz:'America/Vancouver'},
+  {id:'milton',        name:'Milton',         province:'ON', lat:43.5083, lon:-79.8833, region:'ontario',     tz:'America/Toronto'},
+  {id:'guelph',        name:'Guelph',         province:'ON', lat:43.5448, lon:-80.2482, region:'ontario',     tz:'America/Toronto'},
+  {id:'barrie',        name:'Barrie',         province:'ON', lat:44.3894, lon:-79.6903, region:'ontario',     tz:'America/Toronto'},
+  {id:'cornwall',      name:'Cornwall',       province:'ON', lat:45.0183, lon:-74.7283, region:'ontario',     tz:'America/Toronto'},
+  {id:'gatineau',      name:'Gatineau',       province:'QC', lat:45.4765, lon:-75.7013, region:'quebec',      tz:'America/Toronto'},
+  {id:'sherbrooke',    name:'Sherbrooke',     province:'QC', lat:45.4042, lon:-71.8929, region:'quebec',      tz:'America/Toronto'},
+  {id:'goderich',      name:'Goderich',       province:'ON', lat:43.7454, lon:-81.7165, region:'ontario',     tz:'America/Toronto'},
+  {id:'sudbury',       name:'Sudbury',        province:'ON', lat:46.4917, lon:-80.9930, region:'ontario',     tz:'America/Toronto'},
+  {id:'stjohns',       name:"St. John's",     province:'NL', lat:47.5615, lon:-52.7126, region:'maritimes',   tz:'America/St_Johns'},
+  {id:'princealbert',  name:'Prince Albert',  province:'SK', lat:53.2033, lon:-105.7531,region:'prairies',    tz:'America/Regina'},
+  // Additional cities
+  {id:'dauphin',       name:'Dauphin',        province:'MB', lat:51.1497, lon:-100.0535,region:'prairies',    tz:'America/Winnipeg'},
+  {id:'medicinehat',   name:'Medicine Hat',   province:'AB', lat:50.0416, lon:-110.6775,region:'prairies',    tz:'America/Edmonton'},
+  {id:'fortmcmurray',  name:'Fort McMurray',  province:'AB', lat:56.7265, lon:-111.3790,region:'prairies',    tz:'America/Edmonton'},
+  {id:'timmins',       name:'Timmins',        province:'ON', lat:48.4758, lon:-81.3305, region:'ontario',     tz:'America/Toronto'},
+  {id:'sarnia',        name:'Sarnia',         province:'ON', lat:42.9746, lon:-82.4061, region:'ontario',     tz:'America/Toronto'},
+  {id:'chatham',       name:'Chatham',        province:'ON', lat:42.4048, lon:-82.1910, region:'ontario',     tz:'America/Toronto'},
+  {id:'woodstock',     name:'Woodstock',      province:'ON', lat:43.1306, lon:-80.7466, region:'ontario',     tz:'America/Toronto'},
+  {id:'troisrivieres', name:'Trois-Rivières', province:'QC', lat:46.3450, lon:-72.5450, region:'quebec',      tz:'America/Toronto'},
+];
+
+const PROVINCE_ORDER=['BC','AB','SK','MB','ON','QC','NB','NS','NL'];
+
+
+const state={cityData:{},selectedCity:null,pinnedCities:[],refreshTimer:null};
+try{const s=JSON.parse(localStorage.getItem('stormcast_pins')||'[]');state.pinnedCities=s.filter(id=>CITIES.some(c=>c.id===id)).slice(0,MAX_PINS);}catch(e){}
+function savePins(){try{localStorage.setItem('stormcast_pins',JSON.stringify(state.pinnedCities));}catch(e){}}
+
+// ── RISK HELPERS ────────────────────────────────────────────────────────
+const RT={prairies:1.0,ontario:0.55,quebec:0.35,maritimes:0.18,west_coast:0.04,interior_bc:0.12};
+const RS={prairies:1.0,ontario:0.85,quebec:0.75,maritimes:0.6,west_coast:0.35,interior_bc:0.5};
+function sf(m){return[0.08,0.08,0.15,0.35,0.65,1.0,1.0,0.85,0.5,0.25,0.1,0.08][Math.max(0,Math.min(11,m-1))];}
+function tornadoRisk(cape,li,gust,region,month){cape=cape||0;li=(li==null)?2:li;let b=0;if(cape>2500&&li<-6)b=55;else if(cape>2000&&li<-5)b=38;else if(cape>1500&&li<-4)b=24;else if(cape>1000&&li<-3)b=15;else if(cape>700&&li<-2)b=9;else if(cape>400&&li<-1)b=5;else if(cape>200&&li<0)b=2.5;else if(cape>50)b=0.8;if(gust>80)b*=1.3;else if(gust>60)b*=1.15;return Math.max(0,Math.min(Math.round(b*sf(month)*(RT[region]||0.3)),85));}
+function thunderRisk(cape,li,pp,wc,gust,region,month){cape=cape||0;li=(li==null)?2:li;pp=pp||0;let b=0;if([95,96,99].includes(wc))b=Math.max(b,55+Math.min(pp*0.25,25));if(cape>2000&&li<-5)b=Math.max(b,60);else if(cape>1500&&li<-4)b=Math.max(b,48);else if(cape>1000&&li<-3)b=Math.max(b,36);else if(cape>700&&li<-2)b=Math.max(b,26);else if(cape>400&&li<-1)b=Math.max(b,18);else if(cape>200&&li<0)b=Math.max(b,10);else if(cape>50)b=Math.max(b,4);b+=pp*0.18;if(gust>80)b*=1.2;return Math.max(0,Math.min(Math.round(b*sf(month)*(RS[region]||0.6)),90));}
+function tLbl(p){if(p===0)return{label:'None',cls:'none'};if(p<=2)return{label:'Slight',cls:'slight'};if(p<=10)return{label:'Low',cls:'low'};if(p<=25)return{label:'Marginal',cls:'marginal'};if(p<=49)return{label:'Moderate',cls:'moderate'};if(p<=75)return{label:'High',cls:'high'};return{label:'Extreme',cls:'extreme'};}
+function sLbl(p){if(p===0)return{label:'None',cls:'none'};if(p<=5)return{label:'Slight',cls:'slight'};if(p<=15)return{label:'Low',cls:'low'};if(p<=25)return{label:'Marginal',cls:'marginal'};if(p<=49)return{label:'Moderate',cls:'moderate'};if(p<=75)return{label:'High',cls:'high'};return{label:'Very High',cls:'very-high'};}
+function rbc(cls){return{none:'#2ecc71',slight:'#27ae60',low:'#a3d977',marginal:'#f1c40f',moderate:'#e67e22',high:'#e74c3c',extreme:'#c0392b','very-high':'#ff6b35'}[cls]||'#3ab4ff';}
+function windDir(deg){if(deg==null||deg===undefined)return'—';return['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'][Math.round(deg/22.5)%16];}
+
+// Colorful emoji weather icons (no external font needed — works everywhere)
+// Colour map for weather-icons font — user-requested palette
+const WI_COLORS={
+  'wi-day-sunny':'#FFD700','wi-day-sunny-overcast':'#FFB300','wi-night-clear':'#FFD700',
+  'wi-day-cloudy':'#FFB300','wi-night-alt-partly-cloudy':'#FFD700','wi-day-cloudy-gusts':'#FFB300',
+  'wi-cloud':'#8CB4C9','wi-night-alt-cloudy':'#8CB4C9',
+  'wi-fog':'#B0C4D8','wi-smoke':'#C4A882',
+  'wi-sprinkle':'#4FC3F7','wi-showers':'#4FC3F7','wi-day-showers':'#4FC3F7','wi-night-alt-showers':'#4FC3F7',
+  'wi-rain':'#29B6F6','wi-day-rain':'#29B6F6','wi-night-alt-rain':'#29B6F6',
+  'wi-rain-mix':'#7986CB',
+  'wi-snow':'#E1F5FE','wi-day-snow':'#E1F5FE','wi-night-alt-snow':'#E1F5FE',
+  'wi-snow-wind':'#B3E5FC','wi-snowflake-cold':'#E0FFFF',
+  'wi-day-thunderstorm':'#FFB300','wi-night-alt-thunderstorm':'#8CB4C9',
+  'wi-thunderstorm':'#8CB4C9','wi-storm-showers':'#4FC3F7',
+  'wi-strong-wind':'#4FC3F7','wi-windy':'#4FC3F7',
+  'wi-na':'#8CB4C9',
+}
+function getWiColor(wiClass){
+  if(WI_COLORS[wiClass])return WI_COLORS[wiClass];
+  // Pattern fallback
+  if(wiClass.includes('sunny'))return'#FFB300';
+  if(wiClass.includes('thunderstorm')||wiClass.includes('storm'))return'#455A64';
+  if(wiClass.includes('rain-mix')||wiClass.includes('freezing'))return'#7986CB';
+  if(wiClass.includes('rain')||wiClass.includes('showers'))return'#1E88E5';
+  if(wiClass.includes('snow')||wiClass.includes('snowflake'))return'#90CAF9';
+  if(wiClass.includes('sprinkle')||wiClass.includes('drizzle'))return'#64B5F6';
+  if(wiClass.includes('fog'))return'#B0BEC5';
+  if(wiClass.includes('cloud'))return'#78909C';
+  if(wiClass.includes('night'))return'#90A4AE';
+  return'#78909C';
+}
+
+function wmoInfo(code,isDay=1){
+  const d=isDay===1||isDay===true?'day':'night';
+  const map={
+    0: {desc:'Clear Sky',              wiClass:d==='day'?'wi-day-sunny':'wi-night-clear'},
+    1: {desc:'Mainly Clear',           wiClass:d==='day'?'wi-day-sunny-overcast':'wi-night-alt-partly-cloudy'},
+    2: {desc:'Partly Cloudy',          wiClass:d==='day'?'wi-day-cloudy':'wi-night-alt-cloudy'},
+    3: {desc:'Overcast',               wiClass:'wi-cloud'},
+    45:{desc:'Foggy',                  wiClass:'wi-fog'},
+    48:{desc:'Icy Fog',                wiClass:'wi-fog'},
+    51:{desc:'Light Drizzle',          wiClass:'wi-sprinkle'},
+    53:{desc:'Drizzle',                wiClass:'wi-showers'},
+    55:{desc:'Heavy Drizzle',          wiClass:'wi-rain'},
+    56:{desc:'Freezing Drizzle',       wiClass:'wi-rain-mix'},
+    57:{desc:'Freezing Drizzle',       wiClass:'wi-rain-mix'},
+    61:{desc:'Light Rain',             wiClass:d==='day'?'wi-day-rain':'wi-night-alt-rain'},
+    63:{desc:'Moderate Rain',          wiClass:'wi-rain'},
+    65:{desc:'Heavy Rain',             wiClass:'wi-rain'},
+    66:{desc:'Freezing Rain',          wiClass:'wi-rain-mix'},
+    67:{desc:'Heavy Freezing Rain',    wiClass:'wi-rain-mix'},
+    71:{desc:'Light Snow',             wiClass:d==='day'?'wi-day-snow':'wi-night-alt-snow'},
+    73:{desc:'Moderate Snow',          wiClass:'wi-snow'},
+    75:{desc:'Heavy Snow',             wiClass:'wi-snow-wind'},
+    77:{desc:'Snow Grains',            wiClass:'wi-snowflake-cold'},
+    80:{desc:'Light Showers',          wiClass:d==='day'?'wi-day-showers':'wi-night-alt-showers'},
+    81:{desc:'Moderate Showers',       wiClass:'wi-showers'},
+    82:{desc:'Heavy Showers',          wiClass:'wi-storm-showers'},
+    85:{desc:'Snow Showers',           wiClass:'wi-snow'},
+    86:{desc:'Heavy Snow Showers',     wiClass:'wi-snow-wind'},
+    95:{desc:'Thunderstorm',           wiClass:d==='day'?'wi-day-thunderstorm':'wi-night-alt-thunderstorm'},
+    96:{desc:'T-Storm w/ Hail',        wiClass:'wi-thunderstorm'},
+    99:{desc:'Severe Thunderstorm',    wiClass:'wi-thunderstorm'},
+  };
+  if(map[code])return{...map[code],icon:null};
+  // Range fallback — no more Unknown/N/A
+  if(code>=0&&code<=3)return{desc:'Cloudy',wiClass:'wi-cloud',icon:null};
+  if(code>=45&&code<=49)return{desc:'Foggy',wiClass:'wi-fog',icon:null};
+  if(code>=50&&code<=59)return{desc:'Drizzle',wiClass:'wi-sprinkle',icon:null};
+  if(code>=60&&code<=69)return{desc:'Rain',wiClass:'wi-rain',icon:null};
+  if(code>=70&&code<=79)return{desc:'Snow',wiClass:'wi-snow',icon:null};
+  if(code>=80&&code<=84)return{desc:'Showers',wiClass:'wi-showers',icon:null};
+  if(code>=85&&code<=89)return{desc:'Snow Showers',wiClass:'wi-snow',icon:null};
+  if(code>=90&&code<=99)return{desc:'Thunderstorm',wiClass:d==='day'?'wi-day-thunderstorm':'wi-night-alt-thunderstorm',icon:null};
+  return{desc:d==='day'?'Partly Cloudy':'Clear',wiClass:d==='day'?'wi-day-cloudy':'wi-night-alt-cloudy',icon:null};
+}
+// Render a coloured weather icon using the wi font
+function wiIcon(w){
+  const cls=typeof w==='string'?w:(w&&w.wiClass?w.wiClass:'wi-cloud');
+
+  // ── THUNDERSTORM ICONS ────────────────────────────────────────────────────
+  // DAY thunderstorm: sun(orange wi-day-sunny, z:1) BEHIND grey cloud(z:2) + yellow lightning(z:3)
+  // Cloud is larger and covers sun body — only sun rays peek out upper-right
+  if(cls==='wi-day-thunderstorm'){
+    return'<span style="display:inline-block;position:relative;width:1.5em;height:1.25em;vertical-align:-0.25em">'+
+      '<i class="wi wi-day-sunny" style="position:absolute;top:0.05em;right:0.04em;font-size:0.56em;color:#FFB300;z-index:1"></i>'+
+      '<i class="wi wi-cloud"     style="position:absolute;top:0.05em;left:0;font-size:0.92em;color:#90A4AE;z-index:2"></i>'+
+      '<i class="wi wi-lightning" style="position:absolute;bottom:0;left:0.32em;font-size:0.48em;color:#FFE600;z-index:3"></i>'+
+    '</span>';
+  }
+  // NO-SUN thunderstorm: pure grey cloud + yellow lightning (current weather hero)
+  if(cls==='wi-thunderstorm'||cls==='wi-storm-showers'){
+    return'<span style="display:inline-block;position:relative;width:1.2em;height:1.05em;vertical-align:-0.15em">'+
+      '<i class="wi wi-cloud"     style="position:absolute;top:0;left:0;font-size:0.85em;color:#90A4AE;z-index:1"></i>'+
+      '<i class="wi wi-lightning" style="position:absolute;bottom:0;left:0.28em;font-size:0.46em;color:#FFE600;z-index:2"></i>'+
+    '</span>';
+  }
+  // NIGHT thunderstorm: grey cloud + yellow lightning + moon overlay
+  if(cls==='wi-night-alt-thunderstorm'){
+    return'<span style="display:inline-block;position:relative;width:1.35em;height:1.1em;vertical-align:-0.2em">'+
+      '<i class="wi wi-cloud"     style="position:absolute;top:0.08em;left:0;font-size:0.84em;color:#90A4AE;z-index:1"></i>'+
+      '<i class="wi wi-lightning" style="position:absolute;bottom:0;left:0.28em;font-size:0.46em;color:#FFE600;z-index:2"></i>'+
+      '<span                      style="position:absolute;top:0;right:0;font-size:0.44em;z-index:3;line-height:1">🌙</span>'+
+    '</span>';
+  }
+
+  const color=getWiColor(cls);
+  return'<i class="wi '+cls+'" style="color:'+color+'"></i>';
+}
+
+
+// ── BLITZORTUNG REAL-TIME LIGHTNING ──────────────────────────────────────
+// Connects to Blitzortung public WebSocket; collects strikes in rolling 15-min buffer
+let _bzStrikes=[];
+let _bzSocket=null;
+let _bzConnected=false;
+
+function _bzDist(lat1,lon1,lat2,lon2){
+  const R=6371,dLat=(lat2-lat1)*Math.PI/180,dLon=(lon2-lon1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+function initBlitzortung(){
+  if(_bzSocket&&(_bzSocket.readyState===0||_bzSocket.readyState===1))return;
+  // Try Blitzortung public WebSocket servers (wss for HTTPS pages)
+  const servers=['wss://ws.blitzortung.org:8080/','wss://ws2.blitzortung.org:8080/','wss://ws3.blitzortung.org:8080/'];
+  let idx=0;
+  function tryNext(){
+    if(idx>=servers.length)return;
+    try{
+      const ws=new WebSocket(servers[idx++]);
+      ws.onopen=()=>{_bzSocket=ws;_bzConnected=true;console.info('[Blitzortung] Connected');};
+      ws.onmessage=(e)=>{
+        try{
+          const d=JSON.parse(e.data);
+          if(d.lat!=null&&d.lon!=null){
+            _bzStrikes.push({lat:+d.lat,lon:+d.lon,t:Date.now()});
+            // Prune to last 15 minutes
+            const cut=Date.now()-900000;
+            _bzStrikes=_bzStrikes.filter(s=>s.t>cut);
+          }
+        }catch(ex){}
+      };
+      ws.onerror=()=>{ws.close();};
+      ws.onclose=()=>{
+        _bzSocket=null;_bzConnected=false;
+        if(idx<servers.length)setTimeout(tryNext,2000);
+        else setTimeout(initBlitzortung,60000); // retry all after 1 min
+      };
+    }catch(ex){tryNext();}
+  }
+  tryNext();
+}
+
+function hasNearbyLightning(lat,lon,radiusKm){
+  radiusKm=radiusKm||30;
+  const cut=Date.now()-900000; // 15 min window
+  return _bzStrikes.some(s=>s.t>cut&&_bzDist(lat,lon,s.lat,s.lon)<=radiusKm);
+}
+
+// Start Blitzortung connection when page loads
+try{initBlitzortung();}catch(ex){}
+
+
+
+
+// ── RAIN CANVAS ANIMATION ──────────────────────────────────────────────────
+let _rainAF=null,_rainCanvas=null,_rainDrops=[];
+function startRainCanvas(){
+  stopRainCanvas();
+  const bg=document.getElementById('weatherBg');if(!bg)return;
+  _rainCanvas=document.createElement('canvas');
+  _rainCanvas.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;';
+  bg.appendChild(_rainCanvas);
+  function resize(){if(!_rainCanvas)return;_rainCanvas.width=window.innerWidth;_rainCanvas.height=window.innerHeight;}
+  resize();
+  window.addEventListener('resize',resize);
+  _rainDrops=[];
+  for(let i=0;i<160;i++){
+    _rainDrops.push({
+      x:Math.random()*window.innerWidth,
+      y:Math.random()*window.innerHeight,
+      len:Math.random()*18+8,
+      spd:Math.random()*9+7,
+      op:Math.random()*0.45+0.2,
+      w:Math.random()<0.25?1.5:1
+    });
+  }
+  function draw(){
+    if(!_rainCanvas)return;
+    const ctx=_rainCanvas.getContext('2d');
+    ctx.clearRect(0,0,_rainCanvas.width,_rainCanvas.height);
+    _rainDrops.forEach(d=>{
+      ctx.beginPath();
+      // Slight rightward angle for realism
+      ctx.moveTo(d.x,d.y);
+      ctx.lineTo(d.x+d.len*0.18,d.y+d.len);
+      ctx.strokeStyle='rgba(174,214,241,'+d.op+')';
+      ctx.lineWidth=d.w;
+      ctx.lineCap='round';
+      ctx.stroke();
+      d.y+=d.spd;d.x+=d.spd*0.08;
+      if(d.y>_rainCanvas.height+d.len){
+        d.y=-d.len;d.x=Math.random()*_rainCanvas.width;
+        d.spd=Math.random()*9+7;d.op=Math.random()*0.45+0.2;
+      }
+    });
+    _rainAF=requestAnimationFrame(draw);
+  }
+  draw();
+}
+function stopRainCanvas(){
+  if(_rainAF){cancelAnimationFrame(_rainAF);_rainAF=null;}
+  if(_rainCanvas){_rainCanvas.remove();_rainCanvas=null;}
+  _rainDrops=[];
+}
+
+// ── ANIMATED WEATHER BACKGROUND ──────────────────────────────────────────
+// Keep the progressive darkening overlay stretched to the full scrollable
+// page height so the background reads darker the further down you scroll
+// (AQI section onward), regardless of how much content is on the page.
+function updateBgDarkenHeight(){
+  const el=document.getElementById('weatherBgDarken');
+  if(!el)return;
+  const h=Math.max(document.documentElement.scrollHeight,document.body.scrollHeight,window.innerHeight);
+  el.style.height=h+'px';
+}
+window.addEventListener('resize',updateBgDarkenHeight);
+if(window.ResizeObserver){
+  new ResizeObserver(updateBgDarkenHeight).observe(document.body);
+}else{
+  setInterval(updateBgDarkenHeight,1500);
+}
+function setWeatherBackground(wCode, isDay, isHazy){
+  const bg=document.getElementById('weatherBg');
+  if(!bg)return;
+  let cls='wx-overcast';
+  if(isHazy){cls='wx-hazy';}
+  else if(wCode>=95){cls='wx-thunderstorm';}
+  else if(wCode>=71&&wCode<=77){cls='wx-snow';}
+  else if((wCode>=50&&wCode<=70)||(wCode>=80&&wCode<=84)){cls='wx-rain';}
+  else if(wCode>=45&&wCode<=48){cls='wx-hazy';}
+  else if(wCode===3){cls='wx-overcast';}
+  else if(wCode===2){cls=isDay?'wx-partly-cloudy':'wx-overcast';}
+  else if(wCode<=1){cls=isDay?'wx-clear-day':'wx-clear-night';}
+  bg.className=cls;
+  // Start/stop canvas rain animation
+  if(cls==='wx-rain'){startRainCanvas();}else{stopRainCanvas();}
+}
+
+// ── HAZE INDICATOR — replaces weather icon with wi-fog when AQI>80 ────────
+function hazeSeverityColor(aqi){
+  return aqi>150?'#e67e22':aqi>100?'#f1c40f':'#B0C4D8'; // grey-blue 51-100, yellow 101-150, orange 150+
+}
+function hazeFogIcon(aqi){
+  const col=hazeSeverityColor(aqi);
+  return '<i class="wi wi-fog" style="color:'+col+';font-size:3.2rem;filter:drop-shadow(0 0 6px '+col+'80)"></i>';
+}
+function updateHazeIndicator(aqi){
+  const iconEl=document.getElementById('weatherIconBig');
+  const descEl=document.getElementById('weatherDesc');
+  if(!iconEl||!descEl)return;
+  if(aqi!==null&&aqi>80){
+    const col=hazeSeverityColor(aqi);
+    // ONLY show fog icon — no other icon, no AQI number
+    iconEl.innerHTML=hazeFogIcon(aqi);
+    descEl.textContent='Hazy';
+    descEl.style.color=col;
+  }else if(aqi!==null){
+    // AQI good — nothing to override (renderMain already set correct icon+desc)
+  }
+}
+
+// ── FETCH ────────────────────────────────────────────────────────────────
+// ── LOCAL CACHE (survives WiFi blocks & refreshes) ──────────────────────
+const CACHE_KEY='sc_weather_cache_v3';
+const CACHE_MAX_AGE=4*60*60*1000; // show cache up to 4 hours old
+
+function saveCache(cityId,data){
+  try{
+    const c=JSON.parse(localStorage.getItem(CACHE_KEY)||'{}');
+    c[cityId]={data,ts:Date.now()};
+    // Keep only last 50 cities to avoid storage overflow
+    const keys=Object.keys(c);
+    if(keys.length>50){delete c[keys[0]];}
+    localStorage.setItem(CACHE_KEY,JSON.stringify(c));
+  }catch(e){}
+}
+function loadCache(cityId){
+  try{
+    const c=JSON.parse(localStorage.getItem(CACHE_KEY)||'{}');
+    const entry=c[cityId];
+    if(!entry)return null;
+    if(Date.now()-entry.ts>CACHE_MAX_AGE)return null; // too old
+    return{...entry.data,fromCache:true,cacheAge:Date.now()-entry.ts};
+  }catch(e){return null;}
+}
+function loadAllCache(){
+  try{return JSON.parse(localStorage.getItem(CACHE_KEY)||'{}');}catch(e){return {};}
+}
+
+// Fetch with automatic proxy fallback for blocked networks
+// ═══════════════════════════════════════════════════════
+// SET YOUR CLOUDFLARE WORKER URL HERE after deploying it
+// e.g. 'https://weather-proxy.yourname.workers.dev'
+// Leave as '' to use public proxies only
+const CUSTOM_PROXY = 'https://plain-bonus-eade.alexsiannas.workers.dev';
+// ═══════════════════════════════════════════════════════
+
+async function fetchWithFallback(url){
+  // Validate that the response is actual weather data (has current or hourly fields)
+  // This prevents broken proxies that return HTTP 200 with an error JSON from poisoning the race
+  const validate=(d)=>{
+    if(!d||typeof d!=='object')throw new Error('invalid response');
+    if(d.error)throw new Error('proxy error: '+d.error);
+    if(!d.current&&!d.hourly)throw new Error('not weather data');
+    return d;
+  };
+  const wrap=(p,via)=>p.then(r=>r.ok?r.json().then(d=>({d:validate(d),via})):Promise.reject(new Error('HTTP '+r.status)));
+  const wrapParsed=(p,via)=>p.then(r=>r.ok?r.json().then(j=>({d:validate(JSON.parse(j.contents||'{}')),via})):Promise.reject(new Error('HTTP '+r.status)));
+  const attempts=[];
+  // ★ SAME-DOMAIN PROXY: /api/wx/ routes through canadianstormcast.ca itself
+  // Works on Cloudflare Pages / Netlify via _redirects — network CANNOT block your own domain
+  const sameDomain=url.replace('https://api.open-meteo.com','/api/wx').replace('https://air-quality-api.open-meteo.com','/api/aq');
+  if(sameDomain!==url) attempts.push(wrap(fetch(sameDomain),'samedomain'));
+  // Cloudflare Worker fallback (reliable, custom domain)
+  if(CUSTOM_PROXY){
+    const wu=CUSTOM_PROXY.replace(/\/$/,'')+new URL(url).pathname+new URL(url).search;
+    attempts.push(wrap(fetch(wu),'worker'));
+  }
+  // Direct fetch — open-meteo supports CORS, works on most networks
+  attempts.push(wrap(fetch(url),'direct'));
+  // NOTE: corsproxy.io removed — now requires paid plan, returns HTTP 200 with error JSON
+  // allorigins.win — free, reliable fallback
+  attempts.push(wrapParsed(fetch('https://api.allorigins.win/get?url='+encodeURIComponent(url)),'proxy2'));
+  // Additional reliable public proxies
+  attempts.push(wrap(fetch('https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(url)),'proxy4'));
+  attempts.push(wrap(fetch('https://thingproxy.freeboard.io/fetch/'+url),'proxy3'));
+  // All fire simultaneously — first VALID success wins
+  const result=await Promise.race([
+    new Promise((resolve,reject)=>{
+      let n=0;
+      attempts.forEach(p=>p.then(resolve).catch(()=>{if(++n===attempts.length)reject(new Error('All proxies failed'));}));
+    }),
+    new Promise((_,r)=>setTimeout(()=>r(new Error('Timeout')),15000))
+  ]);
+  fetchMethod=result.via;
+  return result.d;
+}
+
+async function fetchCityWeather(city){
+  const url='https://api.open-meteo.com/v1/forecast?latitude='+city.lat+'&longitude='+city.lon+'&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,precipitation,surface_pressure,is_day&hourly=cape,lifted_index,precipitation_probability,temperature_2m,weather_code,wind_speed_10m,uv_index,apparent_temperature&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,wind_speed_10m_max,wind_gusts_10m_max,uv_index_max,sunrise,sunset&timezone='+encodeURIComponent(city.tz)+'&forecast_days=7&wind_speed_unit=kmh&temperature_unit=celsius&precipitation_unit=mm';
+  const data=await fetchWithFallback(url);
+  // Compare ISO time strings directly — avoids browser timezone parsing issues.
+  // Open-Meteo returns all times in the city's local timezone, so string compare is correct.
+  const nowStr=data.current.time; // e.g. "2026-05-15T23:37"
+  const hi=Math.max(0,data.hourly.time.findIndex(t=>t>=nowStr));
+  const now=new Date(nowStr); // still needed for month calculation below
+  const dailyCape=[],dailyLi=[];
+  for(let d=0;d<5;d++){const s=d*24,e=s+24;const ca=data.hourly.cape.slice(s,e).filter(v=>v!==null);const li=data.hourly.lifted_index.slice(s,e).filter(v=>v!==null);dailyCape.push(ca.length?Math.max(...ca):0);dailyLi.push(li.length?Math.min(...li):2);}
+  const cur=data.current,gust=cur.wind_gusts_10m||cur.wind_speed_10m;
+  // Store 48 hours with uvIndex + feelsLike for dynamic hourly strip
+  const hourlyAll=[];
+  for(let h=0;h<Math.min(48,data.hourly.time.length);h++){
+    const hWC=data.hourly.weather_code[h]??0;
+    const hPP=data.hourly.precipitation_probability[h]??0;
+    hourlyAll.push({
+      time:data.hourly.time[h],
+      temp:Math.round(data.hourly.temperature_2m[h]??0),
+      wCode:hWC,
+      precipProb:Math.round(Math.round((hPP||0)/5)*5),
+      wind:Math.round(data.hourly.wind_speed_10m[h]??0),
+      uvIndex:data.hourly.uv_index?Math.round((data.hourly.uv_index[h]??0)*10)/10:0,
+      feelsLike:data.hourly.apparent_temperature?Math.round(data.hourly.apparent_temperature[h]??0):null,
+    });
+  }
+  // UV Index (today's max)
+  const uvIndex=data.daily.uv_index_max?Math.round(data.daily.uv_index_max[0]??0):null;
+  return{city,month:now.getMonth()+1,hourlyAll,uvIndex,current:{temp:Math.round(cur.temperature_2m),feels:Math.round(cur.apparent_temperature),humidity:cur.relative_humidity_2m,wCode:cur.weather_code,wind:Math.round(cur.wind_speed_10m),windDir:cur.wind_direction_10m,windGust:Math.round(gust),precip:cur.precipitation,pressure:Math.round(cur.surface_pressure),isDay:cur.is_day,time:cur.time,cape:Math.round(data.hourly.cape[hi]??0),li:data.hourly.lifted_index[hi]!=null?Math.round((data.hourly.lifted_index[hi]??2)*10)/10:null,precipProb:data.hourly.precipitation_probability[hi]??0},daily:data.daily,dailyCape,dailyLi};
+}
+
+// ── AIR QUALITY — AQICN real-time ground stations (aqicn.org/here) are the sole live data source ──
+const AQ_REFRESH_MS=30*60*1000; // 30 minutes
+const AQICN_TOKEN='bdc283808f41278c8d5893997dab1edfd8a8bc9c'; // get a free token at aqicn.org/data-platform/token/
+async function fetchAirQuality(city){
+  // AQICN geolocation feed — real ground-monitoring stations, the SAME live
+  // network that powers aqicn.org/here. This is the only source guaranteed
+  // to match that reference site, since it IS that reference site's data.
+  try{
+    const aqUrl='https://api.waqi.info/feed/geo:'+city.lat+';'+city.lon+'/?token='+AQICN_TOKEN;
+    const aqRes=await Promise.race([fetch(aqUrl),new Promise((_,r)=>setTimeout(()=>r(new Error('t/o')),8000))]);
+    if(!aqRes.ok)throw new Error('AQICN HTTP '+aqRes.status);
+    const aqData=await aqRes.json();
+    if(aqData.status==='ok'&&aqData.data&&aqData.data.aqi!=='-'){
+      const aqi=Math.round(+aqData.data.aqi);
+      return{
+        ok:true,aqi,source:'aqicn',
+        dominentpol:aqData.data.dominentpol||'pm25',
+        station:aqData.data.city?.name||city.name,
+        pm25:aqData.data.iaqi?.pm25?.v??null,
+        pm10:aqData.data.iaqi?.pm10?.v??null,
+        o3:aqData.data.iaqi?.o3?.v??null,
+        fetchedAt:Date.now(),
+      };
+    }
+    throw new Error('AQICN no data');
+  }catch(aqcnErr){
+    // No fallback provider — AQICN ground stations are the sole source of truth
+    return{ok:false,aqi:null};
+  }
+}
+function aqiLabel(aqi){
+  if(aqi===null||aqi===undefined)return{label:'Unavailable',cls:'none',color:'var(--text-muted)',icon:'🌿'};
+  if(aqi<=50) return{label:'LOW',cls:'none',color:'#2ecc71',icon:'🌿'};
+  if(aqi<=100)return{label:'MODERATE',cls:'marginal',color:'#f1c40f',icon:'😐'};
+  if(aqi<=150)return{label:'HIGH',cls:'moderate',color:'#e67e22',icon:'😷'};
+  if(aqi<=200)return{label:'UNHEALTHY',cls:'unhealthy',color:'#e74c3c',icon:'☣️'};
+  return         {label:'HAZARDOUS',cls:'hazardous',color:'#8e1a4b',icon:'☠️'};
+}
+function uvLabel(uv){
+  if(uv===null||uv===undefined)return{label:'N/A',color:'var(--text-muted)',icon:'🌞'};
+  if(uv<=2) return{label:'Low',color:'#2ecc71',icon:'🌞'};
+  if(uv<=5) return{label:'Moderate',color:'#f1c40f',icon:'🌤️'};
+  if(uv<=7) return{label:'High',color:'#e67e22',icon:'⚠️'};
+  if(uv<=10)return{label:'Very High',color:'#e74c3c',icon:'🔴'};
+  return       {label:'Extreme',color:'#9b59b6',icon:'☠️'};
+}
+
+// ── FEATURES PAGE: Moon / Sun / Pollen / Bug Report (per selected city) ──
+// Astronomical moon phase — standard synodic-month calculation (no API needed, always accurate)
+function moonPhaseForDate(date){
+  const synodic=29.530588853;
+  const knownNewMoon=Date.UTC(2000,0,6,18,14,0); // Jan 6 2000 18:14 UTC reference new moon
+  const diffDays=(date.getTime()-knownNewMoon)/86400000;
+  let phase=(diffDays%synodic)/synodic; if(phase<0)phase+=1;
+  const idx=Math.floor(phase*8+0.5)%8;
+  const names=['New Moon','Waxing Crescent','First Quarter','Waxing Gibbous','Full Moon','Waning Gibbous','Last Quarter','Waning Crescent'];
+  // Weather Icons font glyphs (vector/clip-art style, not emoji) — same icon font already used for wi-fog etc.
+  const wiClasses=['wi-moon-new','wi-moon-waxing-crescent-3','wi-moon-first-quarter','wi-moon-waxing-gibbous-3','wi-moon-full','wi-moon-waning-gibbous-3','wi-moon-third-quarter','wi-moon-waning-crescent-3'];
+  return{label:names[idx],wiClass:wiClasses[idx],illum:Math.round((1-Math.cos(phase*2*Math.PI))/2*100)};
+}
+function moonIcon(m,size){
+  size=size||'1.6rem';
+  return '<i class="wi '+m.wiClass+'" style="font-size:'+size+';color:#E8EEF7;filter:drop-shadow(0 0 5px rgba(232,238,247,0.5))"></i>';
+}
+function pollenTierForValue(v){
+  // Colour legend: 0-1 green, 2 yellow, 3 orange, 4-5 red
+  if(v<=1)return{label:'Low Risk',desc:'Minimal impact expected.',color:'#2ecc71'};
+  if(v===2)return{label:'Low-Moderate Risk',desc:'Sensitive individuals may notice mild symptoms.',color:'#f1c40f'};
+  if(v===3)return{label:'Moderate Risk',desc:'At Risk Individuals should take precaution',color:'#e67e22'};
+  return{label:v===4?'High Risk':'Very High Risk',desc:v===4?'Sensitive at-risk individuals should take precaution.':'Most allergy sufferers will be affected.',color:'#e74c3c'};
+}
+function pollenEstimate(city,cur,daily,dayOffset){
+  // No free live pollen API covers Canada (Open-Meteo pollen is Europe-only).
+  // Seasonal + weather-based estimate: tree pollen (spring), grass (early summer),
+  // ragweed/weed (late summer-fall); dry+windy days raise counts, rain suppresses them.
+  dayOffset=dayOffset||0;
+  const d=new Date();d.setDate(d.getDate()+dayOffset);
+  const month=d.getMonth()+1; // 1-12
+  let base=1;
+  if(month>=3&&month<=5)base=3;       // spring — tree pollen
+  else if(month>=6&&month<=8)base=3;  // summer — grass pollen
+  else if(month===9||month===10)base=2; // fall — ragweed/weed
+  else base=1; // winter — minimal
+  const precipDay=daily?.precipitation_sum?.[dayOffset]??(cur.precip||0);
+  const humidity=dayOffset===0?(cur.humidity||50):50;
+  if(precipDay>2)base-=1;           // rain knocks pollen down
+  if(humidity<40&&(cur.wind||0)>15)base+=1; // dry + windy raises it
+  base=Math.max(1,Math.min(5,base));
+  return{...pollenTierForValue(base),value:base};
+}
+function bugRiskEstimate(cur,daily){
+  // No public real-time API for insect activity (e.g. gdg.ca has no data feed).
+  // Weather-based estimate: mosquitoes/black flies favour warm+humid+recent rain;
+  // bees favour warm, calm, dry, sunny days.
+  const temp=cur.temp??18,humidity=cur.humidity??50,wind=cur.wind??10;
+  const precipRecent=(cur.precip||0)+(daily?.precipitation_sum?.[0]||0);
+  function tier(score){
+    if(score<=1)return{label:'Low Risk',color:'#2ecc71',value:1};
+    if(score<=3)return{label:'Moderate Risk',color:'#f1c40f',value:score};
+    return{label:'High Risk',color:'#e74c3c',value:Math.min(score,5)};
+  }
+  let mosq=1;
+  if(temp>=15&&temp<=30)mosq+=1;
+  if(humidity>60)mosq+=1;
+  if(precipRecent>2)mosq+=2;
+  let flies=1;
+  if(temp>=12&&temp<=25)flies+=1;
+  if(humidity>65)flies+=1;
+  if(precipRecent>1)flies+=1;
+  let bees=1;
+  if(temp>=18&&temp<=30)bees+=1;
+  if(humidity<70&&wind<20)bees+=1;
+  if(precipRecent<1)bees+=1;
+  return{mosquitoes:tier(mosq),blackflies:tier(flies),bees:tier(bees)};
+}
+function renderFeaturesPage(city){
+  const container=document.getElementById('featuresContent');
+  if(!container)return;
+  const cd=state.cityData[city.id];
+  if(!cd||!cd.daily){container.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text-muted)">Loading weather conditions\u2026</div>';return;}
+  const daily=cd.daily,cur=cd.current;
+  const fmtTime=(iso)=>{if(!iso)return'\u2014';const t=new Date(iso);return t.toLocaleTimeString('en-CA',{timeZone:city.tz,hour:'numeric',minute:'2-digit',hour12:true});};
+  const fmtDate=(offsetDays)=>{const d=new Date();d.setDate(d.getDate()+offsetDays);return d.toLocaleDateString('en-CA',{weekday:'short',month:'short',day:'numeric'});};
+  const today=new Date(),tmrw=new Date(Date.now()+86400000),dayAfter=new Date(Date.now()+2*86400000);
+  const mToday=moonPhaseForDate(today),mTmrw=moonPhaseForDate(tmrw),mDayAfter=moonPhaseForDate(dayAfter);
+  const pollen=pollenEstimate(city,cur,daily);
+  const bugs=bugRiskEstimate(cur,daily);
+  const yTempHigh=daily.temperature_2m_max?Math.round(daily.temperature_2m_max[0]):null;
+  const yTempLow=daily.temperature_2m_min?Math.round(daily.temperature_2m_min[0]):null;
+  const bugRow=(label,r,svg)=>'<div style="display:flex;align-items:center;gap:0.6rem;padding:0.4rem 0">'+
+    '<div style="text-align:center;flex-shrink:0">'+
+      '<div style="width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;margin-bottom:0.25rem">'+svg(r.color)+'</div>'+
+      '<div style="font-size:0.6rem;color:var(--text-muted)">'+label+'</div>'+
+    '</div>'+
+    '<div style="width:36px;height:36px;flex-shrink:0;border-radius:50%;background:transparent;border:2px solid '+r.color+';display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1rem;color:'+r.color+'">'+r.value+'</div>'+
+    '<div style="font-size:0.72rem;font-weight:800;color:'+r.color+';letter-spacing:0.02em">'+r.label.toUpperCase()+'</div>'+
+  '</div>';
+  // Hand-drawn vector icons (no emoji, no external icon font) — coloured per severity tier
+  const svgMosquito=(c)=>'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="'+c+'" stroke-width="1.6" stroke-linecap="round"><ellipse cx="12" cy="12" rx="2" ry="3.4" fill="'+c+'"/><path d="M12 8.6 L12 3M12 15.4 L12 21"/><path d="M10.3 9.5 4 6M10.3 14.5 4 18M13.7 9.5 20 6M13.7 14.5 20 18"/><path d="M9.5 10.5 3 9M9.5 13.5 3 15M14.5 10.5 21 9M14.5 13.5 21 15"/><circle cx="12" cy="7.6" r="1.1" fill="'+c+'"/></svg>';
+  const svgBlackfly=(c)=>'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="'+c+'" stroke-width="1.6" stroke-linecap="round"><ellipse cx="12" cy="13" rx="2.6" ry="3.6" fill="'+c+'"/><circle cx="12" cy="7.8" r="2.1" fill="'+c+'"/><path d="M9.6 10.5 3.5 7.5M9.6 13 3 12.5M14.4 10.5 20.5 7.5M14.4 13 21 12.5" fill="none" opacity="0.85"/><path d="M10.5 6.5 8 4.5M13.5 6.5 16 4.5"/></svg>';
+  const svgBee=(c)=>'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="'+c+'" stroke-width="1.4"><ellipse cx="12" cy="13.5" rx="4.4" ry="3.6" fill="'+c+'" opacity="0.18"/><path d="M7.8 11 h8.4M7.8 13.5 h8.4M7.8 16 h8.4" stroke="'+c+'" stroke-width="1.8"/><ellipse cx="12" cy="13.5" rx="4.4" ry="3.6"/><circle cx="12" cy="7.4" r="2.1" fill="'+c+'"/><path d="M8.5 9 3.5 5.5M8.7 11 2.5 9.5M15.5 9 20.5 5.5M15.3 11 21.5 9.5" opacity="0.85"/><path d="M9.3 5.8 7.3 3.6M14.7 5.8 16.7 3.6"/></svg>';
+  container.innerHTML=
+    '<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1.5rem">'+
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.75rem">'+
+        '<div><div style="font-size:0.65rem;font-weight:700;letter-spacing:0.15em;color:var(--text-muted);text-transform:uppercase">Moon Report \u00b7 '+fmtDate(0)+'</div></div>'+
+        '<div style="text-align:right"><div style="font-size:0.6rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em">Tonight</div><div style="display:flex;align-items:center;gap:0.5rem;justify-content:flex-end"><span style="font-size:1.1rem;font-weight:900">'+mToday.label+'</span>'+moonIcon(mToday,'2.2rem')+'</div></div>'+
+      '</div>'+
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)">'+
+        '<div><div style="font-size:0.6rem;color:var(--text-muted);text-transform:uppercase;margin-bottom:0.3rem">'+fmtDate(1)+'</div><div style="display:flex;align-items:center;gap:0.5rem"><span style="font-weight:700;font-size:0.85rem">'+mTmrw.label+'</span>'+moonIcon(mTmrw,'1.5rem')+'</div></div>'+
+        '<div><div style="font-size:0.6rem;color:var(--text-muted);text-transform:uppercase;margin-bottom:0.3rem">'+fmtDate(2)+'</div><div style="display:flex;align-items:center;gap:0.5rem"><span style="font-weight:700;font-size:0.85rem">'+mDayAfter.label+'</span>'+moonIcon(mDayAfter,'1.5rem')+'</div></div>'+
+      '</div>'+
+    '</div>'+
+    '<div style="display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:1rem;margin-bottom:1.5rem">'+
+      '<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem">'+
+        '<div style="font-size:0.65rem;font-weight:700;letter-spacing:0.15em;color:var(--text-muted);text-transform:uppercase;margin-bottom:0.9rem">Sun Report \u00b7 '+fmtDate(0)+'</div>'+
+        '<div style="display:flex;justify-content:space-between;gap:1.5rem">'+
+          '<div><div style="font-size:0.68rem;color:var(--text-muted);margin-bottom:0.4rem">Sunrise</div><div style="display:flex;align-items:center;gap:0.5rem"><i class="wi wi-sunrise" style="font-size:1.5rem;color:#FFB300"></i><span style="font-size:1.1rem;font-weight:900">'+fmtTime(daily.sunrise?.[0])+'</span></div></div>'+
+          '<div><div style="font-size:0.68rem;color:var(--text-muted);margin-bottom:0.4rem">Sunset</div><div style="display:flex;align-items:center;gap:0.5rem"><i class="wi wi-sunset" style="font-size:1.5rem;color:#FF7043"></i><span style="font-size:1.1rem;font-weight:900">'+fmtTime(daily.sunset?.[0])+'</span></div></div>'+
+        '</div>'+
+      '</div>'+
+      '<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;text-align:center">'+
+        '<div style="font-size:0.65rem;font-weight:700;letter-spacing:0.15em;color:var(--text-muted);text-transform:uppercase;margin-bottom:0.9rem">Humidity</div>'+
+        '<div style="font-size:1.6rem;font-weight:900">'+(cur.humidity??'\u2014')+'%</div>'+
+      '</div>'+
+      '<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;text-align:center">'+
+        '<div style="font-size:0.65rem;font-weight:700;letter-spacing:0.15em;color:var(--text-muted);text-transform:uppercase;margin-bottom:0.5rem">Yesterday</div>'+
+        '<div style="font-size:1.1rem;font-weight:900">H '+(yTempHigh??'\u2014')+'\u00b0 <span style="color:var(--text-muted);font-weight:600">L '+(yTempLow??'\u2014')+'\u00b0</span></div>'+
+      '</div>'+
+    '</div>'+
+    (function(){
+      const pollenTmrw=pollenEstimate(city,cur,daily,1);
+      const legendBadge=(txt,color)=>'<span style="display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:22px;padding:0 6px;border-radius:11px;background:'+color+';color:#0c1c44;font-size:0.62rem;font-weight:900">'+txt+'</span>';
+      const barMaxH=64;
+      const barCol=(v)=>{const t=pollenTierForValue(v);return t.color;};
+      const bar=(dateLbl,v)=>{
+        const h=Math.max(10,Math.round((v/5)*barMaxH));
+        return '<div style="display:flex;flex-direction:column;align-items:center;gap:0.35rem;flex:1">'+
+          '<div style="font-size:0.85rem;font-weight:900;color:'+barCol(v)+'">'+v+'</div>'+
+          '<div style="width:34px;height:'+h+'px;background:'+barCol(v)+';border-radius:4px 4px 0 0"></div>'+
+          '<div style="font-size:0.6rem;font-weight:700;color:var(--text-muted);letter-spacing:0.05em">'+dateLbl.toUpperCase()+'</div>'+
+        '</div>';
+      };
+      return '<div style="display:grid;grid-template-columns:0.85fr 1.4fr;gap:1rem;margin-bottom:1.5rem">'+
+        '<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem">'+
+          '<div style="font-size:0.65rem;font-weight:700;letter-spacing:0.15em;color:var(--text-muted);text-transform:uppercase;margin-bottom:1rem">Bug Report \u00b7 '+fmtDate(0)+'</div>'+
+          '<div style="display:flex;flex-direction:column;gap:0.85rem">'+bugRow('Mosquitoes',bugs.mosquitoes,svgMosquito)+bugRow('Black Flies',bugs.blackflies,svgBlackfly)+bugRow('Bees',bugs.bees,svgBee)+'</div>'+
+          '<div style="font-size:0.58rem;color:var(--text-muted);margin-top:1rem;text-align:center">Estimated from local weather conditions</div>'+
+        '</div>'+
+        '<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem">'+
+          '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;margin-bottom:1rem">'+
+            '<div style="font-size:0.65rem;font-weight:700;letter-spacing:0.15em;color:var(--text-muted);text-transform:uppercase">Pollen \u00b7 '+fmtDate(0)+'</div>'+
+            '<div style="display:flex;gap:0.35rem">'+legendBadge('0-1','#2ecc71')+legendBadge('2','#f1c40f')+legendBadge('3','#e67e22')+legendBadge('4-5','#e74c3c')+'</div>'+
+          '</div>'+
+          '<div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.25rem">'+
+            '<div style="width:64px;height:64px;flex-shrink:0;border-radius:50%;border:3px solid '+pollen.color+';display:flex;align-items:center;justify-content:center;font-size:1.7rem;font-weight:900;color:'+pollen.color+'">'+pollen.value+'</div>'+
+            '<div><div style="font-weight:900;color:'+pollen.color+';font-size:1rem;letter-spacing:0.02em">'+pollen.label.toUpperCase()+'</div><div style="font-size:0.7rem;color:var(--text-muted);margin-top:0.2rem">'+pollen.desc+'</div></div>'+
+          '</div>'+
+          '<div style="display:flex;align-items:flex-end;gap:0.75rem;padding:0.75rem 0.5rem 0;border-top:1px solid var(--border)">'+
+            '<div style="display:flex;flex-direction:column;justify-content:space-between;height:'+barMaxH+'px;font-size:0.58rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;padding-bottom:1.1rem">'+
+              '<div>High</div><div>Moderate</div><div>Low</div>'+
+            '</div>'+
+            '<div style="display:flex;gap:1.25rem;flex:1;align-items:flex-end;justify-content:center">'+bar(fmtDate(0).split(', ')[1]||fmtDate(0),pollen.value)+bar(fmtDate(1).split(', ')[1]||fmtDate(1),pollenTmrw.value)+'</div>'+
+          '</div>'+
+          '<div style="font-size:0.58rem;color:var(--text-muted);margin-top:0.9rem">Seasonal + weather-based estimate</div>'+
+        '</div>'+
+      '</div>';
+    })();
+}
+function loadFeaturesPage(){
+  const city=CITIES.find(c=>c.id===state.selectedCity);
+  const nameEl=document.getElementById('featuresCityName');
+  if(nameEl&&city)nameEl.textContent=city.name+', '+city.province;
+  if(city)renderFeaturesPage(city);
+}
+
+// ── CITIES DROPDOWN ──────────────────────────────────────────────────────
+let menuOpen=false;
+function toggleCitiesMenu(){
+  menuOpen=!menuOpen;
+  document.getElementById('citiesMenu').classList.toggle('open',menuOpen);
+  document.getElementById('citiesBtn').classList.toggle('open',menuOpen);
+  if(menuOpen){buildMenuList('');document.getElementById('menuSearch').value='';setTimeout(()=>document.getElementById('menuSearch').focus(),50);}
+}
+function closeCitiesMenu(){menuOpen=false;document.getElementById('citiesMenu').classList.remove('open');document.getElementById('citiesBtn').classList.remove('open');}
+document.addEventListener('click',e=>{if(!e.target.closest('.cities-dropdown-wrap'))closeCitiesMenu();});
+function filterMenu(q){buildMenuList(q);}
+function buildMenuList(q){
+  const list=document.getElementById('menuList');
+  const lq=q.toLowerCase();
+  const filtered=CITIES.filter(c=>!lq||c.name.toLowerCase().includes(lq)||c.province.toLowerCase().includes(lq));
+  // group by province
+  const groups={};
+  PROVINCE_ORDER.forEach(p=>{groups[p]=[];});
+  filtered.forEach(c=>{if(groups[c.province])groups[c.province].push(c);else{groups[c.province]=groups[c.province]||[];groups[c.province].push(c);}});
+  let html='';
+  for(const prov of PROVINCE_ORDER){
+    const cities=groups[prov];
+    if(!cities||!cities.length)continue;
+    html+='<div class="cities-group-label">'+prov+'</div>';
+    cities.forEach(city=>{
+      const d=state.cityData[city.id];
+      const isPinned=state.pinnedCities.includes(city.id);
+      const isActive=state.selectedCity===city.id;
+      const tempHtml=d?'<span class="cmi-temp">'+d.current.temp+'°</span>':'';
+      const pinHtml=isPinned?'<span class="cmi-pin">📌</span>':'';
+      html+='<div class="city-menu-item'+(isActive?' active':'')+(isPinned?' pinned-item':'')+'" onclick="selectCity(\''+city.id+'\');closeCitiesMenu()">'+
+        '<span>'+city.name+'</span>'+
+        '<span style="display:flex;align-items:center;gap:4px">'+tempHtml+pinHtml+'</span>'+
+        '</div>';
+    });
+  }
+  if(!html)html='<div style="padding:1rem;color:var(--text-muted);font-size:0.8rem;text-align:center">No cities found</div>';
+  list.innerHTML=html;
+}
+
+// ── PINNED PILLS ─────────────────────────────────────────────────────────
+function renderPinnedPills(){
+  const wrap=document.getElementById('pinPills');
+  const hint=document.getElementById('noPinsHint');
+  wrap.querySelectorAll('.pin-pill').forEach(el=>el.remove());
+  if(state.pinnedCities.length===0){hint.style.display='';return;}
+  hint.style.display='none';
+  state.pinnedCities.forEach(id=>{
+    const city=CITIES.find(c=>c.id===id);if(!city)return;
+    const d=state.cityData[id];
+    const isActive=state.selectedCity===id;
+    const pill=document.createElement('div');
+    pill.className='pin-pill'+(isActive?' active':'');
+    let iconHtml='<span class="pp-icon">🍁</span>';
+    let tempHtml='<span class="pp-sep">·</span><span class="pp-temp">--°</span>';
+    if(d){const w=wmoInfo(d.current.wCode,d.current.isDay);iconHtml='<span class="pp-icon">'+wiIcon(w)+'</span>';tempHtml='<span class="pp-sep">·</span><span class="pp-temp">'+d.current.temp+'°</span>';}
+    pill.innerHTML=iconHtml+'<span class="pp-name">'+city.name+'</span>'+tempHtml;
+    pill.onclick=()=>selectCity(id);
+    wrap.appendChild(pill);
+  });
+}
+
+// ── SELECT / RENDER ───────────────────────────────────────────────────────
+function selectCity(id){
+  state.selectedCity=id;
+  renderPinnedPills();
+  renderMain();
+  startAlertAutoRefresh();
+  // If data not loaded yet, fetch it immediately
+  if(!state.cityData[id]){
+    const city=CITIES.find(c=>c.id===id);
+    if(city)loadOneCity(city);
+  }
+  if(currentTab==='alerts')loadFeaturesPage();
+}
+
+function renderMain(){
+  const panel=document.getElementById('mainPanel');
+  const cityId=state.selectedCity;
+  if(!cityId){
+    panel.innerHTML='<div class="welcome-state">'+
+      '<div class="big-leaf">🍁</div>'+
+      '<h2>Canadian StormCast</h2>'+
+      '<p>Your pinned cities open instantly on every visit. Use <strong>All Cities ▼</strong> in the header to browse and select any city.</p>'+
+      buildPinManager()+
+      '</div>';
+    return;
+  }
+  const d=state.cityData[cityId];
+  // Look up city name safely — available even before data loads
+  const cityName=(CITIES.find(c=>c.id===cityId)||{name:cityId}).name;
+  if(!d){
+    panel.innerHTML='<div class="loading-state">'+
+      '<div class="spinner"></div>'+
+      '<div style="color:var(--text-primary);font-size:1rem;font-weight:600">Fetching weather for '+cityName+'…</div>'+
+      '<div style="color:var(--text-muted);font-size:0.78rem">Connecting to Open-Meteo API</div>'+
+      '<div id="dataTimeout" style="display:none;margin-top:1rem;background:rgba(231,76,60,0.12);border:1px solid rgba(231,76,60,0.3);border-radius:10px;padding:0.8rem 1rem;max-width:380px;text-align:left;font-size:0.8rem">'+
+        '<strong style="color:var(--accent-red)">⏱ Taking longer than expected</strong><br>'+
+        '<span style="color:var(--text-muted)">Check your internet connection or try again.</span> '+
+        '<button onclick="selectCity(\''+cityId+'\')" style="background:rgba(50,120,255,0.2);border:1px solid var(--border-glow);color:var(--accent-blue);border-radius:6px;padding:2px 10px;font-size:0.78rem;font-family:inherit;cursor:pointer">↻ Retry</button>'+
+      '</div>'+
+    '</div>';
+    setTimeout(()=>{const el=document.getElementById('dataTimeout');if(el)el.style.display='block';},6000);
+    return;
+  }
+  const city=d.city,cur=d.current,w=wmoInfo(cur.wCode,cur.isDay),month=d.month;
+  const tr=tornadoRisk(cur.cape,cur.li,cur.windGust,city.region,month);
+  const sr=thunderRisk(cur.cape,cur.li,cur.precipProb,cur.wCode,cur.windGust,city.region,month);
+  const tl=tLbl(tr),sl=sLbl(sr);
+  const isPinned=state.pinnedCities.includes(cityId);
+  const alertHTML=(tr>=26||sr>=51)?'<div class="alert-banner"><span>⚠️</span><span>'+(tr>=26?'<strong>Tornado Risk Alert:</strong> '+tl.label+' risk ('+tr+'%) in '+city.name+'. ':'')+(sr>=51?'<strong>Severe Thunderstorm:</strong> '+sl.label+' risk ('+sr+'%) of thunderstorms. ':'')+'Stay weather-aware.</span></div>':'';
+  const localTime=new Date(cur.time+':00').toLocaleString('en-CA',{timeZone:city.tz,weekday:'long',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
+  const dew=Math.round(cur.temp-((100-cur.humidity)/5));
+  const vis=cur.wCode>=45&&cur.wCode<=48?'< 1 km':cur.wCode<=1?'> 20 km':'5-15 km';
+
+  // Fetch EC alerts from official MSC API and inject when ready
+  fetchECAlerts(city).then(result=>{
+    const el=document.getElementById('ecAlertsPanel');
+    if(el)el.outerHTML=renderECAlerts(result,city);
+    updateECTopBanner(result,city);
+  });
+  // Start 5-min auto-refresh for alerts
+  startAlertAutoRefresh();
+
+  panel.innerHTML='<div class="page-layout">'+alertHTML+
+    '<div class="current-hero"><div class="city-title-row"><div>'+
+    '<div class="city-title">'+city.name+
+      '<button class="hero-pin-btn'+(isPinned?' pinned':'')+'" onclick="openPinDialog()" title="'+(isPinned?'Unpin '+city.name:'Pin '+city.name)+'">'+
+      (isPinned?'✓ Pinned':'+ Pin')+'</button>'+
+    '</div>'+
+    '<div class="city-province">'+city.province+' · Canada</div>'+
+    '</div>'+
+    '<div class="city-time">📅 '+localTime+'</div></div>'+
+    '<div class="conditions-grid">'+
+    '<div><div class="big-temp">'+cur.temp+'<span class="big-temp-unit">°C</span></div><div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px">Feels like '+cur.feels+'°C</div></div>'+
+    '<div class="weather-icon-big" id="weatherIconBig">'+(d.aqData&&d.aqData.ok&&d.aqData.aqi>80?hazeFogIcon(d.aqData.aqi):cur.wCode>=95||hasNearbyLightning(city.lat,city.lon,30)?wiIcon('wi-thunderstorm'):wiIcon(w))+'</div>'+
+    '<div class="condition-block"><div class="condition-label">💧 Humidity</div><div class="condition-value">'+cur.humidity+'%</div><div class="condition-label" style="margin-top:8px">🌡️ Dew Point</div><div class="condition-value">'+dew+'°C</div></div>'+
+    '<div class="condition-block"><div class="condition-label">💨 Wind</div><div class="condition-value">'+cur.wind+' km/h '+windDir(cur.windDir)+'</div><div class="condition-label" style="margin-top:8px">⚡ Gusts</div><div class="condition-value">'+cur.windGust+' km/h</div></div>'+
+    '</div><div class="weather-desc" id="weatherDesc">'+w.desc+'</div></div>'+
+    '<div class="conditions-strip">'+
+    '<div class="cond-tile"><div class="cond-tile-icon">🌧️</div><div class="cond-tile-label">Precip</div><div class="cond-tile-value">'+cur.precip.toFixed(1)+' mm</div></div>'+
+    '<div class="cond-tile"><div class="cond-tile-icon">⏱️</div><div class="cond-tile-label">Pressure</div><div class="cond-tile-value">'+cur.pressure+' hPa</div></div>'+
+    '<div class="cond-tile"><div class="cond-tile-icon">👁️</div><div class="cond-tile-label">Visibility</div><div class="cond-tile-value">'+vis+'</div></div>'+
+    '<div class="cond-tile"><div class="cond-tile-icon">☔</div><div class="cond-tile-label">Precip Prob.</div><div class="cond-tile-value">'+Math.round(cur.precipProb)+'%</div></div>'+
+    '</div>'+
+    // Main content row: left (weather) + right (EC alerts)
+    '<div class="content-main">'+
+        buildShortTermForecast(d,city)+
+        buildHourlyStrip(d,city)+
+        buildUvAqRow(d,city)+
+    '<div class="risk-row">'+buildRiskPanel('tornado',tr,tl)+buildRiskPanel('thunder',sr,sl)+'</div>'+
+        '<div class="forecast-section"><div class="section-title">📅 5-Day Forecast</div><div class="forecast-grid">'+buildForecast(d,city)+'</div></div>'+
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1.25rem">'+buildLegend('tornado')+buildLegend('thunder')+'</div>'+
+        '<div style="text-align:center;font-size:0.65rem;color:var(--text-muted);padding-bottom:1rem">Data: Open-Meteo API · v2.3</div>'+
+    '</div>'+
+    '<div id="ecAlertsPanel"><div class="ec-alerts-panel"><div class="ec-alerts-title">🍁 Environment Canada Alerts</div><div class="ec-loading">Checking for alerts…</div></div></div>'+
+    '</div>';
+  // Set animated weather background
+  setWeatherBackground(cur.wCode,cur.isDay,d.aqData&&d.aqData.ok&&d.aqData.aqi>80);
+  setTimeout(()=>initUvChart(),50);
+  // Update haze indicator immediately if AQ data already in cache
+  if(d.aqData&&d.aqData.ok)updateHazeIndicator(d.aqData.aqi);
+  updateBgDarkenHeight();
+  setTimeout(updateBgDarkenHeight,300); // catch late-loading content (EC alerts, charts)
+}
+
+function buildPinManager(){
+  let rows='';
+  if(state.pinnedCities.length===0){
+    rows='<div class="pin-manager-empty">No cities pinned yet.</div>';
+  } else {
+    state.pinnedCities.forEach((id,i)=>{
+      const city=CITIES.find(c=>c.id===id);if(!city)return;
+      const d=state.cityData[id];
+      const tempHtml=d?'<span class="pmr-temp">'+d.current.temp+'°C</span>':'';
+      const label=i===0?' <span style="font-size:0.65rem;color:var(--accent-yellow);margin-left:4px">(opens first)</span>':'';
+      rows+='<div class="pin-manager-row" onclick="selectCity(\''+id+'\')">'+'<span class="pmr-left">📌 '+city.name+label+'</span>'+'<span style="display:flex;align-items:center;gap:8px">'+tempHtml+'<button class="pmr-remove" title="Remove pin" onclick="event.stopPropagation();removePinFromManager(\''+id+'\')" >✕</button></span>'+'</div>';
+    });
+  }
+  return '<div class="pin-manager">'+
+    '<div class="pin-manager-title">📌 Your Pinned Cities</div>'+
+    rows+
+    '<div class="pin-manager-hint">The <strong>first pinned city</strong> always opens on load &amp; refresh.<br>Remove a city with ✕, then pin a new one via <em>All Cities ▼</em>.</div>'+
+    '</div>';
+}
+function removePinFromManager(id){
+  const idx=state.pinnedCities.indexOf(id);
+  if(idx>=0)state.pinnedCities.splice(idx,1);
+  savePins();renderPinnedPills();renderMain();
+}
+function openPinDialog(){
+  const id=state.selectedCity;if(!id)return;
+  const idx=state.pinnedCities.indexOf(id);
+  if(idx>=0){state.pinnedCities.splice(idx,1);savePins();renderPinnedPills();renderMain();}
+  else{
+    if(state.pinnedCities.length>=MAX_PINS){alert('You can pin up to 5 cities. Remove a pin first.');return;}
+    state.pinnedCities.push(id);savePins();renderPinnedPills();renderMain();
+  }
+}
+
+
+
+// ── PRECIPITATION AMOUNT HELPERS ─────────────────────────────────────────
+function precipRatePerHr(wCode){
+  if(wCode>=95)return 4.0;   // thunderstorm
+  if(wCode>=82)return 5.0;   // heavy showers
+  if(wCode>=81)return 2.0;   // moderate showers
+  if(wCode>=80)return 0.8;   // light showers
+  if(wCode>=75)return 3.0;   // heavy snow
+  if(wCode>=73)return 1.0;   // moderate snow
+  if(wCode>=71)return 0.4;   // light snow
+  if(wCode>=65)return 4.0;   // heavy rain
+  if(wCode>=63)return 2.0;   // moderate rain
+  if(wCode>=61)return 0.8;   // light rain
+  if(wCode>=55)return 0.5;   // heavy drizzle
+  if(wCode>=51)return 0.2;   // drizzle
+  return 0;
+}
+function precipAmountLabel(mm){
+  if(!mm||mm<=0)return null;  // null only for exactly 0
+  if(mm<1)  return '<1mm';
+  if(mm<1.5)return '~1mm';
+  if(mm<3)  return '1-3mm';
+  if(mm<4)  return '2-4mm';
+  if(mm<5.5)return '~5mm';
+  if(mm<10) return '5-10mm';
+  if(mm<11) return '~10mm';
+  if(mm<15) return '10-15mm';
+  if(mm<20) return '15-20mm';
+  if(mm<30) return '20-30mm';
+  if(mm<50) return '30-50mm';
+  if(mm<75) return '50-75mm';
+  return '75+mm';
+}
+
+// ── SHORT TERM FORECAST ────────────────────────────────────────────────────
+function buildShortTermForecast(d,city){
+  if(!d.hourlyAll||d.hourlyAll.length<4)return'';
+  const nowStr=new Date().toLocaleString('sv-SE',{timeZone:city.tz}).replace(' ','T').slice(0,16);
+  const nowHour=parseInt(nowStr.split('T')[1].split(':')[0]);
+  const nowDate=nowStr.slice(0,10);
+  const PERIODS=[
+    {id:'overnight',name:'Overnight',start:0,end:6,isDay:false},
+    {id:'morning',  name:'Morning',  start:6,end:12,isDay:true},
+    {id:'afternoon',name:'Afternoon',start:12,end:18,isDay:true},
+    {id:'evening',  name:'Evening',  start:18,end:24,isDay:false},
+  ];
+  const curPIdx=nowHour<6?0:nowHour<12?1:nowHour<18?2:3;
+  const cards=[];
+  for(let i=0;i<4;i++){
+    const pIdx=(curPIdx+i)%4;
+    const p=PERIODS[pIdx];
+    const dayOff=Math.floor((curPIdx+i)/4);
+    // Build target date string
+    const td=new Date(nowDate+'T12:00:00');
+    td.setDate(td.getDate()+dayOff);
+    const tdStr=td.toISOString().slice(0,10);
+    const entries=d.hourlyAll.filter(h=>{
+      const hd=h.time.slice(0,10);
+      const hh=parseInt(h.time.split('T')[1].split(':')[0]);
+      return hd===tdStr&&hh>=p.start&&hh<p.end;
+    });
+    if(!entries.length)continue;
+    const avgTemp=Math.round(entries.reduce((s,h)=>s+h.temp,0)/entries.length);
+    const avgFeels=entries[0].feelsLike!=null?Math.round(entries.reduce((s,h)=>s+(h.feelsLike||h.temp),0)/entries.length):null;
+    const maxPP=Math.max(...entries.map(h=>h.precipProb));
+    // Dominant weather code
+    const wcM={};entries.forEach(h=>{wcM[h.wCode]=(wcM[h.wCode]||0)+1;});
+    const domWC=parseInt(Object.keys(wcM).sort((a,b)=>wcM[b]-wcM[a])[0]);
+    let dW=wmoInfo(domWC,p.isDay?1:0);
+    // Upgrade icon when precipProb≥35% and no precip in WMO code
+    if(maxPP>=35&&domWC<51){
+      const loT=Math.min(...entries.map(h=>h.temp));
+      const pc=loT<=0?(p.isDay?'wi-day-snow':'wi-night-alt-snow'):loT<=3?'wi-rain-mix':(p.isDay?'wi-day-showers':'wi-night-alt-showers');
+      dW={...dW,wiClass:pc};
+    }
+    const isActive=i===0;
+    const ppStyle=maxPP>=35?'color:#4FC3F7;font-weight:700':'color:var(--text-muted)';
+    const activeBg=isActive?'background:rgba(35,75,160,0.65);border-color:rgba(100,180,255,0.55);':'background:rgba(18,42,90,0.45);border-color:rgba(80,130,220,0.18);';
+    // Estimate precip: WMO rate × precipProb × 1 hour per entry
+    let estMm=0;
+    entries.forEach(h=>{
+      const rate=precipRatePerHr(h.wCode);
+      if(rate>0)estMm+=rate*(Math.max(h.precipProb,10)/100); // use at least 10% for any precip code
+      else if(h.precipProb>=15)estMm+=0.05*(h.precipProb/100); // cloud+prob still adds a tiny bit
+    });
+    // Always show label if any precipitation code present OR high probability
+    const hasPrecipCode=entries.some(h=>h.wCode>=51);
+    if(hasPrecipCode&&estMm<0.05)estMm=0.05; // minimum so '<1mm' shows
+    const precipLbl=precipAmountLabel(estMm);
+    const hasRain=precipLbl!==null||(maxPP>=15&&hasPrecipCode);
+    cards.push(
+      '<div style="'+activeBg+'border:1px solid;border-radius:14px;padding:0.8rem 0.55rem 0.7rem;display:flex;flex-direction:column;align-items:center;gap:0.18rem;text-align:center;min-width:0;flex:1;overflow:hidden">'+
+        '<div style="font-size:0.82rem;font-weight:900;color:var(--text-primary);letter-spacing:0.02em;white-space:nowrap">'+p.name+'</div>'+
+        '<div style="font-size:0.62rem;color:var(--text-secondary);margin-bottom:0.15rem;min-height:1.2em">'+dW.desc+'</div>'+
+        '<div style="background:rgba(20,50,110,0.55);border-radius:50%;width:2.8rem;height:2.8rem;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;margin:0.1rem 0">'+wiIcon(dW)+'</div>'+
+        '<div style="'+ppStyle+';font-size:0.63rem">POP '+maxPP+'%</div>'+
+        '<div style="font-family:Roboto,sans-serif;font-size:1.5rem;font-weight:900;color:var(--text-primary);line-height:1.1;margin:0.1rem 0">'+avgTemp+'°</div>'+
+        (avgFeels!==null?'<div style="font-size:0.6rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em">Feels: '+avgFeels+'°</div>':'')+
+        (hasRain?'<div style="margin-top:0.35rem;padding-top:0.3rem;border-top:1px solid rgba(79,195,247,0.25);font-size:0.62rem;color:#4FC3F7;width:100%;text-align:center;font-weight:600">💧 '+(precipLbl||'<1mm')+'</div>':'')+
+      '</div>'
+    );
+  }
+  if(!cards.length)return'';
+  return'<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:0.85rem 0.9rem;margin-bottom:1rem">'+
+    '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.15em;color:var(--text-muted);text-transform:uppercase;margin-bottom:0.65rem">📋 Short Term Forecast</div>'+
+    '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.55rem">'+
+    cards.join('')+
+    '</div>'+
+  '</div>';
+}
+
+// ── HOURLY STRIP ────────────────────────────────────────────────────────
+// Returns a small coloured precip icon for hourly forecast based on weather code
+function hourlyPrecipIcon(wCode){
+  if(wCode>=95)return'<i class="wi wi-thunderstorm" style="font-size:0.78em;color:#FFE600;vertical-align:middle"></i>';
+  if(wCode>=85)return'<i class="wi wi-snow" style="font-size:0.78em;color:#B3E5FC;vertical-align:middle"></i>';
+  if(wCode>=80)return'<i class="wi wi-showers" style="font-size:0.78em;color:#42A5F5;vertical-align:middle"></i>';
+  if(wCode>=71)return'<i class="wi wi-snow" style="font-size:0.78em;color:#90CAF9;vertical-align:middle"></i>';
+  if(wCode>=61)return'<i class="wi wi-rain" style="font-size:0.78em;color:#1E88E5;vertical-align:middle"></i>';
+  if(wCode>=51)return'<i class="wi wi-sprinkle" style="font-size:0.78em;color:#64B5F6;vertical-align:middle"></i>';
+  return'<i class="wi wi-raindrop" style="font-size:0.78em;color:#42A5F5;vertical-align:middle"></i>';
+}
+function buildHourlyStrip(d,city){
+  if(!d.hourlyAll||!d.hourlyAll.length)return'';
+  const nowCityStr=new Date().toLocaleString('sv-SE',{timeZone:city.tz}).replace(' ','T').slice(0,16);
+  let si=d.hourlyAll.findIndex(h=>h.time>nowCityStr);
+  if(si<0)si=Math.max(0,d.hourlyAll.length-24);else si=Math.max(0,si-1);
+  const items=d.hourlyAll.slice(si,Math.min(si+24,d.hourlyAll.length)).map(h=>{
+    const hr=parseInt((h.time||'T00').split('T')[1].split(':')[0]);
+    const ap=hr>=12?'PM':'AM';const h12=hr%12||12;
+    const w=wmoInfo(h.wCode,hr>=6&&hr<21?1:0);
+    // Upgrade to thunderstorm icon if showers/rain with high precip prob (≥60%)
+    const isDay=hr>=6&&hr<21;
+    const shouldThunder=(h.wCode>=61&&h.wCode<=82&&h.precipProb>=60)||(h.wCode>=80&&h.precipProb>=50);
+    let hw=shouldThunder?{...w,wiClass:isDay?'wi-day-thunderstorm':'wi-night-alt-thunderstorm'}:w;
+    // precipProb ≥35% but WMO shows no precip → upgrade to correct precip icon
+    if(h.precipProb>=35&&h.wCode<51){
+      const pc=h.temp<=0?(isDay?'wi-day-snow':'wi-night-alt-snow'):h.temp<=3?'wi-rain-mix':(isDay?'wi-day-showers':'wi-night-alt-showers');
+      hw={...hw,wiClass:pc};
+    }
+    const fl=h.feelsLike!=null?'<div class="hourly-feels">FL '+h.feelsLike+'°</div>':'';
+    const ps=h.precipProb>=35?'color:#64B5F6;font-weight:700':'color:var(--accent-blue)';
+    return'<div class="hourly-item"><div class="hourly-time">'+h12+' '+ap+'</div><div class="hourly-icon">'+wiIcon(hw)+'</div><div class="hourly-temp">'+h.temp+'°</div>'+fl+'<div class="hourly-precip" style="'+ps+'">'+h.precipProb+'%</div></div>';
+  }).join('');
+  return'<div class="hourly-strip"><div class="hourly-strip-title">🕐 24-Hour Forecast</div><div class="hourly-scroll">'+items+'</div></div>';
+}
+
+// ── EC ALERTS — Official MSC OGC API (api.weather.gc.ca) ─────────────────
+// CORS-enabled, real-time, auto-refreshes every 3 minutes
+const EC_ALERT_REFRESH_MS = 3 * 60 * 1000; // 3 minutes
+const EC_PROV_URL = {
+  BC:'bc',AB:'ab',SK:'sk',MB:'mb',ON:'on',QC:'qc',
+  NB:'nb',NS:'ns',NL:'nl',PE:'pe',YT:'yt',NT:'nt',NU:'nu'
+};
+let alertRefreshTimer=null;
+let lastAlertData={};
+let alertLastChecked={};
+let alertNextCheck={};
+let alertCountdownTimer=null;
+
+function ecProvUrl(province){
+  const code=(EC_PROV_URL[province]||'on');
+  return 'https://weather.gc.ca/warnings/report_e.html?'+code;
+}
+
+async function fetchECAlerts(city){
+  const prov=city.province;
+  try{
+    const url='https://api.weather.gc.ca/collections/weather-alerts/items?f=json&lang=en&limit=30&sortby=-publication_datetime&province='+prov;
+    const res=await Promise.race([
+      fetch(url),
+      new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),7000))
+    ]);
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    const features=data.features||[];
+    // Sort: warnings > watches > advisories > statements
+    const pri={warning:0,watch:1,advisory:2,statement:3};
+    // Sub-priority within warnings: thunderstorm/tornado > wind/storm > heat > other
+    function alertSubPri(t,name){
+      const n=(name||'').toLowerCase();
+      if(t!=='warning')return 50;
+      if(n.includes('thunderstorm')||n.includes('tornado')||n.includes('severe'))return 0;
+      if(n.includes('wind')||n.includes('storm')||n.includes('hurricane'))return 10;
+      if(n.includes('heat')||n.includes('humidex'))return 20;
+      if(n.includes('rain')||n.includes('flood'))return 15;
+      return 30;
+    }
+    features.sort((a,b)=>{
+      const pa=(pri[a.properties.alert_type]??9)*100+alertSubPri(a.properties.alert_type,a.properties.alert_name_en);
+      const pb=(pri[b.properties.alert_type]??9)*100+alertSubPri(b.properties.alert_type,b.properties.alert_name_en);
+      return pa-pb;
+    });
+    // STRICT city-only matching — NO province fallback
+    // Word-boundary safe: 'London' won't match 'New London'
+    const cityName=city.name.toLowerCase();
+    // Normalise: strip punctuation so "St. John's" matches "st johns"
+    const cityNorm=cityName.replace(/[.'’]/g,'').replace(/\s+/g,' ').trim();
+    const alerts=features.filter(f=>{
+      const raw=(f.properties.feature_name_en||'').toLowerCase();
+      const area=raw.replace(/[.'’]/g,'').replace(/\s+/g,' ').trim();
+      const words=area.split(/[\s,\-\/\(\)–]+/).filter(Boolean);
+      // 1. Exact word match (normalised)
+      if(words.includes(cityNorm))return true;
+      // 2. Common EC prefix patterns
+      if(area.includes('city of '+cityNorm))return true;
+      if(area.includes('greater '+cityNorm))return true;
+      if(area.startsWith(cityNorm+' '))return true;
+      if(area.startsWith(cityNorm+','))return true;
+      // 3. Word-boundary regex match
+            // Word-boundary: city appears as its own token
+      if(area.split(/[\s,\-\/\(\)]+/).includes(cityNorm))return true;
+      // 4. Multi-word cities: all parts present as words
+      const cityParts=cityNorm.split(' ');
+      if(cityParts.length>1&&cityParts.every(w=>words.includes(w)))return true;
+      return false;
+    });;
+    // Detect new alerts since last check
+    const prev=lastAlertData[prov];
+    const prevIds=new Set((prev&&prev.alerts||[]).map(f=>f.properties.id));
+    const newAlertIds=new Set(alerts.filter(f=>!prevIds.has(f.properties.id)).map(f=>f.properties.id));
+    lastAlertData[prov]={ok:true,alerts,newAlertIds,total:features.length,city};
+    alertLastChecked[prov]=Date.now();
+    alertNextCheck[prov]=Date.now()+EC_ALERT_REFRESH_MS;
+    return lastAlertData[prov];
+  }catch(e){
+    console.warn('EC alerts failed:',e.message);
+    alertLastChecked[prov]=Date.now();
+    alertNextCheck[prov]=Date.now()+EC_ALERT_REFRESH_MS;
+    lastAlertData[prov]={ok:false,city};
+    return lastAlertData[prov];
+  }
+}
+
+function renderECAlerts(result,city){
+  const ecUrl=ecProvUrl(city.province);
+  const lastCheck=alertLastChecked[city.province];
+  const msAgo=lastCheck?(Date.now()-lastCheck):null;
+  const agoStr=msAgo===null?'':(msAgo<60000?'just now':Math.round(msAgo/60000)+'m ago');
+  const nextMs=alertNextCheck[city.province]?Math.max(0,alertNextCheck[city.province]-Date.now()):null;
+  const nextStr=nextMs!==null?(nextMs<60000?Math.ceil(nextMs/1000)+'s':Math.ceil(nextMs/60000)+'m'):'';
+
+  const footer='<div style="margin-top:0.7rem;border-top:1px solid var(--border);padding-top:0.55rem;display:flex;flex-direction:column;gap:4px">'+
+    '<a href="'+ecUrl+'" target="_blank" style="font-size:0.68rem;color:var(--accent-blue);text-decoration:none;display:flex;align-items:center;gap:4px">'+
+      '🍁 View EC warnings page for '+city.province+' ↗'+
+    '</a>'+
+    '<div style="display:flex;justify-content:space-between;font-size:0.6rem;color:var(--text-muted)">'+
+      '<span>Checked: '+agoStr+'</span>'+
+      '<span id="alertCountdown">'+( nextStr?'Next: '+nextStr:'')+'</span>'+
+    '</div>'+
+  '</div>';
+
+  if(!result||!result.ok){
+    return'<div id="ecAlertsPanel" class="ec-alerts-panel">'+
+      '<div class="ec-alerts-title"><span style="color:#e74c3c;animation:pulse 1.5s infinite">●</span> EC Alerts — '+city.province+'</div>'+
+      '<div class="ec-alert-none" style="color:#e67e22">⚠️ Could not reach Environment Canada API. Check your connection.</div>'+
+      footer+'</div>';
+  }
+  if(!result.alerts||result.alerts.length===0){
+    return'<div id="ecAlertsPanel" class="ec-alerts-panel">'+
+      '<div class="ec-alerts-title"><span style="color:var(--risk-none);animation:pulse 2s infinite">●</span> EC Alerts — '+city.name+'</div>'+
+      '<div class="ec-alert-none"><span>✅</span> No active alerts for '+city.name+' ('+city.province+')</div>'+
+      footer+'</div>';
+  }
+  const typeConfig={
+    warning: {icon:'🔴',label:'WARNING',  color:'#e74c3c',bg:'rgba(231,76,60,0.13)',border:'rgba(231,76,60,0.45)'},
+    watch:   {icon:'🟠',label:'WATCH',    color:'#e67e22',bg:'rgba(230,126,34,0.13)',border:'rgba(230,126,34,0.45)'},
+    advisory:{icon:'🟡',label:'ADVISORY', color:'#f1c40f',bg:'rgba(241,196,15,0.10)',border:'rgba(241,196,15,0.35)'},
+    statement:{icon:'🔵',label:'STATEMENT',color:'#5cc8ff',bg:'rgba(92,200,255,0.08)',border:'rgba(92,200,255,0.25)'},
+  };
+  const dotColor=result.alerts.some(f=>f.properties.alert_type==='warning')?'#e74c3c':
+    result.alerts.some(f=>f.properties.alert_type==='watch')?'#e67e22':'#f1c40f';
+  const shown=result.alerts.slice(0,8);
+  const items=shown.map(f=>{
+    const p=f.properties;
+    const cfg=typeConfig[p.alert_type]||typeConfig.advisory;
+    const isNew=result.newAlertIds&&result.newAlertIds.has(p.id);
+    const title=(p.alert_name_en||p.alert_type||'Alert').replace(/^./,c=>c.toUpperCase());
+    const area=p.feature_name_en||'';
+    const pubDate=p.publication_datetime?new Date(p.publication_datetime).toLocaleString('en-CA',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true}):'';
+    const expDate=p.expiration_datetime?new Date(p.expiration_datetime).toLocaleString('en-CA',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true}):'Unknown';
+    const snippet=(p.alert_text_en||'').split('\n').filter(l=>l.trim()).slice(0,3).join(' ').slice(0,150);
+    return'<div style="background:'+cfg.bg+';border:1px solid '+cfg.border+';border-radius:8px;padding:0.6rem 0.75rem;margin-bottom:0.45rem">'+
+      '<div style="display:flex;align-items:center;gap:0.4rem;margin-bottom:3px;flex-wrap:wrap">'+
+        '<span>'+cfg.icon+'</span>'+
+        '<span style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:'+cfg.color+'">'+cfg.label+'</span>'+
+        (isNew?'<span style="font-size:0.55rem;background:#e74c3c;color:#fff;border-radius:3px;padding:1px 4px;font-weight:700">NEW</span>':'')+
+        '<span style="font-size:0.58rem;color:var(--text-muted);margin-left:auto">Expires '+expDate+'</span>'+
+      '</div>'+
+      '<div style="font-weight:700;color:var(--text-primary);font-size:0.82rem;line-height:1.3">'+title+'</div>'+
+      (area?'<div style="font-size:0.68rem;color:var(--text-muted);margin-top:2px">📍 '+area+'</div>':'')+
+      (pubDate?'<div style="font-size:0.6rem;color:var(--text-muted);margin-top:1px">Issued: '+pubDate+'</div>':'')+
+      (snippet?'<div style="font-size:0.7rem;color:var(--text-secondary);margin-top:5px;line-height:1.45">'+snippet+(snippet.length>=150?'…':'')+'</div>':'')+
+    '</div>';
+  }).join('');
+  const extra=result.alerts.length>8?'<div style="font-size:0.7rem;color:var(--text-muted);text-align:center;padding:4px 0">+'+( result.alerts.length-8)+' more alerts for '+city.province+'</div>':'';
+  return'<div id="ecAlertsPanel" class="ec-alerts-panel">'+
+    '<div class="ec-alerts-title">'+
+      '<span style="color:'+dotColor+';animation:pulse 1.5s infinite">●</span> '+
+      'EC Alerts — '+city.name+
+      '<span style="font-size:0.6rem;margin-left:4px;color:var(--text-muted);font-weight:400">('+result.alerts.length+' active)</span>'+
+    '</div>'+
+    items+extra+footer+
+  '</div>';
+}
+
+// Live countdown updater for the alerts panel
+function startAlertCountdown(){
+  clearInterval(alertCountdownTimer);
+  alertCountdownTimer=setInterval(()=>{
+    const id=state.selectedCity;
+    if(!id)return;
+    const city=CITIES.find(c=>c.id===id);
+    if(!city)return;
+    const nextMs=alertNextCheck[city.province]?Math.max(0,alertNextCheck[city.province]-Date.now()):null;
+    const el=document.getElementById('alertCountdown');
+    if(el&&nextMs!==null)el.textContent='Next: '+(nextMs<60000?Math.ceil(nextMs/1000)+'s':Math.ceil(nextMs/60000)+'m');
+  },1000);
+}
+
+// Auto-refresh EC alerts every 3 minutes — independent of weather refresh
+function startAlertAutoRefresh(){
+  if(alertRefreshTimer)clearInterval(alertRefreshTimer);
+  startAlertCountdown();
+  alertRefreshTimer=setInterval(async()=>{
+    const id=state.selectedCity;
+    if(!id)return;
+    const city=CITIES.find(c=>c.id===id);
+    if(!city)return;
+    const result=await fetchECAlerts(city);
+    const el=document.getElementById('ecAlertsPanel');
+    if(el)el.outerHTML=renderECAlerts(result,city);
+    updateECTopBanner(result,city);
+    startAlertCountdown();
+  },EC_ALERT_REFRESH_MS);
+}
+
+// UV Index chart + Air Quality
+function buildUvAqRow(d,city){
+  const aqData=d.aqData||null;
+  const aqiVal=aqData&&aqData.ok?aqData.aqi:null;
+  const aqL=aqiLabel(aqiVal);
+  if(!d.aqData){
+    fetchAirQuality(city).then(r=>{
+      const cd=state.cityData[city.id];
+      if(cd){cd.aqData=r;if(state.selectedCity===city.id){
+        // Update haze indicator + background based on fresh AQI
+        updateHazeIndicator(r.ok?r.aqi:null);
+        const cd2=state.cityData[city.id];
+        if(cd2)setWeatherBackground(cd2.current.wCode,cd2.current.isDay,r.ok&&r.aqi>80);
+        const el=document.getElementById('aqValue');
+        if(el){const aqL2=aqiLabel(r.ok?r.aqi:null);const v2=r.ok&&r.aqi!==null?r.aqi:null;const aqPct2=Math.min((v2||0)/200*100,100);
+          el.innerHTML='<div style="display:flex;align-items:baseline;gap:0.5rem;margin-bottom:0.3rem"><span style="font-family:Roboto,sans-serif;font-size:2.2rem;font-weight:900;color:'+aqL2.color+';line-height:1">'+(v2!==null?v2:'N/A')+'</span><span style="font-size:0.8rem;font-weight:700;color:'+aqL2.color+'">'+aqL2.label+'</span></div>'+
+          '<div class="risk-bar-wrap"><div class="risk-bar" style="width:'+aqPct2+'%;background:'+aqL2.color+'"></div></div>'+
+          '<div class="risk-scale"><span class="risk-scale-item bg-none">LOW</span><span class="risk-scale-item bg-marginal">MODERATE</span><span class="risk-scale-item bg-high">HIGH</span><span class="risk-scale-item bg-unhealthy">UNHEALTHY</span><span class="risk-scale-item bg-hazardous">HAZARDOUS</span></div>';
+        }
+      }}
+    });
+  }
+  const aqPct=Math.min((aqiVal||0)/200*100,100);
+  return buildUvChartSection(d,city)+
+    '<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1.25rem">'+
+    '<div style="font-size:0.65rem;font-weight:700;letter-spacing:0.15em;color:var(--text-muted);text-transform:uppercase;margin-bottom:0.9rem">Air Quality (US AQI)'+(d.aqData&&d.aqData.source==='aqicn'&&d.aqData.station?' <span style="font-size:0.55rem;font-weight:400;opacity:0.7">· '+d.aqData.station+'</span>':'')+'</div>'+
+    '<div id="aqValue">'+
+      '<div style="display:flex;align-items:baseline;gap:0.5rem;margin-bottom:0.3rem">'+
+        '<span style="font-family:Roboto,sans-serif;font-size:2.2rem;font-weight:900;color:'+aqL.color+';line-height:1">'+(aqiVal!==null?aqiVal:'N/A')+'</span>'+
+        '<span style="font-size:0.8rem;font-weight:700;color:'+aqL.color+'">'+aqL.label+'</span>'+
+        (aqiVal===null?'<span style="font-size:0.7rem;color:var(--text-muted)">Loading…</span>':'')+
+      '</div>'+
+      '<div class="risk-bar-wrap"><div class="risk-bar" style="width:'+aqPct+'%;background:'+aqL.color+'"></div></div>'+
+      '<div class="risk-scale"><span class="risk-scale-item bg-none">LOW</span><span class="risk-scale-item bg-marginal">MODERATE</span><span class="risk-scale-item bg-high">HIGH</span><span class="risk-scale-item bg-unhealthy">UNHEALTHY</span><span class="risk-scale-item bg-hazardous">HAZARDOUS</span></div>'+
+    '</div>'+
+    '</div>';
+}
+
+function closeECBanner(){var b=document.getElementById('ecTopBanner');if(b)b.style.display='none';}
+function updateECTopBanner(result,city){var banner=document.getElementById('ecTopBanner');if(!banner)return;if(!result||!result.ok||!result.alerts||!result.alerts.length){banner.style.display='none';return;}var top=result.alerts[0];var t=top.properties.alert_type||'advisory';var title=(top.properties.alert_name_en||t).replace(/^./,function(x){return x.toUpperCase();});var icons={warning:'🔴',watch:'🟠',advisory:'🟡',statement:'🔵'};// Colour banner by sub-type: thunderstorm=purple-red, heat=orange-red, other warning=red
+    const alertName=(top.properties.alert_name_en||'').toLowerCase();
+    // ONLY tornado warning = purple; other warnings = red; watches = brown; advisories = yellow
+    if(t==='warning'&&alertName.includes('tornado')){
+      banner.style.cssText+='background:rgba(120,0,200,0.85)!important;border-color:rgba(180,0,255,0.95)!important;';
+    } else if(t==='warning'){
+      banner.style.cssText+='background:rgba(200,30,30,0.85)!important;border-color:rgba(255,60,60,0.95)!important;';
+    } else if(t==='watch'){
+      banner.style.cssText+='background:rgba(130,70,0,0.82)!important;border-color:rgba(200,120,0,0.95)!important;';
+    } else {
+      banner.style.cssText+='';
+    }
+    banner.className=t==='warning'?'':t;banner.style.display='flex';banner.innerHTML=(icons[t]||'⚠️')+' <strong>'+city.name+' '+t.toUpperCase()+':</strong> '+title+(result.alerts.length>1?' <span style="font-weight:700">(+'+(result.alerts.length-1)+' more alert'+(result.alerts.length>2?'s':'')+' active)</span>':'')+'<button onclick="closeECBanner()" style="margin-left:auto;background:none;border:none;color:inherit;cursor:pointer;font-size:1rem;opacity:0.6">&#x2715;</button>';}
+
+// ── UV INDEX CHART ────────────────────────────────────────────────────────
+function uvIndexColor(uv){if(uv<=0)return'#4ecb7a';if(uv<=2)return'#2ecc71';if(uv<=3)return'#7dc400';if(uv<=5)return'#f1c40f';if(uv<=6)return'#f39c12';if(uv<=7)return'#e67e22';if(uv<=9)return'#e74c3c';if(uv<=10)return'#c0392b';return'#8e1a4b';}
+function uvLevelName(uv){if(uv<=2)return'Low';if(uv<=5)return'Moderate';if(uv<=7)return'High';if(uv<=10)return'Very High';return'Extreme';}
+function uvAdvice(uv){if(uv<=2)return'No protection required.';if(uv<=5)return'Protection recommended.';if(uv<=7)return'Protection essential.';if(uv<=10)return'Extra protection needed.';return'Stay indoors if possible.';}
+function buildUvChartSection(d,city){const nowCityStr=new Date().toLocaleString('sv-SE',{timeZone:city.tz}).replace(' ','T').slice(0,16);const todayDate=nowCityStr.slice(0,10);let nowHourIdx=d.hourlyAll.findIndex(h=>h.time>nowCityStr);if(nowHourIdx<0)nowHourIdx=d.hourlyAll.length-1;else nowHourIdx=Math.max(0,nowHourIdx-1);const curUv=Math.max(0,+(d.hourlyAll[nowHourIdx]?.uvIndex??0)||0);const todayUv=d.hourlyAll.filter(h=>h.time.startsWith(todayDate));const maxUvToday=Math.max(1,...todayUv.map(h=>+(h.uvIndex??0)||0));window._scUvData=todayUv;window._scUvNowIdx=todayUv.findIndex(h=>h.time===d.hourlyAll[nowHourIdx]?.time);if(window._scUvNowIdx<0)window._scUvNowIdx=Math.min(nowHourIdx,todayUv.length-1);window._scUvMax=maxUvToday;const localTimeStr=new Date().toLocaleString('en-CA',{timeZone:city.tz,hour:'numeric',minute:'2-digit',hour12:true});const lvlColor=uvIndexColor(curUv);const lvlName=uvLevelName(curUv);return'<div id="uvChartCard" style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1.5rem"><div style="font-size:0.62rem;font-weight:700;letter-spacing:0.12em;color:var(--text-muted);text-transform:uppercase;margin-bottom:0.5rem">☀️ UV Index</div><div style="display:flex;align-items:baseline;gap:0.5rem;margin-bottom:0.6rem"><span style="font-family:Roboto,sans-serif;font-size:2.5rem;font-weight:900;color:'+lvlColor+';line-height:1">'+Math.round(curUv)+'</span><span style="font-size:1rem;font-weight:700;color:'+lvlColor+'">'+lvlName+'</span></div><div id="uvHoverLabel" style="font-size:0.72rem;color:var(--text-muted);min-height:1.1em;margin-bottom:0.4rem">&nbsp;</div><div style="position:relative"><canvas id="uvChartCanvas" style="width:100%;height:240px;display:block;cursor:crosshair;image-rendering:smooth"></canvas></div><div style="font-size:0.68rem;color:var(--text-muted);margin-top:0.55rem">Today, '+localTimeStr+' · '+uvAdvice(curUv)+'</div></div>';}
+function initUvChart(){const canvas=document.getElementById('uvChartCanvas');if(!canvas)return;const data=window._scUvData;if(!data||!data.length)return;const nowIdx=window._scUvNowIdx??0;drawUvCanvas(canvas,data,nowIdx,null);function getIdx(e){const rect=canvas.getBoundingClientRect();const cx=e.touches?e.touches[0].clientX:e.clientX;const rx=cx-rect.left;const pL=10,pR=54;const cw=canvas.offsetWidth-pL-pR;return Math.max(0,Math.min(data.length-1,Math.round((rx-pL)/cw*(data.length-1))));}function onMove(e){e.preventDefault();const idx=getIdx(e);const h=data[idx];if(!h)return;drawUvCanvas(canvas,data,nowIdx,idx);const hr=parseInt((h.time||'T00').split('T')[1].split(':')[0]);const ap=hr>=12?'PM':'AM';const h12=hr%12||12;const uv=Math.round(h.uvIndex??0);const el=document.getElementById('uvHoverLabel');if(el)el.innerHTML='<span style="color:'+uvIndexColor(uv)+';font-weight:700">'+h12+':00 '+ap+' — UV '+uv+' ('+uvLevelName(uv)+')</span>';}function onLeave(){drawUvCanvas(canvas,data,nowIdx,null);const el=document.getElementById('uvHoverLabel');if(el)el.innerHTML='&nbsp;';}canvas.addEventListener('mousemove',onMove);canvas.addEventListener('mouseleave',onLeave);canvas.addEventListener('touchmove',onMove,{passive:false});canvas.addEventListener('touchend',onLeave);}
+function drawUvCanvas(canvas,data,nowIdx,hoverIdx){const dpr=window.devicePixelRatio||1;const W=canvas.offsetWidth||300;const H=canvas.offsetHeight||210;canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr);const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);const pL=10,pR=54,pT=58,pB=26;const cW=W-pL-pR,cH=H-pT-pB;const n=data.length||24;const maxUV=Math.max(12,Math.ceil((window._scUvMax||8)/2)*2+2);const toX=i=>pL+(i/(Math.max(n-1,1)))*cW;const toY=uv=>pT+cH-(Math.max(0,Math.min(uv,maxUV))/maxUV)*cH;ctx.fillStyle='rgba(10,20,45,0.7)';ctx.fillRect(0,0,W,H);
+  ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';const lvls=[{uv:2,label:'Low',color:'#2ecc71'},{uv:5,label:'Moderate',color:'#f1c40f'},{uv:7,label:'High',color:'#f39c12'},{uv:10,label:'V. High',color:'#e74c3c'},{uv:11,label:'Extreme',color:'#8e1a4b'}];ctx.save();ctx.font='9px Inter,sans-serif';lvls.forEach(lv=>{if(lv.uv>maxUV)return;const y=toY(lv.uv);ctx.beginPath();ctx.moveTo(pL,y);ctx.lineTo(pL+cW,y);ctx.strokeStyle='rgba(255,255,255,0.07)';ctx.lineWidth=1;ctx.setLineDash([2,4]);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=lv.color+'bb';ctx.textAlign='left';ctx.fillText(lv.label,pL+cW+4,y+3.5);});ctx.restore();const fillGrad=ctx.createLinearGradient(0,pT+cH,0,pT);fillGrad.addColorStop(0,'rgba(20,80,40,0.48)');fillGrad.addColorStop(Math.min(1,2/maxUV),'rgba(39,174,96,0.52)');fillGrad.addColorStop(Math.min(1,3.5/maxUV),'rgba(130,190,0,0.54)');fillGrad.addColorStop(Math.min(1,5/maxUV),'rgba(241,196,15,0.56)');fillGrad.addColorStop(Math.min(1,6.5/maxUV),'rgba(243,156,18,0.58)');fillGrad.addColorStop(Math.min(1,8/maxUV),'rgba(231,76,60,0.60)');fillGrad.addColorStop(Math.min(1,10/maxUV),'rgba(192,57,43,0.62)');if(11/maxUV<=1)fillGrad.addColorStop(Math.min(1,11/maxUV),'rgba(142,26,75,0.65)');ctx.beginPath();ctx.moveTo(toX(0),pT+cH);ctx.lineTo(toX(0),toY(data[0]?.uvIndex??0));for(let i=1;i<n;i++){const x0=toX(i-1),y0=toY(data[i-1]?.uvIndex??0);const x1=toX(i),y1=toY(data[i]?.uvIndex??0);ctx.bezierCurveTo((x0+x1)/2,y0,(x0+x1)/2,y1,x1,y1);}ctx.lineTo(toX(n-1),pT+cH);ctx.closePath();ctx.fillStyle=fillGrad;ctx.fill();ctx.beginPath();ctx.moveTo(toX(0),toY(data[0]?.uvIndex??0));for(let i=1;i<n;i++){const x0=toX(i-1),y0=toY(data[i-1]?.uvIndex??0);const x1=toX(i),y1=toY(data[i]?.uvIndex??0);ctx.bezierCurveTo((x0+x1)/2,y0,(x0+x1)/2,y1,x1,y1);}ctx.strokeStyle='rgba(255,255,255,0.5)';ctx.lineWidth=1.5;ctx.stroke();ctx.save();ctx.fillStyle='rgba(180,210,255,0.5)';ctx.font='9px Inter,sans-serif';ctx.textAlign='center';[6,12,18].forEach(hr=>{const idx=data.findIndex(h=>parseInt((h.time||'T0').split('T')[1]?.split(':')[0]??-1)===hr);if(idx<0)return;ctx.fillText(hr===12?'12pm':hr<12?hr+'am':(hr-12)+'pm',toX(idx),pT+cH+18);});ctx.restore();const pkIdx=data.reduce((mi,h,i)=>(h.uvIndex??0)>(data[mi]?.uvIndex??0)?i:mi,0);if(pkIdx>=0&&(data[pkIdx]?.uvIndex??0)>0){const pkUv=Math.round(data[pkIdx].uvIndex??0);const col=uvIndexColor(pkUv);const pkHr=parseInt((data[pkIdx].time||'T12').split('T')[1].split(':')[0]);const pkAp=pkHr>=12?'PM':'AM';const pkH12=pkHr%12||12;const mx=toX(pkIdx);const annotY=pT+8;const circR=14;const startX=Math.min(Math.max(mx-circR-52,pL+4),pL+cW-circR*2-82);const circCX=startX+86;ctx.save();ctx.fillStyle=col;ctx.font='bold 10.5px Inter,sans-serif';ctx.textAlign='left';ctx.fillText('DAILY MAX',startX,annotY);ctx.font='9px Inter,sans-serif';ctx.fillText('('+pkH12+':00 '+pkAp+')',startX,annotY+14);const circY=annotY+5;ctx.beginPath();ctx.arc(circCX,circY,circR,0,Math.PI*2);ctx.strokeStyle=col;ctx.lineWidth=2;ctx.stroke();ctx.font='bold 13px Roboto,sans-serif';ctx.textAlign='center';ctx.fillText(String(pkUv),circCX,circY+5);ctx.restore();}const markerIdx=hoverIdx!==null?hoverIdx:nowIdx;if(markerIdx>=0&&markerIdx<n){const mx=toX(markerIdx);const uv=data[markerIdx]?.uvIndex??0;const my=toY(uv);ctx.beginPath();ctx.moveTo(mx,pT);ctx.lineTo(mx,pT+cH);ctx.strokeStyle='rgba(255,255,255,0.7)';ctx.lineWidth=1.5;ctx.setLineDash(hoverIdx!==null?[]:[4,4]);ctx.stroke();ctx.setLineDash([]);ctx.beginPath();ctx.arc(mx,my,6.5,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,0.25)';ctx.fill();ctx.beginPath();ctx.arc(mx,my,4.5,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();ctx.beginPath();ctx.arc(mx,my,2.5,0,Math.PI*2);ctx.fillStyle=uvIndexColor(uv);ctx.fill();}}
+
+function buildRiskPanel(type,risk,lbl){
+  const isTornado=type==='tornado';
+  const title=isTornado?'🌪️ Tornado Risk':'⛈️ Thunderstorm Risk';
+  const maxR=isTornado?85:90;
+  const color=rbc(lbl.cls);
+  const pct=Math.min((risk/maxR)*100,100);
+  const r=42,circ=263.9;
+  const offset=(circ*(1-pct/100)).toFixed(1);
+  const displayLabel=risk===0?'No Risk':lbl.label;
+  const items=isTornado?
+    [{l:'Slight',c:'slight'},{l:'Low',c:'low'},{l:'Marginal',c:'marginal'},{l:'Moderate',c:'moderate'},{l:'High',c:'high'},{l:'Extreme',c:'extreme'}]:
+    [{l:'Slight',c:'slight'},{l:'Low',c:'low'},{l:'Marginal',c:'marginal'},{l:'Moderate',c:'moderate'},{l:'High',c:'high'},{l:'Very High',c:'very-high'}];
+  return'<div class="risk-panel" style="text-align:center;padding:1.25rem 1rem">'+
+    '<div class="risk-panel-title" style="margin-bottom:0.6rem">'+title+'</div>'+
+    '<div style="display:flex;justify-content:center;margin-bottom:0.6rem">'+
+      '<svg viewBox="0 0 110 110" width="130" height="130">'+
+        // Background track
+        '<circle cx="55" cy="55" r="'+r+'" fill="rgba(10,20,50,0.5)" stroke="rgba(40,70,140,0.4)" stroke-width="11"/>'+
+        // Coloured progress arc
+        '<circle cx="55" cy="55" r="'+r+'"'+
+          ' fill="none"'+
+          ' stroke="'+color+'"'+
+          ' stroke-width="11"'+
+          ' stroke-linecap="round"'+
+          ' stroke-dasharray="'+circ.toFixed(1)+'"'+
+          ' stroke-dashoffset="'+offset+'"'+
+          ' transform="rotate(-90 55 55)"'+
+          ' style="filter:drop-shadow(0 0 6px '+color+'80);transition:stroke-dashoffset 1.2s ease"/>'+
+        // Percentage number inside
+        '<text x="55" y="50" text-anchor="middle" fill="#fff" font-family="Roboto,sans-serif" font-size="'+(risk>=100?'20':'22')+'" font-weight="900">'+risk+'%</text>'+
+        // Risk label inside circle
+        '<text x="55" y="68" text-anchor="middle" fill="'+color+'" font-family="Inter,sans-serif" font-size="8.5" font-weight="700" letter-spacing="0.1">'+displayLabel.toUpperCase()+'</text>'+
+      '</svg>'+
+    '</div>'+
+    '<div class="risk-scale" style="justify-content:center">'+items.map(s=>'<span class="risk-scale-item bg-'+s.c+'">'+s.l+'</span>').join('')+'</div>'+
+  '</div>';
+}
+
+function buildLegend(type){
+  const isTornado=type==='tornado';
+  const title=isTornado?'🌪️ Tornado Risk Scale':'⛈️ Thunderstorm Risk Scale';
+  const items=isTornado?[{l:'Slight',c:'slight',n:'Isolated, non-threatening'},{l:'Low',c:'low',n:'Possible in unstable areas'},{l:'Marginal',c:'marginal',n:'Elevated, monitor conditions'},{l:'Moderate',c:'moderate',n:'Significant threat, prepare'},{l:'High',c:'high',n:'Dangerous conditions likely'},{l:'Extreme',c:'extreme',n:'Life-threatening situation'}]:[{l:'Slight',c:'slight',n:'Isolated chance'},{l:'Low',c:'low',n:'Scattered storms possible'},{l:'Marginal',c:'marginal',n:'Storms likely in region'},{l:'Moderate',c:'moderate',n:'Widespread storm activity'},{l:'High',c:'high',n:'Severe storms expected'},{l:'Very High',c:'very-high',n:'Dangerous, widespread severe'}];
+  return'<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:1rem"><div class="section-title">'+title+'</div><div style="display:flex;flex-direction:column;gap:5px">'+items.map(i=>'<div style="display:flex;align-items:center;gap:8px;font-size:0.7rem"><strong class="risk-color-'+i.c+'" style="min-width:80px">'+i.l+'</strong><span style="color:var(--text-muted)">'+i.n+'</span></div>').join('')+'</div></div>';
+}
+
+function buildForecast(d,city){
+  const daily=d.daily,days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  return daily.time.slice(0,6).map((dateStr,i)=>{
+    const date=new Date(dateStr+'T12:00:00');
+    const dayLabel=i===0?'TODAY':days[date.getDay()].toUpperCase();
+    const dateLabel=(date.getMonth()+1)+'/'+date.getDate();
+    const wc=daily.weather_code[i],w=wmoInfo(wc,1);
+    const hi=Math.round(daily.temperature_2m_max[i]),lo=Math.round(daily.temperature_2m_min[i]);
+    const precip=(daily.precipitation_sum[i]||0).toFixed(1),pp=daily.precipitation_probability_max[i]||0;
+    const gust=Math.round(daily.wind_gusts_10m_max[i]||daily.wind_speed_10m_max[i]||0);
+    const tr=tornadoRisk(d.dailyCape[i]||0,d.dailyLi[i]??2,gust,city.region,date.getMonth()+1);
+    const sr=thunderRisk(d.dailyCape[i]||0,d.dailyLi[i]??2,pp,wc,gust,city.region,date.getMonth()+1);
+    const tl=tLbl(tr),sl=sLbl(sr);
+    const displayW=(sr>=16&&wc<95)?{...w,wiClass:'wi-day-thunderstorm',desc:'Thunderstorm Possible'}:w;
+    // Risk badge background colour
+    function riskBg(cls){return{none:'#27ae60',slight:'#27ae60',low:'#a3d977',marginal:'#e67e22',moderate:'#e67e22',high:'#e74c3c',extreme:'#c0392b','very-high':'#c0392b'}[cls]||'#e67e22';}
+    const todayStyle=i===0?'border:2px solid rgba(77,196,255,0.5);background:rgba(28,70,130,0.9);':'';
+    return'<div class="forecast-card" style="'+todayStyle+'display:flex;flex-direction:column;align-items:center;gap:0;padding:0.9rem 0.55rem 0.75rem;min-height:0">'+
+      // Day label
+      '<div style="font-weight:900;font-size:'+(i===0?'1rem':'0.78rem')+';letter-spacing:0.1em;color:var(--text-primary);margin-bottom:2px">'+dayLabel+'</div>'+
+      // Date
+      '<div style="font-size:0.62rem;color:var(--text-muted);margin-bottom:0.4rem">'+dateLabel+'</div>'+
+      // Weather description
+      '<div style="font-size:0.62rem;color:var(--text-secondary);margin-bottom:0.4rem;text-align:center;line-height:1.3;min-height:1.8em">'+displayW.desc+'</div>'+
+      // Icon — large, centred, overflow visible
+      '<div style="font-size:2rem;line-height:1.5;overflow:visible;margin-bottom:0.25rem">'+wiIcon(displayW)+'</div>'+
+      // POP
+      '<div style="font-size:0.65rem;color:var(--accent-blue);margin-bottom:0.3rem">💧 '+pp+'%</div>'+
+      // High temp large
+      '<div style="font-family:Roboto,sans-serif;font-size:1.45rem;font-weight:900;color:var(--text-primary);line-height:1;margin-bottom:2px">'+hi+'°</div>'+
+      // Low temp
+      '<div style="font-size:0.65rem;color:var(--text-muted);margin-bottom:0.4rem">LOW: '+lo+'°</div>'+
+      // Rain accumulation
+      '<div style="font-size:0.63rem;color:var(--accent-blue);margin-bottom:0.45rem;min-height:1.1em">'+(parseFloat(precip)>0.05?'💧 '+(precipAmountLabel(parseFloat(precip))||'<1mm'):'')+'</div>'+
+      // Risk badges
+      '<div style="display:flex;flex-direction:column;gap:3px;width:100%">'+
+        '<div style="background:'+riskBg(tl.cls)+'99;color:#fff;border-radius:5px;padding:3px 5px;font-size:0.58rem;font-weight:800;text-align:center;letter-spacing:0.04em;border:1px solid '+riskBg(tl.cls)+'cc">🌪 '+tl.label.toUpperCase()+'</div>'+
+        '<div style="background:'+riskBg(sl.cls)+'99;color:#fff;border-radius:5px;padding:3px 5px;font-size:0.58rem;font-weight:800;text-align:center;letter-spacing:0.04em;border:1px solid '+riskBg(sl.cls)+'cc">⛈ '+sl.label.toUpperCase()+'</div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+const REFRESH_MS=15*60*1000;
+let nextRefreshAt=null,countdownTimer=null;
+function updateCountdown(){if(!nextRefreshAt)return;const ms=nextRefreshAt-Date.now();if(ms<=0){document.getElementById('countdownText').textContent='';return;}const m=Math.floor(ms/60000),s=Math.floor((ms%60000)/1000);document.getElementById('countdownText').textContent='Next update in '+m+':'+String(s).padStart(2,'0');}
+
+// Fetch a single city with timeout, never throws — returns null on failure
+async function loadOneCity(city){
+  try{
+    const data=await fetchCityWeather(city);
+    data.fromCache=false;
+    state.cityData[city.id]=data;
+    saveCache(city.id,data); // ✅ save fresh data to cache
+    if(state.pinnedCities.includes(city.id))renderPinnedPills();
+    if(state.selectedCity===city.id)renderMain();
+    return true;
+  }catch(err){
+    console.warn('Failed:',city.name,err.message);
+    // ✅ Try cached data before showing error
+    const cached=loadCache(city.id);
+    if(cached){
+      state.cityData[city.id]=cached;
+      if(state.pinnedCities.includes(city.id))renderPinnedPills();
+      if(state.selectedCity===city.id)renderMain();
+      console.info('Using cached data for',city.name);
+      return 'cached';
+    }
+    // No cache available — show helpful error only for selected city
+    if(state.selectedCity===city.id){
+      document.getElementById('mainPanel').innerHTML=
+        '<div class="loading-state">'+
+        '<div style="font-size:2.5rem">📶</div>'+
+        '<div style="color:var(--text-primary);font-weight:600;font-size:1rem">No connection to weather API</div>'+
+        '<div style="color:var(--text-muted);font-size:0.8rem;max-width:340px;text-align:center;line-height:1.7;margin-top:4px">'+
+          'Your network is blocking the weather data.<br>'+
+          '<strong style="color:var(--accent-yellow)">Try switching from WiFi to mobile data</strong>, then hit Refresh.'+
+          '<br><br>Once loaded on data, the app caches weather so it shows even on blocked WiFi.'+
+        '</div>'+
+        '<button onclick="manualRefresh()" style="margin-top:0.75rem;background:rgba(50,120,255,0.2);border:1px solid var(--border-glow);color:var(--accent-blue);border-radius:8px;padding:0.5rem 1.5rem;font-size:0.85rem;font-family:inherit;cursor:pointer">↻ Try Again</button>'+
+        '</div>';
+    }
+    return false;
+  }
+}
+
+// Silently load a city in background (for dropdown temps etc)
+function loadCityBackground(city){
+  if(state.cityData[city.id])return; // already loaded
+  loadOneCity(city);
+}
+
+async function loadSelectedCity(){
+  const id=state.selectedCity;
+  if(!id)return;
+  if(state.cityData[id]){renderMain();return;}
+  const city=CITIES.find(c=>c.id===id);
+  if(city)await loadOneCity(city);
+}
+
+function finishLoading(){
+  const now=new Date();
+  document.getElementById('lastUpdate').textContent='Updated '+now.toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  document.getElementById('refreshBtn').disabled=false;
+  document.getElementById('refreshBtn').classList.remove('loading');
+  document.getElementById('updateBadge').classList.remove('updating');
+  nextRefreshAt=Date.now()+REFRESH_MS;
+  clearInterval(countdownTimer);
+  countdownTimer=setInterval(updateCountdown,1000);
+  updateCountdown();
+}
+
+async function loadAllCities(){
+  const badge=document.getElementById('updateBadge'),btn=document.getElementById('refreshBtn');
+  badge.classList.add('updating');btn.disabled=true;btn.classList.add('loading');
+  document.getElementById('lastUpdate').textContent='Updating…';
+  // Load in small batches to avoid overwhelming the browser/API
+  for(let i=0;i<CITIES.length;i+=4){
+    await Promise.all(CITIES.slice(i,i+4).map(c=>loadOneCity(c)));
+  }
+  finishLoading();
+}
+
+async function manualRefresh(){
+  clearInterval(state.refreshTimer);clearInterval(countdownTimer);
+  // Reload selected city first for instant feedback
+  const selCity=CITIES.find(c=>c.id===state.selectedCity);
+  if(selCity){
+    delete state.cityData[selCity.id];
+    renderMain();
+    await loadOneCity(selCity);
+  }
+  // Then rest in background
+  for(let i=0;i<CITIES.length;i+=4){
+    await Promise.all(CITIES.slice(i,i+4).map(c=>loadOneCity(c)));
+  }
+  finishLoading();
+  state.refreshTimer=setInterval(loadAllCities,REFRESH_MS);
+  // Dedicated 30-minute AQI refresh (independent of the weather/alerts timers), Open-Meteo sole source
+  if(state.aqRefreshTimer)clearInterval(state.aqRefreshTimer);
+  state.aqRefreshTimer=setInterval(async()=>{
+    const city=CITIES.find(c=>c.id===state.selectedCity);
+    if(!city)return;
+    const r=await fetchAirQuality(city);
+    const cd=state.cityData[city.id];
+    if(cd){
+      cd.aqData=r;
+      updateHazeIndicator(r.ok?r.aqi:null);
+      setWeatherBackground(cd.current.wCode,cd.current.isDay,r.ok&&r.aqi>80);
+      const el=document.getElementById('aqValue');
+      if(el){
+        const aqL=aqiLabel(r.ok?r.aqi:null);const v=r.ok&&r.aqi!==null?r.aqi:null;const aqPct=Math.min((v||0)/200*100,100);
+        el.innerHTML='<div style="display:flex;align-items:baseline;gap:0.5rem;margin-bottom:0.3rem"><span style="font-family:Roboto,sans-serif;font-size:2.2rem;font-weight:900;color:'+aqL.color+';line-height:1">'+(v!==null?v:'N/A')+'</span><span style="font-size:0.8rem;font-weight:700;color:'+aqL.color+'">'+aqL.label+'</span></div>'+
+          '<div class="risk-bar-wrap"><div class="risk-bar" style="width:'+aqPct+'%;background:'+aqL.color+'"></div></div>'+
+          '<div class="risk-scale"><span class="risk-scale-item bg-none">LOW</span><span class="risk-scale-item bg-marginal">MODERATE</span><span class="risk-scale-item bg-high">HIGH</span><span class="risk-scale-item bg-unhealthy">UNHEALTHY</span><span class="risk-scale-item bg-hazardous">HAZARDOUS</span></div>';
+      }
+    }
+  },AQ_REFRESH_MS);
+}
+
+// Run a quick connectivity test before anything else
+// ═══════════════════════════════════════════════════════════════════════════
+// CANADIAN CITIES DATABASE (ulation)
+// ═══════════════════════════════════════════════════════════════════════════
+const CA_CITIES_DB=[
+  // British Columbia
+  {id:'vancouver',name:'Vancouver',province:'BC',lat:49.2827,lon:-123.1207,pop:675218,region:'west_coast',tz:'America/Vancouver'},
+  {id:'surrey',name:'Surrey',province:'BC',lat:49.1913,lon:-122.8490,pop:517887,region:'west_coast',tz:'America/Vancouver'},
+  {id:'burnaby',name:'Burnaby',province:'BC',lat:49.2488,lon:-122.9805,pop:245891,region:'west_coast',tz:'America/Vancouver'},
+  {id:'richmond_bc',name:'Richmond',province:'BC',lat:49.1666,lon:-123.1336,pop:209937,region:'west_coast',tz:'America/Vancouver'},
+  {id:'kelowna',name:'Kelowna',province:'BC',lat:49.8880,lon:-119.4960,pop:144576,region:'interior_bc',tz:'America/Vancouver'},
+  {id:'abbotsford',name:'Abbotsford',province:'BC',lat:49.0504,lon:-122.3045,pop:141397,region:'west_coast',tz:'America/Vancouver'},
+  {id:'coquitlam',name:'Coquitlam',province:'BC',lat:49.2838,lon:-122.7932,pop:139284,region:'west_coast',tz:'America/Vancouver'},
+  {id:'langley_bc',name:'Langley',province:'BC',lat:49.0847,lon:-122.6093,pop:132603,region:'west_coast',tz:'America/Vancouver'},
+  {id:'delta_bc',name:'Delta',province:'BC',lat:49.0847,lon:-123.0587,pop:102661,region:'west_coast',tz:'America/Vancouver'},
+  {id:'nanaimo',name:'Nanaimo',province:'BC',lat:49.1659,lon:-123.9401,pop:90504,region:'west_coast',tz:'America/Vancouver'},
+  {id:'kamloops',name:'Kamloops',province:'BC',lat:50.6745,lon:-120.3273,pop:90280,region:'interior_bc',tz:'America/Vancouver'},
+  {id:'chilliwack',name:'Chilliwack',province:'BC',lat:49.1579,lon:-121.9514,pop:83788,region:'west_coast',tz:'America/Vancouver'},
+  {id:'maple_ridge',name:'Maple Ridge',province:'BC',lat:49.2193,lon:-122.5984,pop:82256,region:'west_coast',tz:'America/Vancouver'},
+  {id:'prince_george',name:'Prince George',province:'BC',lat:53.9171,lon:-122.7497,pop:74003,region:'interior_bc',tz:'America/Vancouver'},
+  {id:'new_westminster',name:'New Westminster',province:'BC',lat:49.2069,lon:-122.9110,pop:70996,region:'west_coast',tz:'America/Vancouver'},
+  {id:'port_coquitlam',name:'Port Coquitlam',province:'BC',lat:49.2628,lon:-122.7813,pop:61498,region:'west_coast',tz:'America/Vancouver'},
+  {id:'victoria',name:'Victoria',province:'BC',lat:48.4284,lon:-123.3656,pop:92141,region:'west_coast',tz:'America/Vancouver'},
+  {id:'saanich',name:'Saanich',province:'BC',lat:48.4776,lon:-123.3826,pop:117735,region:'west_coast',tz:'America/Vancouver'},
+  {id:'mission_bc',name:'Mission',province:'BC',lat:49.1325,lon:-122.3144,pop:40739,region:'west_coast',tz:'America/Vancouver'},
+  {id:'penticton',name:'Penticton',province:'BC',lat:49.4991,lon:-119.5937,pop:33761,region:'interior_bc',tz:'America/Vancouver'},
+  {id:'port_moody',name:'Port Moody',province:'BC',lat:49.2838,lon:-122.8312,pop:33551,region:'west_coast',tz:'America/Vancouver'},
+  {id:'vernon',name:'Vernon',province:'BC',lat:50.2676,lon:-119.2720,pop:40116,region:'interior_bc',tz:'America/Vancouver'},
+  {id:'west_kelowna',name:'West Kelowna',province:'BC',lat:49.8597,lon:-119.5876,pop:35644,region:'interior_bc',tz:'America/Vancouver'},
+  {id:'campbell_river',name:'Campbell River',province:'BC',lat:50.0163,lon:-125.2446,pop:32588,region:'west_coast',tz:'America/Vancouver'},
+  {id:'langley_city',name:'Langley City',province:'BC',lat:49.1044,lon:-122.6604,pop:28956,region:'west_coast',tz:'America/Vancouver'},
+  {id:'courtenay',name:'Courtenay',province:'BC',lat:49.6872,lon:-124.9925,pop:26377,region:'west_coast',tz:'America/Vancouver'},
+  {id:'white_rock',name:'White Rock',province:'BC',lat:49.0253,lon:-122.8026,pop:22862,region:'west_coast',tz:'America/Vancouver'},
+  // Alberta
+  {id:'calgary',name:'Calgary',province:'AB',lat:51.0447,lon:-114.0719,pop:1336000,region:'prairies',tz:'America/Edmonton'},
+  {id:'edmonton',name:'Edmonton',province:'AB',lat:53.5461,lon:-113.4938,pop:972223,region:'prairies',tz:'America/Edmonton'},
+  {id:'red_deer',name:'Red Deer',province:'AB',lat:52.2681,lon:-113.8112,pop:101832,region:'prairies',tz:'America/Edmonton'},
+  {id:'lethbridge',name:'Lethbridge',province:'AB',lat:49.6956,lon:-112.8451,pop:98406,region:'prairies',tz:'America/Edmonton'},
+  {id:'airdrie',name:'Airdrie',province:'AB',lat:51.2917,lon:-114.0144,pop:78097,region:'prairies',tz:'America/Edmonton'},
+  {id:'medicine_hat',name:'Medicine Hat',province:'AB',lat:50.0416,lon:-110.6775,pop:63260,region:'prairies',tz:'America/Edmonton'},
+  {id:'grande_prairie',name:'Grande Prairie',province:'AB',lat:55.1699,lon:-118.7981,pop:63166,region:'prairies',tz:'America/Edmonton'},
+  {id:'fort_mcmurray',name:'Fort McMurray',province:'AB',lat:56.7265,lon:-111.3790,pop:68549,region:'prairies',tz:'America/Edmonton'},
+  {id:'st_albert',name:'St. Albert',province:'AB',lat:53.6305,lon:-113.6252,pop:66062,region:'prairies',tz:'America/Edmonton'},
+  {id:'spruce_grove',name:'Spruce Grove',province:'AB',lat:53.5440,lon:-113.9000,pop:34066,region:'prairies',tz:'America/Edmonton'},
+  {id:'okotoks',name:'Okotoks',province:'AB',lat:50.7257,lon:-113.9752,pop:28881,region:'prairies',tz:'America/Edmonton'},
+  {id:'leduc',name:'Leduc',province:'AB',lat:53.2594,lon:-113.5491,pop:31410,region:'prairies',tz:'America/Edmonton'},
+  {id:'cochrane_ab',name:'Cochrane',province:'AB',lat:51.1889,lon:-114.4672,pop:28304,region:'prairies',tz:'America/Edmonton'},
+  {id:'lloydminster',name:'Lloydminster',province:'AB',lat:53.2831,lon:-110.0044,pop:31483,region:'prairies',tz:'America/Edmonton'},
+  {id:'chestermere',name:'Chestermere',province:'AB',lat:51.0530,lon:-113.8230,pop:21982,region:'prairies',tz:'America/Edmonton'},
+  {id:'beaumont_ab',name:'Beaumont',province:'AB',lat:53.3573,lon:-113.4148,pop:20877,region:'prairies',tz:'America/Edmonton'},
+  // Saskatchewan
+  {id:'saskatoon',name:'Saskatoon',province:'SK',lat:52.1332,lon:-106.6700,pop:266141,region:'prairies',tz:'America/Regina'},
+  {id:'regina',name:'Regina',province:'SK',lat:50.4452,lon:-104.6189,pop:215106,region:'prairies',tz:'America/Regina'},
+  {id:'prince_albert',name:'Prince Albert',province:'SK',lat:53.2033,lon:-105.7531,pop:37756,region:'prairies',tz:'America/Regina'},
+  {id:'moose_jaw',name:'Moose Jaw',province:'SK',lat:50.3934,lon:-105.5519,pop:33274,region:'prairies',tz:'America/Regina'},
+  {id:'swift_current',name:'Swift Current',province:'SK',lat:50.2881,lon:-107.7939,pop:16604,region:'prairies',tz:'America/Regina'},
+  // Manitoba
+  {id:'winnipeg',name:'Winnipeg',province:'MB',lat:49.8951,lon:-97.1384,pop:749534,region:'prairies',tz:'America/Winnipeg'},
+  {id:'brandon',name:'Brandon',province:'MB',lat:49.8485,lon:-99.9501,pop:48859,region:'prairies',tz:'America/Winnipeg'},
+  {id:'dauphin',name:'Dauphin',province:'MB',lat:51.1497,lon:-100.0535,pop:8457,region:'prairies',tz:'America/Winnipeg'},
+  // Ontario (major cities)
+  {id:'toronto',name:'Toronto',province:'ON',lat:43.6532,lon:-79.3832,pop:2731571,region:'ontario',tz:'America/Toronto'},
+  {id:'ottawa',name:'Ottawa',province:'ON',lat:45.4215,lon:-75.6972,pop:994837,region:'ontario',tz:'America/Toronto'},
+  {id:'mississauga',name:'Mississauga',province:'ON',lat:43.5890,lon:-79.6441,pop:717961,region:'ontario',tz:'America/Toronto'},
+  {id:'brampton',name:'Brampton',province:'ON',lat:43.7315,lon:-79.7624,pop:656480,region:'ontario',tz:'America/Toronto'},
+  {id:'hamilton',name:'Hamilton',province:'ON',lat:43.2557,lon:-79.8711,pop:536917,region:'ontario',tz:'America/Toronto'},
+  {id:'london_on',name:'London',province:'ON',lat:42.9849,lon:-81.2453,pop:422324,region:'ontario',tz:'America/Toronto'},
+  {id:'markham',name:'Markham',province:'ON',lat:43.8561,lon:-79.3370,pop:338503,region:'ontario',tz:'America/Toronto'},
+  {id:'vaughan',name:'Vaughan',province:'ON',lat:43.8361,lon:-79.4985,pop:323103,region:'ontario',tz:'America/Toronto'},
+  {id:'kitchener',name:'Kitchener',province:'ON',lat:43.4516,lon:-80.4925,pop:256885,region:'ontario',tz:'America/Toronto'},
+  {id:'windsor_on',name:'Windsor',province:'ON',lat:42.3149,lon:-83.0364,pop:237942,region:'ontario',tz:'America/Toronto'},
+  {id:'richmond_hill',name:'Richmond Hill',province:'ON',lat:43.8828,lon:-79.4403,pop:195022,region:'ontario',tz:'America/Toronto'},
+  {id:'burlington',name:'Burlington',province:'ON',lat:43.3255,lon:-79.7990,pop:183314,region:'ontario',tz:'America/Toronto'},
+  {id:'oakville',name:'Oakville',province:'ON',lat:43.4675,lon:-79.6877,pop:213759,region:'ontario',tz:'America/Toronto'},
+  {id:'oshawa',name:'Oshawa',province:'ON',lat:43.8975,lon:-78.8659,pop:166000,region:'ontario',tz:'America/Toronto'},
+  {id:'barrie',name:'Barrie',province:'ON',lat:44.3894,lon:-79.6903,pop:153356,region:'ontario',tz:'America/Toronto'},
+  {id:'st_catharines',name:'St. Catharines',province:'ON',lat:43.1594,lon:-79.2469,pop:133113,region:'ontario',tz:'America/Toronto'},
+  {id:'cambridge',name:'Cambridge',province:'ON',lat:43.3616,lon:-80.3144,pop:136858,region:'ontario',tz:'America/Toronto'},
+  {id:'kingston',name:'Kingston',province:'ON',lat:44.2312,lon:-76.4860,pop:136685,region:'ontario',tz:'America/Toronto'},
+  {id:'ajax',name:'Ajax',province:'ON',lat:43.8509,lon:-79.0204,pop:119677,region:'ontario',tz:'America/Toronto'},
+  {id:'whitby',name:'Whitby',province:'ON',lat:43.8975,lon:-78.9429,pop:138501,region:'ontario',tz:'America/Toronto'},
+  {id:'thunder_bay',name:'Thunder Bay',province:'ON',lat:48.3809,lon:-89.2477,pop:107909,region:'ontario',tz:'America/Toronto'},
+  {id:'greater_sudbury',name:'Greater Sudbury',province:'ON',lat:46.4917,lon:-80.9930,pop:165004,region:'ontario',tz:'America/Toronto'},
+  {id:'waterloo',name:'Waterloo',province:'ON',lat:43.4668,lon:-80.5164,pop:121436,region:'ontario',tz:'America/Toronto'},
+  {id:'guelph',name:'Guelph',province:'ON',lat:43.5448,lon:-80.2482,pop:143740,region:'ontario',tz:'America/Toronto'},
+  {id:'brantford',name:'Brantford',province:'ON',lat:43.1394,lon:-80.2644,pop:104688,region:'ontario',tz:'America/Toronto'},
+  {id:'niagara_falls',name:'Niagara Falls',province:'ON',lat:43.0896,lon:-79.0849,pop:88071,region:'ontario',tz:'America/Toronto'},
+  {id:'pickering',name:'Pickering',province:'ON',lat:43.8384,lon:-79.0868,pop:91771,region:'ontario',tz:'America/Toronto'},
+  {id:'newmarket',name:'Newmarket',province:'ON',lat:44.0596,lon:-79.4608,pop:84224,region:'ontario',tz:'America/Toronto'},
+  {id:'aurora_on',name:'Aurora',province:'ON',lat:44.0065,lon:-79.4508,pop:67639,region:'ontario',tz:'America/Toronto'},
+  {id:'peterborough',name:'Peterborough',province:'ON',lat:44.3091,lon:-78.3197,pop:83651,region:'ontario',tz:'America/Toronto'},
+  {id:'sarnia',name:'Sarnia',province:'ON',lat:42.9746,lon:-82.4061,pop:71682,region:'ontario',tz:'America/Toronto'},
+  {id:'sault_ste_marie',name:'Sault Ste. Marie',province:'ON',lat:46.5136,lon:-84.3358,pop:73368,region:'ontario',tz:'America/Toronto'},
+  {id:'north_bay',name:'North Bay',province:'ON',lat:46.3092,lon:-79.4608,pop:51553,region:'ontario',tz:'America/Toronto'},
+  {id:'belleville',name:'Belleville',province:'ON',lat:44.1628,lon:-77.3832,pop:55695,region:'ontario',tz:'America/Toronto'},
+  {id:'milton_on',name:'Milton',province:'ON',lat:43.5083,lon:-79.8833,pop:110128,region:'ontario',tz:'America/Toronto'},
+  {id:'clarington',name:'Clarington',province:'ON',lat:43.9354,lon:-78.6080,pop:105402,region:'ontario',tz:'America/Toronto'},
+  {id:'halton_hills',name:'Halton Hills',province:'ON',lat:43.6303,lon:-79.9450,pop:66468,region:'ontario',tz:'America/Toronto'},
+  {id:'timmins',name:'Timmins',province:'ON',lat:48.4758,lon:-81.3305,pop:41788,region:'ontario',tz:'America/Toronto'},
+  {id:'chatham_on',name:'Chatham',province:'ON',lat:42.4048,lon:-82.1910,pop:44679,region:'ontario',tz:'America/Toronto'},
+  {id:'cornwall_on',name:'Cornwall',province:'ON',lat:45.0183,lon:-74.7283,pop:47952,region:'ontario',tz:'America/Toronto'},
+  {id:'woodstock_on',name:'Woodstock',province:'ON',lat:43.1306,lon:-80.7466,pop:43174,region:'ontario',tz:'America/Toronto'},
+  {id:'welland',name:'Welland',province:'ON',lat:42.9921,lon:-79.2484,pop:52293,region:'ontario',tz:'America/Toronto'},
+  {id:'kenora',name:'Kenora',province:'ON',lat:49.7667,lon:-94.4889,pop:15096,region:'ontario',tz:'America/Winnipeg'},
+  {id:'east_gwillimbury',name:'East Gwillimbury',province:'ON',lat:44.1167,lon:-79.4333,pop:34637,region:'ontario',tz:'America/Toronto'},
+  {id:'georgina',name:'Georgina',province:'ON',lat:44.2996,lon:-79.3832,pop:45418,region:'ontario',tz:'America/Toronto'},
+  // Quebec
+  {id:'montreal',name:'Montréal',province:'QC',lat:45.5017,lon:-73.5673,pop:1762949,region:'quebec',tz:'America/Toronto'},
+  {id:'quebec_city',name:'Québec City',province:'QC',lat:46.8139,lon:-71.2080,pop:531902,region:'quebec',tz:'America/Toronto'},
+  {id:'laval',name:'Laval',province:'QC',lat:45.5700,lon:-73.7400,pop:422993,region:'quebec',tz:'America/Toronto'},
+  {id:'gatineau',name:'Gatineau',province:'QC',lat:45.4765,lon:-75.7013,pop:287200,region:'quebec',tz:'America/Toronto'},
+  {id:'longueuil',name:'Longueuil',province:'QC',lat:45.5314,lon:-73.5124,pop:247553,region:'quebec',tz:'America/Toronto'},
+  {id:'sherbrooke',name:'Sherbrooke',province:'QC',lat:45.4042,lon:-71.8929,pop:161323,region:'quebec',tz:'America/Toronto'},
+  {id:'saguenay',name:'Saguenay',province:'QC',lat:48.4167,lon:-71.0667,pop:145949,region:'quebec',tz:'America/Toronto'},
+  {id:'levis',name:'Lévis',province:'QC',lat:46.8036,lon:-71.1756,pop:143414,region:'quebec',tz:'America/Toronto'},
+  {id:'trois_rivieres',name:'Trois-Rivières',province:'QC',lat:46.3450,lon:-72.5450,pop:136236,region:'quebec',tz:'America/Toronto'},
+  {id:'terrebonne',name:'Terrebonne',province:'QC',lat:45.7000,lon:-73.6333,pop:111575,region:'quebec',tz:'America/Toronto'},
+  {id:'saint_jean',name:'Saint-Jean-sur-Richelieu',province:'QC',lat:45.3167,lon:-73.2667,pop:96496,region:'quebec',tz:'America/Toronto'},
+  {id:'repentigny',name:'Repentigny',province:'QC',lat:45.7420,lon:-73.4650,pop:83870,region:'quebec',tz:'America/Toronto'},
+  {id:'drummondville',name:'Drummondville',province:'QC',lat:45.8833,lon:-72.4833,pop:79004,region:'quebec',tz:'America/Toronto'},
+  {id:'blainville',name:'Blainville',province:'QC',lat:45.6800,lon:-73.8800,pop:60000,region:'quebec',tz:'America/Toronto'},
+  {id:'saint_jerome',name:'Saint-Jérôme',province:'QC',lat:45.7833,lon:-74.0000,pop:77234,region:'quebec',tz:'America/Toronto'},
+  {id:'granby',name:'Granby',province:'QC',lat:45.4000,lon:-72.7333,pop:69349,region:'quebec',tz:'America/Toronto'},
+  {id:'mirabel',name:'Mirabel',province:'QC',lat:45.6500,lon:-74.0833,pop:60000,region:'quebec',tz:'America/Toronto'},
+  {id:'shawinigan',name:'Shawinigan',province:'QC',lat:46.5500,lon:-72.7500,pop:49764,region:'quebec',tz:'America/Toronto'},
+  {id:'chateauguay',name:'Châteauguay',province:'QC',lat:45.3667,lon:-73.7500,pop:46884,region:'quebec',tz:'America/Toronto'},
+  {id:'rimouski',name:'Rimouski',province:'QC',lat:48.4500,lon:-68.5333,pop:48664,region:'quebec',tz:'America/Toronto'},
+  {id:'joliette',name:'Joliette',province:'QC',lat:46.0167,lon:-73.4500,pop:36027,region:'quebec',tz:'America/Toronto'},
+  {id:'victoriaville',name:'Victoriaville',province:'QC',lat:46.0500,lon:-71.9667,pop:46700,region:'quebec',tz:'America/Toronto'},
+  {id:'rouyn_noranda',name:'Rouyn-Noranda',province:'QC',lat:48.2394,lon:-79.0192,pop:40929,region:'quebec',tz:'America/Toronto'},
+  {id:'val_dor',name:"Val-d'Or",province:'QC',lat:48.1000,lon:-77.7833,pop:32874,region:'quebec',tz:'America/Toronto'},
+  {id:'sept_iles',name:"Sept-Îles",province:'QC',lat:50.2167,lon:-66.3833,pop:25648,region:'quebec',tz:'America/Toronto'},
+  {id:'dollard',name:'Dollard-des-Ormeaux',province:'QC',lat:45.4958,lon:-73.8230,pop:50788,region:'quebec',tz:'America/Toronto'},
+  // New Brunswick
+  {id:'moncton',name:'Moncton',province:'NB',lat:46.0878,lon:-64.7782,pop:79470,region:'maritimes',tz:'America/Moncton'},
+  {id:'fredericton',name:'Fredericton',province:'NB',lat:45.9636,lon:-66.6431,pop:63116,region:'maritimes',tz:'America/Moncton'},
+  {id:'saint_john',name:'Saint John',province:'NB',lat:45.2733,lon:-66.0633,pop:67575,region:'maritimes',tz:'America/Moncton'},
+  {id:'dieppe',name:'Dieppe',province:'NB',lat:46.0960,lon:-64.7229,pop:30001,region:'maritimes',tz:'America/Moncton'},
+  {id:'riverview',name:'Riverview',province:'NB',lat:46.0619,lon:-64.8024,pop:21993,region:'maritimes',tz:'America/Moncton'},
+  // Nova Scotia
+  {id:'halifax',name:'Halifax',province:'NS',lat:44.6488,lon:-63.5752,pop:439819,region:'maritimes',tz:'America/Halifax'},
+  {id:'cape_breton',name:'Cape Breton',province:'NS',lat:46.1351,lon:-60.1831,pop:94285,region:'maritimes',tz:'America/Halifax'},
+  {id:'truro',name:'Truro',province:'NS',lat:45.3648,lon:-63.2877,pop:12954,region:'maritimes',tz:'America/Halifax'},
+  // Newfoundland
+  {id:'st_johns',name:"St. John's",province:'NL',lat:47.5615,lon:-52.7126,pop:212884,region:'maritimes',tz:'America/St_Johns'},
+  {id:'mount_pearl',name:'Mount Pearl',province:'NL',lat:47.5192,lon:-52.8058,pop:22957,region:'maritimes',tz:'America/St_Johns'},
+  {id:'corner_brook',name:'Corner Brook',province:'NL',lat:48.9500,lon:-57.9500,pop:18693,region:'maritimes',tz:'America/St_Johns'},
+  {id:'conception_bay',name:'Conception Bay South',province:'NL',lat:47.5200,lon:-52.9800,pop:26199,region:'maritimes',tz:'America/St_Johns'},
+  // PEI
+  {id:'charlottetown',name:'Charlottetown',province:'PEI',lat:46.2382,lon:-63.1311,pop:38809,region:'maritimes',tz:'America/Halifax'},
+  {id:'summerside',name:'Summerside',province:'PEI',lat:46.3963,lon:-63.7908,pop:15022,region:'maritimes',tz:'America/Halifax'},
+];
+
+// Province order for display
+const PROV_ORDER_ALL=['BC','AB','SK','MB','ON','QC','NB','NS','NL','PEI'];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TAB NAVIGATION
+// ─────────────────────────────────────────────────────────────────────────────
+let currentTab='weather';
+function switchTab(tab){
+  document.querySelectorAll('.tab-view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.bottom-nav button').forEach(b=>b.classList.remove('active'));
+  const viewEl=document.getElementById('view'+tab.charAt(0).toUpperCase()+tab.slice(1));
+  if(viewEl)viewEl.classList.add('active');
+  const navEl=document.getElementById('nav'+tab.charAt(0).toUpperCase()+tab.slice(1));
+  if(navEl)navEl.classList.add('active');
+  currentTab=tab;
+  if(tab==='radar'&&!radarMapInited)initRadarMap();
+  if(tab==='alerts')loadFeaturesPage();
+  if(tab==='search'){renderPinnedChips();const inp=document.getElementById('citySearchInput');searchCities(inp?inp.value:'');}
+  window.scrollTo(0,0);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RADAR (RainViewer)
+// ─────────────────────────────────────────────────────────────────────────────
+let radarMap=null,radarMapInited=false;
+let radarFrames=[],radarForecast=[],radarMode_='live';
+let radarTileLayer=null,radarAnimTimer=null,radarPlayIdx=0,radarPlaying=false;
+
+
+// ── RADAR COLOR HELPERS ───────────────────────────────────────────────────
+function _rgbToHsl(r,g,b){
+  r/=255;g/=255;b/=255;
+  const max=Math.max(r,g,b),min=Math.min(r,g,b);
+  let h,s,l=(max+min)/2;
+  if(max===min){h=s=0;}
+  else{const d=max-min;s=l>.5?d/(2-max-min):d/(max+min);
+    switch(max){case r:h=((g-b)/d+(g<b?6:0))/6;break;case g:h=((b-r)/d+2)/6;break;case b:h=((r-g)/d+4)/6;break;}}
+  return[h*360,s,l];
+}
+function _hslToRgb(h,s,l){
+  h/=360;let r,g,b;
+  if(s===0){r=g=b=l;}
+  else{
+    const q=l<.5?l*(1+s):l+s-l*s,p=2*l-q;
+    const hue2rgb=(p,q,t)=>{if(t<0)t+=1;if(t>1)t-=1;if(t<1/6)return p+(q-p)*6*t;if(t<.5)return q;if(t<2/3)return p+(q-p)*(2/3-t)*6;return p;};
+    r=hue2rgb(p,q,h+1/3);g=hue2rgb(p,q,h);b=hue2rgb(p,q,h-1/3);
+  }
+  return[Math.round(r*255),Math.round(g*255),Math.round(b*255)];
+}
+
+// Canvas tile layer extending L.TileLayer — inherits maxNativeZoom zoom-clamping
+// This prevents "Zoom Level Not Supported" by upscaling zoom-8 tiles beyond zoom 8
+const RadarCanvasLayer=L.TileLayer.extend({
+  createTile:function(coords,done){
+    const sz=this.getTileSize().x;
+    const canvas=document.createElement('canvas');
+    canvas.width=canvas.height=sz;
+    canvas.style.imageRendering='auto';
+    const img=new Image();
+    img.crossOrigin='anonymous';
+    img.onload=()=>{
+      const ctx=canvas.getContext('2d');
+      // Smooth interpolation when tiles are upscaled
+      ctx.imageSmoothingEnabled=true;
+      ctx.imageSmoothingQuality='high';
+      // Scale up slightly for smoother appearance then scale back
+      ctx.drawImage(img,0,0,sz,sz);
+      try{
+        const id=ctx.getImageData(0,0,sz,sz),d=id.data;
+        for(let i=0;i<d.length;i+=4){
+          if(d[i+3]<15)continue;
+          const[h,s,l]=_rgbToHsl(d[i],d[i+1],d[i+2]);
+          // Remap blue/cyan (155–275°) → green/yellow-green (50–140°)
+          if(h>=155&&h<=275){
+            const nh=50+((h-155)/(275-155))*90;
+            const[nr,ng,nb]=_hslToRgb(nh,Math.min(s*1.1,1),Math.min(l*1.05,1));
+            d[i]=nr;d[i+1]=ng;d[i+2]=nb;
+          }
+        }
+        ctx.putImageData(id,0,0);
+        // Smooth the result to reduce pixelation
+        const tmp=document.createElement('canvas');tmp.width=tmp.height=sz;
+        const tc=tmp.getContext('2d');tc.imageSmoothingEnabled=true;tc.imageSmoothingQuality='high';
+        tc.drawImage(canvas,0,0);
+        ctx.clearRect(0,0,sz,sz);
+        ctx.filter='blur(0.6px)';
+        ctx.drawImage(tmp,0,0);
+        ctx.filter='none';
+      }catch(e){}
+      done(null,canvas);
+    };
+    img.onerror=()=>done(null,canvas);
+    // getTileUrl() automatically clamps zoom to maxNativeZoom — no more "Zoom Level Not Supported"
+    img.src=this.getTileUrl(coords);
+    return canvas;
+  }
+});
+
+function initRadarMap(){
+
+  radarMapInited=true;
+  radarMap=L.map('radarMap',{
+    center:[56.0,-96.0],zoom:4,
+    minZoom:2,maxZoom:18,
+    zoomControl:true
+  });
+  radarMap.setMaxBounds([[5,-180],[85,-30]]);
+  // Smooth rendering on the overlay pane (reduces pixelation on upscaled tiles)
+  const overlayPane=radarMap.getPane('overlayPane');
+  if(overlayPane)overlayPane.style.imageRendering='smooth';
+  // Dark basemap
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
+    attribution:'&copy; CartoDB',maxZoom:18,subdomains:'abcd'
+  }).addTo(radarMap);
+  fetchRadarFrames();
+}
+
+async function fetchRadarFrames(){
+  try{
+    const resp=await fetch('https://api.rainviewer.com/public/weather-maps.json');
+    const data=await resp.json();
+    radarFrames=data.radar?.past||[];
+    radarForecast=data.radar?.nowcast||[];
+    document.getElementById('radarFrameCount').textContent=radarFrames.length+' past / '+radarForecast.length+' forecast frames';
+    setRadarFrame(radarFrames.length-1,radarFrames);
+    document.getElementById('radarSlider').max=radarFrames.length-1;
+    document.getElementById('radarSlider').value=radarFrames.length-1;
+  }catch(e){document.getElementById('radarTimeLabel').textContent='Radar unavailable';}
+}
+
+function setRadarFrame(idx,frames){
+  if(!frames||!frames.length||idx<0||idx>=frames.length)return;
+  const frame=frames[idx];
+  if(radarTileLayer)radarMap.removeLayer(radarTileLayer);
+  // RainViewer tile: color 1=original, 2=universal blue, 3=TITAN, 4=TPalete, 5=dark sky, 6=vivid, 7=universal
+  const tileUrl='https://tilecache.rainviewer.com'+frame.path+'/256/{z}/{x}/{y}/1/0_0.png'  // 1=Original classic: light-green→yellow→red, no snow-color override; // 6=vivid: green→yellow→red
+  radarTileLayer=new RadarCanvasLayer(tileUrl,{opacity:0.45,tileSize:256,maxNativeZoom:8,maxZoom:18}).addTo(radarMap);
+  // Smooth radar overlay pane for less pixelation
+  try{const op=radarMap.getPane('overlayPane');if(op){op.style.filter='blur(0.5px) saturate(1.15)';}}catch(e){}
+  const d=new Date(frame.time*1000);
+  document.getElementById('radarTimeLabel').textContent=d.toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit',hour12:true})+' – '+d.toLocaleDateString('en-CA',{month:'short',day:'numeric'});
+}
+
+function radarMode(mode){
+  radarMode_=mode;
+  document.querySelectorAll('.radar-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('rBtn'+mode.charAt(0).toUpperCase()+mode.slice(1)).classList.add('active');
+  const frames=mode==='forecast'?radarForecast:radarFrames;
+  const idx=mode==='forecast'?0:frames.length-1;
+  document.getElementById('radarSlider').max=Math.max(0,frames.length-1);
+  document.getElementById('radarSlider').value=idx;
+  setRadarFrame(idx,frames);
+}
+
+function onRadarSlider(val){
+  const frames=radarMode_==='forecast'?radarForecast:radarFrames;
+  setRadarFrame(parseInt(val),frames);
+}
+
+function toggleRadarPlay(){
+  radarPlaying=!radarPlaying;
+  document.getElementById('radarPlayBtn').textContent=radarPlaying?'⏸ Pause':'▶ Play';
+  if(radarPlaying)playNextFrame();
+  else if(radarAnimTimer){clearTimeout(radarAnimTimer);radarAnimTimer=null;}
+}
+
+function playNextFrame(){
+  if(!radarPlaying)return;
+  const frames=radarMode_==='forecast'?radarForecast:radarFrames;
+  const slider=document.getElementById('radarSlider');
+  radarPlayIdx=(parseInt(slider.value)+1)%Math.max(1,frames.length);
+  slider.value=radarPlayIdx;
+  setRadarFrame(radarPlayIdx,frames);
+  radarAnimTimer=setTimeout(playNextFrame,600);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ALL ALERTS VIEW
+// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// CITY SEARCH + 5-PIN SYSTEM
+// ─────────────────────────────────────────────────────────────────────────────
+const MAX_PINS=5; // Updated from 3 to 5
+
+function searchCities(query){
+  const list=document.getElementById('searchResultsList');
+  if(!list)return;
+  // Use CA_CITIES_DB if available, fall back to CITIES array
+  const db=(typeof CA_CITIES_DB!=='undefined'&&CA_CITIES_DB.length)?CA_CITIES_DB:CITIES;
+  const q=(query||'').toLowerCase().trim();
+  let results=q.length>0
+    ?db.filter(city=>city.name.toLowerCase().includes(q)||city.province.toLowerCase()===q||city.province.toLowerCase().includes(q))
+    :db.slice(0,60);
+  // Sort by population desc
+  results=results.slice().sort((a,b)=>(b.pop||0)-(a.pop||0));
+  if(results.length===0){
+    list.innerHTML='<div style="padding:1.5rem;text-align:center;color:var(--text-muted)">No cities found for "'+q+'"</div>';
+    return;
+  }
+  // Build HTML string directly — much more reliable than outerHTML approach
+  list.innerHTML=results.slice(0,80).map(city=>{
+    const isPinned=state.pinnedCities.includes(city.id);
+    const d=state.cityData[city.id];
+    const tempStr=d?'<span style="font-size:0.72rem;color:var(--accent-blue);margin-left:5px">'+d.current.temp+'°C</span>':'';
+    return'<div class="search-result-item" data-id="'+city.id+'">'
+      +'<div class="city-info">'
+        +'<div class="city-name">'+city.name+tempStr+'</div>'
+        +'<div class="city-meta">'+city.province+'</div>'
+      +'</div>'
+      +'<button class="pin-btn-sm'+(isPinned?' pinned':'')+'" data-pid="'+city.id+'">'+(isPinned?'✓ Pinned':'+ Pin')+'</button>'
+    +'</div>';
+  }).join('');
+  // Event delegation — single listener, far more reliable than per-element
+  list.onclick=function(e){
+    const item=e.target.closest('.search-result-item');
+    if(!item)return;
+    const id=item.getAttribute('data-id');
+    if(e.target.closest('.pin-btn-sm')){
+      e.stopPropagation();
+      togglePinCity(id);
+    } else {
+      selectCityFromSearch(id);
+    }
+  };
+}
+
+function selectCityFromSearch(id){
+  // Ensure city is in the main CITIES array or add it dynamically
+  const city=CA_CITIES_DB.find(c=>c.id===id);
+  if(!city)return;
+  // Add to CITIES if not present
+  if(!CITIES.find(c=>c.id===id)){
+    CITIES.push(city);
+  }
+  state.selectedCity=id;
+  switchTab('weather');
+  renderPinnedPills();
+  renderMain();
+  startAlertAutoRefresh();
+  if(!state.cityData[id])loadOneCity(city);
+}
+
+function togglePinCity(id){
+  const city=CA_CITIES_DB.find(c=>c.id===id);
+  if(!city)return;
+  if(!CITIES.find(c=>c.id===id))CITIES.push(city);
+  const idx=state.pinnedCities.indexOf(id);
+  if(idx>=0){
+    state.pinnedCities.splice(idx,1);
+  }else{
+    if(state.pinnedCities.length>=MAX_PINS){alert('You can pin up to 5 cities. Remove a pin first.');return;}
+    state.pinnedCities.push(id);
+    if(!state.cityData[id])loadOneCity(city);
+  }
+  savePins();
+  renderPinnedPills();
+  renderPinnedChips();
+  searchCities(document.getElementById('citySearchInput')?.value||'');
+}
+
+function renderPinnedChips(){
+  const sec=document.getElementById('pinnedChipsSection');
+  if(!sec)return;
+  if(state.pinnedCities.length===0){
+    sec.innerHTML='<div class="pinned-section-title">📌 Pinned Cities (0/5)</div><div style="font-size:0.7rem;color:var(--text-muted)">Search below and pin up to 5 cities</div>';
+    return;
+  }
+  sec.innerHTML='<div class="pinned-section-title">📌 Pinned Cities ('+state.pinnedCities.length+'/5)</div><div class="pinned-chips" id="pinnedChipsInner"></div>';
+  const inner=document.getElementById('pinnedChipsInner');
+  state.pinnedCities.forEach(function(id){
+    const city=CITIES.find(function(cx){return cx.id===id;})||CA_CITIES_DB.find(function(cx){return cx.id===id;});
+    if(!city)return;
+    const d=state.cityData[id];
+    const chip=document.createElement('span');
+    chip.className='pinned-chip';
+    chip.setAttribute('data-cid',id);
+    chip.innerHTML=city.name+(d?' <b style="color:var(--accent-blue)">'+d.current.temp+'°</b>':'')+'<span class="remove-pin" data-rid="'+id+'">✕</span>';
+    chip.addEventListener('click',function(){selectCityFromSearch(id);});
+    chip.querySelector('.remove-pin').addEventListener('click',function(e){e.stopPropagation();togglePinCity(id);});
+    inner.appendChild(chip);
+  });
+}
+
+
+function init(){
+  // ✅ STEP 0: Load ALL cached data instantly — works on WiFi or offline
+  const allCache=loadAllCache();
+  let cacheCount=0;
+  for(const[cityId,entry]of Object.entries(allCache)){
+    if(Date.now()-entry.ts<CACHE_MAX_AGE){
+      state.cityData[cityId]={...entry.data,fromCache:true,cacheAge:Date.now()-entry.ts};
+      cacheCount++;
+    }
+  }
+  if(cacheCount>0)console.info('Loaded',cacheCount,'cities from cache');
+
+  // SHOW UI IMMEDIATELY — cache fills in city data before first render
+  // Auto-select first pinned city on load
+  state.selectedCity=state.pinnedCities.length>0?state.pinnedCities[0]:null;
+  renderPinnedPills();
+  if(state.selectedCity)switchTab('weather');
+  renderMain(); // shows cached data instantly if available, or welcome screen
+
+  // Then load data quietly in the background
+  document.getElementById('updateBadge').classList.add('updating');
+  document.getElementById('lastUpdate').textContent='Loading…';
+
+  (async()=>{
+    // Load selected city first for instant data
+    if(state.selectedCity){
+      await loadSelectedCity();
+    }
+    // Load pinned cities for header pills
+    const pinned=CITIES.filter(c=>state.pinnedCities.includes(c.id)&&c.id!==state.selectedCity);
+    if(pinned.length) await Promise.all(pinned.map(c=>loadOneCity(c)));
+    renderPinnedPills();
+    finishLoading();
+    startAlertAutoRefresh();
+    // Load all remaining cities silently in background
+    setTimeout(()=>{
+      const loaded=new Set(Object.keys(state.cityData));
+      const remaining=CITIES.filter(c=>!loaded.has(c.id));
+      (async()=>{
+        for(let i=0;i<remaining.length;i+=4){
+          await Promise.all(remaining.slice(i,i+4).map(c=>loadOneCity(c)));
+          await new Promise(r=>setTimeout(r,200));
+        }
+      })();
+    },300);
+    state.refreshTimer=setInterval(loadAllCities,REFRESH_MS);
+  })();
+}
+init();
+</script>
+
+<!-- ── BOTTOM NAVIGATION BAR ── -->
+<nav class="bottom-nav" id="bottomNav">
+  <button id="navWeather" class="active" onclick="switchTab('weather')">
+    <span class="nav-icon"><svg viewBox='0 0 24 24' width='26' height='26' fill='none' stroke='currentColor' stroke-width='1.8'><circle cx='12' cy='12' r='4'/><path d='M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41'/></svg></span>WEATHER
+  </button>
+  <button id="navRadar" onclick="switchTab('radar')">
+    <span class="nav-icon"><svg viewBox='0 0 24 24' width='26' height='26' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M12 12 m-1 0a1 1 0 1 0 2 0a1 1 0 1 0-2 0'/><path d='M8.5 8.5a4.9 4.9 0 0 0 0 7M15.5 8.5a4.9 4.9 0 0 1 0 7'/><path d='M5.5 5.5a9.5 9.5 0 0 0 0 13M18.5 5.5a9.5 9.5 0 0 1 0 13'/></svg></span>RADAR
+  </button>
+  <button id="navAlerts" onclick="switchTab('alerts')">
+    <span class="nav-icon"><svg viewBox='0 0 24 24' width='26' height='26' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1'/><circle cx='12' cy='12' r='4'/></svg></span>FEATURES
+  </button>
+  <button id="navSearch" onclick="switchTab('search')">
+    <span class="nav-icon"><svg viewBox='0 0 24 24' width='26' height='26' fill='none' stroke='currentColor' stroke-width='1.8'><circle cx='11' cy='11' r='8'/><path d='m21 21-4.35-4.35'/></svg></span>CITIES
+  </button>
+</nav>
+<div class="version-footer">🍁 Canadian StormCast v3.0 · Data: Open-Meteo &amp; Environment Canada · Radar: RainViewer</div>
+
+</body>
+</html>
