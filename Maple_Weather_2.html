@@ -1,0 +1,1964 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><title>Maple Weather — Canadian Forecast</title><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="theme-color" content="#EFF7FD"/><link rel="icon" type="image/png" href="Maple_Weather_Logo.png"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>:root{--bg:#EFF7FD;--card:#FFFFFF;--navy:#0A2138;--navy-2:#123A5C;--muted:#5E7893;--muted-2:#8AA3BB;--line:#E5F0F9;--line-2:#EDF5FC;--blue:#0F7BD6;--blue-d:#0A5FA9;--blue-soft:#E8F3FE;--blue-soft-2:#F3F9FF;--sky:#BFE3FA;--green:#12A67B;--amber:#E79A18;--red:#E25555;--radius:26px;--radius-sm:18px;--shadow-sm:0 2px 8px rgba(12,58,100,.04);--shadow:0 18px 40px -26px rgba(12,58,100,.45),0 2px 8px rgba(12,58,100,.04);--font:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:var(--font);color:var(--navy);background:radial-gradient(1100px 520px at 8% -8%,#DFF0FE 0%,rgba(223,240,254,0) 62%),radial-gradient(900px 480px at 96% 2%,#E7F5FF 0%,rgba(231,245,255,0) 60%),linear-gradient(180deg,#F6FBFF 0%,var(--bg) 42%,#F7FBFF 100%);background-attachment:fixed;-webkit-font-smoothing:antialiased;}button{font-family:inherit}a{color:inherit;text-decoration:none}::selection{background:#CBE7FD}.topbar{position:sticky;top:0;z-index:1200;background:rgba(255,255,255,.82);backdrop-filter:saturate(160%) blur(16px);-webkit-backdrop-filter:saturate(160%) blur(16px);border-bottom:1px solid rgba(210,230,246,.9);}.topbar-inner{max-width:1420px;margin:0 auto;padding:12px 28px;display:flex;align-items:center;gap:22px;}.brand{display:flex;align-items:center;gap:11px;flex-shrink:0}.brand-mark{width:44px;height:44px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;filter:drop-shadow(0 5px 10px rgba(12,58,100,.18));}.brand-mark img{width:100%;height:100%;border-radius:50%;display:block}.brand-text{display:flex;flex-direction:column;line-height:1.05}.brand-text strong{font-size:17px;font-weight:800;letter-spacing:-.35px}.brand-text small{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted-2);font-weight:700;margin-top:3px}.search{position:relative;flex:1;max-width:440px;min-width:180px;display:flex;align-items:center;gap:9px;background:#F4F9FE;border:1px solid var(--line);border-radius:14px;padding:0 12px;height:42px;transition:border-color .18s,box-shadow .18s,background .18s;}.search:focus-within{border-color:#A9D2F4;background:#fff;box-shadow:0 0 0 4px rgba(15,123,214,.08)}.search > svg{width:17px;height:17px;color:var(--muted-2);flex-shrink:0}.search input{-webkit-appearance:none;appearance:none;border:0;outline:0;background:transparent;flex:1;min-width:0;font:600 13.5px/1 var(--font);color:var(--navy);letter-spacing:-.1px;}.search input::placeholder{color:#9DB3C8;font-weight:500}.search input::-webkit-search-cancel-button{-webkit-appearance:none;display:none}.kbd{font-size:10px;font-weight:700;color:#8AA3BB;background:#fff;border:1px solid var(--line);border-radius:6px;padding:3px 5px;flex-shrink:0;}.suggest{position:absolute;top:calc(100% + 10px);left:0;right:0;z-index:60;background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 26px 50px -22px rgba(12,58,100,.5);padding:8px;display:none;max-height:348px;overflow:auto;}.suggest.open{display:block}.suggest .sg-head{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted-2);font-weight:800;padding:8px 10px 6px}.sg-item{display:flex;align-items:center;gap:11px;width:100%;text-align:left;background:none;border:0;border-radius:12px;padding:9px 10px;cursor:pointer;color:var(--navy);transition:background .14s;}.sg-item:hover,.sg-item:focus-visible{background:var(--blue-soft-2);outline:none}.sg-item .sg-pin{width:30px;height:30px;border-radius:10px;background:var(--blue-soft);display:grid;place-items:center;color:var(--blue);flex-shrink:0}.sg-item .sg-pin svg{width:15px;height:15px}.sg-item strong{display:block;font-size:13px;font-weight:700;letter-spacing:-.15px}.sg-item span{display:block;font-size:11.5px;color:var(--muted);margin-top:1px}.sg-item .sg-temp{margin-left:auto;font-weight:800;font-size:13.5px;color:var(--navy-2)}.nav{display:flex;align-items:center;gap:2px;margin-left:auto}.nav a{font-size:13px;font-weight:600;color:var(--muted);padding:9px 13px;border-radius:11px;transition:color .16s,background .16s;}.nav a:hover{color:var(--navy);background:#F3F9FE}.nav a.active{color:var(--blue-d);background:var(--blue-soft)}.top-actions{display:flex;align-items:center;gap:9px;flex-shrink:0}.unit-toggle{display:flex;align-items:center;gap:2px;background:#F2F8FE;border:1px solid var(--line);border-radius:12px;padding:3px;cursor:pointer;height:38px;}.unit-toggle span{font-size:12px;font-weight:800;color:var(--muted);padding:5px 9px;border-radius:9px;transition:all .16s;letter-spacing:-.2px;}.unit-toggle span.on{background:#fff;color:var(--blue-d);box-shadow:0 2px 8px rgba(12,58,100,.12)}.icon-btn{width:38px;height:38px;border-radius:12px;border:1px solid var(--line);background:#fff;display:grid;place-items:center;color:var(--navy-2);cursor:pointer;transition:background .16s,transform .16s,border-color .16s;}.icon-btn:hover{background:var(--blue-soft-2);border-color:#CFE5F8}.icon-btn:active{transform:scale(.96)}.icon-btn svg{width:18px;height:18px}.live-pill{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 11px;border-radius:99px;background:#E9F8F2;color:#0C8566;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;}.live-pill i{width:6px;height:6px;border-radius:50%;background:#12B98A;box-shadow:0 0 0 0 rgba(18,185,138,.5);animation:pulse 2.4s infinite}@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(18,185,138,.45)}70%{box-shadow:0 0 0 7px rgba(18,185,138,0)}100%{box-shadow:0 0 0 0 rgba(18,185,138,0)}}.page{max-width:1420px;margin:0 auto;padding:26px 28px 40px}.dashboard{display:grid;grid-template-columns:minmax(0,1fr) 366px;gap:22px;align-items:start}.col-main,.col-side{display:flex;flex-direction:column;gap:22px;min-width:0}#home,#forecast,#dailyTitle,#cities{scroll-margin-top:88px}.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);position:relative;}.card-pad{padding:24px 26px}.card-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px}.card-head > div{min-width:0}.card-head .sub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.card-head h2{margin:0;font-size:16.5px;font-weight:800;letter-spacing:-.35px}.card-head .sub{font-size:12px;color:var(--muted);font-weight:500;margin-top:3px}.link-more{flex-shrink:0;white-space:nowrap;display:inline-flex;align-items:center;gap:5px;border:0;background:none;cursor:pointer;font-size:12.5px;font-weight:800;color:var(--blue);padding:6px 8px;border-radius:9px;transition:background .16s;}.link-more:hover{background:var(--blue-soft)}.link-more svg{width:14px;height:14px}.eyebrow{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:800;color:var(--muted-2)}.fade-up{animation:fadeUp .55s cubic-bezier(.22,.9,.32,1) both}@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}.hero{isolation:isolate}.hero-bg{position:absolute;inset:0;z-index:0;overflow:hidden;border-radius:inherit;pointer-events:none;background:#EAF6FF;}.hero-bg .wx-layer{position:absolute;opacity:0;transition:opacity 1.4s ease;pointer-events:none}.wx-sky{inset:0;opacity:1!important;background-size:170% 170%!important;background-repeat:no-repeat!important;animation:heroSky 28s ease-in-out infinite alternate;transition:background 1.4s ease!important}.wx-moonglow{width:52%;padding-top:52%;right:-2%;top:8%;border-radius:50%;background:radial-gradient(circle at 50% 50%,rgba(214,234,255,.65) 0%,rgba(190,216,246,.28) 38%,rgba(190,216,246,0) 68%);filter:blur(9px);}.wx-sun{width:44%;padding-top:44%;right:-1%;top:14%;border-radius:50%;background:radial-gradient(circle at 50% 50%,rgba(255,218,120,.6) 0%,rgba(255,207,96,.32) 32%,rgba(255,214,130,.1) 56%,rgba(255,214,130,0) 70%);filter:blur(7px);}.wx-stars{inset:-2%;background-image:radial-gradient(2px 2px at 8% 18%,rgba(66,112,163,.95) 0%,transparent 100%),radial-gradient(1.4px 1.4px at 22% 9%,rgba(255,255,255,.95) 0%,transparent 100%),radial-gradient(1.8px 1.8px at 34% 28%,rgba(74,120,170,.9) 0%,transparent 100%),radial-gradient(1.6px 1.6px at 47% 12%,rgba(255,255,255,.9) 0%,transparent 100%),radial-gradient(1.9px 1.9px at 61% 32%,rgba(82,130,180,.85) 0%,transparent 100%),radial-gradient(1.4px 1.4px at 73% 16%,rgba(255,255,255,.85) 0%,transparent 100%),radial-gradient(1.7px 1.7px at 86% 38%,rgba(74,120,170,.9) 0%,transparent 100%),radial-gradient(1.2px 1.2px at 15% 52%,rgba(255,255,255,.8) 0%,transparent 100%),radial-gradient(1.6px 1.6px at 55% 58%,rgba(84,132,178,.8) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 92% 62%,rgba(255,255,255,.8) 0%,transparent 100%),radial-gradient(2px 2px at 72% 8%,rgba(255,255,255,.95) 0%,transparent 100%),radial-gradient(1.8px 1.8px at 88% 18%,rgba(86,132,178,.85) 0%,transparent 100%),radial-gradient(1.6px 1.6px at 12% 74%,rgba(255,255,255,.8) 0%,transparent 100%),radial-gradient(2px 2px at 42% 45%,rgba(86,132,178,.8) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 66% 76%,rgba(255,255,255,.75) 0%,transparent 100%),radial-gradient(1.8px 1.8px at 24% 62%,rgba(96,142,186,.8) 0%,transparent 100%);}.wx-shoot{top:16%;left:-14%;width:150px;height:2px;border-radius:2px;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(120,166,210,.75),rgba(255,255,255,0));}.wx-clouds{inset:-30% -26%;background:radial-gradient(ellipse 26% 32% at 29% 38%,rgba(255,255,255,.99) 0%,rgba(241,249,255,.9) 38%,rgba(146,186,222,.4) 62%,rgba(146,186,222,0) 74%),radial-gradient(ellipse 33% 38% at 65% 25%,rgba(255,255,255,.97) 0%,rgba(229,242,253,.86) 42%,rgba(140,180,218,.36) 66%,rgba(140,180,218,0) 77%),radial-gradient(ellipse 40% 30% at 50% 63%,rgba(168,202,232,.62) 0%,rgba(197,220,241,.35) 48%,rgba(197,220,241,0) 74%),radial-gradient(ellipse 23% 25% at 87% 57%,rgba(255,255,255,.9) 0%,rgba(170,202,230,.32) 58%,rgba(170,202,230,0) 76%);filter:blur(9px);animation:heroCloud 18s ease-in-out infinite alternate;-webkit-mask-image:linear-gradient(90deg,#000 0%,#000 62%,rgba(0,0,0,.35) 80%,transparent 94%);mask-image:linear-gradient(90deg,#000 0%,#000 62%,rgba(0,0,0,.35) 80%,transparent 94%);}.wx-clouds::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 24% 26% at 18% 62%,rgba(255,255,255,.85) 0%,rgba(255,255,255,0) 72%),radial-gradient(ellipse 30% 24% at 58% 18%,rgba(255,255,255,.75) 0%,rgba(255,255,255,0) 72%),radial-gradient(ellipse 22% 22% at 82% 44%,rgba(255,255,255,.7) 0%,rgba(255,255,255,0) 72%);filter:blur(12px);animation:heroCloud2 24s ease-in-out infinite alternate;}.hero-bg.hero-overcast .wx-clouds::after,.hero-bg.hero-rain .wx-clouds::after,.hero-bg.hero-storm .wx-clouds::after{background:radial-gradient(ellipse 26% 28% at 22% 62%,rgba(255,255,255,.85) 0%,rgba(118,150,181,.4) 58%,rgba(118,150,181,0) 74%),radial-gradient(ellipse 32% 26% at 58% 24%,rgba(235,246,255,.85) 0%,rgba(99,133,166,.5) 62%,rgba(99,133,166,0) 78%),radial-gradient(ellipse 24% 24% at 84% 46%,rgba(255,255,255,.75) 0%,rgba(106,141,173,.45) 58%,rgba(106,141,173,0) 74%);filter:blur(9px);}.wx-fog{inset:-20% -30%;background:radial-gradient(ellipse 48% 22% at 24% 52%,rgba(255,255,255,.9) 0%,rgba(255,255,255,0) 70%),radial-gradient(ellipse 42% 18% at 68% 34%,rgba(172,195,216,.5) 0%,rgba(172,195,216,0) 70%),radial-gradient(ellipse 54% 20% at 52% 72%,rgba(154,180,203,.42) 0%,rgba(154,180,203,0) 72%),radial-gradient(ellipse 36% 16% at 84% 58%,rgba(163,187,208,.4) 0%,rgba(163,187,208,0) 72%);filter:blur(20px);animation:heroFog 15s ease-in-out infinite alternate;}.wx-snow{inset:-12%;background-image:radial-gradient(2.4px 2.4px at 6% 0%,rgba(255,255,255,.95) 0%,rgba(150,188,222,.55) 60%,transparent 100%),radial-gradient(2px 2px at 18% 0%,rgba(255,255,255,.9) 0%,rgba(140,180,216,.5) 62%,transparent 100%),radial-gradient(2.8px 2.8px at 31% 0%,rgba(255,255,255,.95) 0%,rgba(147,184,218,.55) 60%,transparent 100%),radial-gradient(1.9px 1.9px at 44% 0%,rgba(255,255,255,.85) 0%,rgba(140,180,216,.45) 62%,transparent 100%),radial-gradient(2.4px 2.4px at 57% 0%,rgba(255,255,255,.95) 0%,rgba(150,188,222,.55) 60%,transparent 100%),radial-gradient(2px 2px at 69% 0%,rgba(255,255,255,.9) 0%,rgba(140,180,216,.5) 62%,transparent 100%),radial-gradient(2.8px 2.8px at 82% 0%,rgba(255,255,255,.95) 0%,rgba(147,184,218,.55) 60%,transparent 100%),radial-gradient(2px 2px at 94% 0%,rgba(255,255,255,.9) 0%,rgba(140,180,216,.5) 62%,transparent 100%);background-size:100% 76px;animation:heroSnow 4s linear infinite;}.wx-flash{inset:0;background:#fff}.wx-raincanvas{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity 1s ease;pointer-events:none}.wx-veil{inset:0;opacity:1!important;transition:none!important;background:radial-gradient(ellipse 60% 40% at 0% 30%,rgba(255,255,255,.55) 0%,rgba(255,255,255,.25) 46%,rgba(255,255,255,0) 70%);}.hero-bg.hero-clear-day .wx-sky{background:linear-gradient(100deg,#EAF8FF 0%,#BFE5FF 44%,#8FCCF8 100%)}.hero-bg.hero-clear-night .wx-sky{background:linear-gradient(150deg,#10152B 0%,#1D2447 45%,#343A68 100%)}.hero-bg.hero-partly-day .wx-sky{background:linear-gradient(100deg,#E4F4FF 0%,#B6DDFB 46%,#7FBBEA 100%)}.hero-bg.hero-partly-night .wx-sky{background:linear-gradient(150deg,#151B38 0%,#262D55 46%,#3D4372 100%)}.hero-bg.hero-cloudy-day .wx-sky{background:linear-gradient(100deg,#EEF2F6 0%,#C6D0D9 46%,#9BA9B5 100%)}.hero-bg.hero-cloudy-night .wx-sky{background:linear-gradient(150deg,#1E242B 0%,#141A20 52%,#0B0F13 100%)}.hero-bg.hero-cloudy-day .wx-clouds,.hero-bg.hero-cloudy-night .wx-clouds{opacity:1;filter:blur(8px);}.hero-bg.hero-cloudy-day .wx-clouds{background:radial-gradient(ellipse 30% 38% at 30% 32%,#FFFFFF 0%,#F3F7FA 36%,rgba(118,134,148,.55) 64%,rgba(118,134,148,0) 76%),radial-gradient(ellipse 42% 44% at 73% 24%,#FFFFFF 0%,#E7EEF4 38%,rgba(104,122,138,.55) 66%,rgba(104,122,138,0) 78%),radial-gradient(ellipse 46% 32% at 52% 68%,rgba(124,140,154,.7) 0%,rgba(156,170,182,.4) 50%,rgba(156,170,182,0) 75%),radial-gradient(ellipse 24% 26% at 88% 58%,#FFFFFF 0%,rgba(120,138,154,.45) 58%,rgba(120,138,154,0) 76%);}.hero-bg.hero-cloudy-night .wx-clouds{background:radial-gradient(ellipse 30% 38% at 30% 32%,rgba(126,136,146,.55) 0%,rgba(92,102,112,.4) 46%,rgba(60,68,76,0) 74%),radial-gradient(ellipse 42% 44% at 73% 24%,rgba(136,146,156,.5) 0%,rgba(86,96,106,.35) 48%,rgba(56,64,72,0) 76%),radial-gradient(ellipse 46% 32% at 52% 68%,rgba(64,72,80,.7) 0%,rgba(74,82,90,.35) 52%,rgba(74,82,90,0) 76%),radial-gradient(ellipse 24% 26% at 88% 58%,rgba(120,130,140,.45) 0%,rgba(70,78,86,.25) 58%,rgba(70,78,86,0) 76%);}#heroBg.hero-rain-night .wx-clouds,#heroBg.hero-snow-night .wx-clouds,#heroBg.hero-storm-night .wx-clouds{opacity:.85!important;filter:blur(10px)!important;background:radial-gradient(ellipse 30% 38% at 30% 32%,rgba(126,136,146,.55) 0%,rgba(92,102,112,.4) 46%,rgba(60,68,76,0) 74%),radial-gradient(ellipse 42% 44% at 73% 24%,rgba(136,146,156,.5) 0%,rgba(86,96,106,.35) 48%,rgba(56,64,72,0) 76%),radial-gradient(ellipse 46% 32% at 52% 68%,rgba(64,72,80,.7) 0%,rgba(74,82,90,.35) 52%,rgba(74,82,90,0) 76%),radial-gradient(ellipse 24% 26% at 88% 58%,rgba(120,130,140,.45) 0%,rgba(70,78,86,.25) 58%,rgba(70,78,86,0) 76%);}#heroBg.hero-rain-night .wx-clouds::after,#heroBg.hero-snow-night .wx-clouds::after,#heroBg.hero-storm-night .wx-clouds::after{background:radial-gradient(ellipse 26% 28% at 22% 62%,rgba(110,120,130,.4) 0%,rgba(70,78,86,.25) 58%,rgba(70,78,86,0) 74%),radial-gradient(ellipse 32% 26% at 58% 24%,rgba(120,130,140,.4) 0%,rgba(74,82,90,.3) 62%,rgba(74,82,90,0) 78%),radial-gradient(ellipse 24% 24% at 84% 46%,rgba(110,120,130,.35) 0%,rgba(70,78,86,.22) 58%,rgba(70,78,86,0) 74%);filter:blur(11px);}.hero-bg.hero-partly-night .wx-clouds{opacity:.65;filter:blur(10px);background:radial-gradient(ellipse 26% 32% at 29% 38%,rgba(150,160,172,.5) 0%,rgba(110,120,132,.32) 48%,rgba(70,78,88,0) 74%),radial-gradient(ellipse 33% 38% at 65% 25%,rgba(160,170,182,.45) 0%,rgba(100,110,122,.28) 52%,rgba(70,78,88,0) 77%),radial-gradient(ellipse 40% 30% at 50% 63%,rgba(90,98,108,.45) 0%,rgba(80,88,98,.22) 50%,rgba(80,88,98,0) 74%);}.hero-bg.hero-overcast .wx-sky{background:linear-gradient(100deg,#E4EFF9 0%,#B3CDE4 46%,#7192B4 100%)}.hero-bg.hero-fog .wx-sky{background:linear-gradient(100deg,#EFF5FA 0%,#C8D7E4 46%,#9DB3C6 100%)}.hero-bg.hero-fog-night .wx-sky{background:linear-gradient(150deg,#2B3138 0%,#1C2229 55%,#10151A 100%)}.hero-bg.hero-fog-night .wx-fog{opacity:1;filter:blur(20px) brightness(.55)}.hero-bg.hero-rain .wx-sky{background:linear-gradient(100deg,#E0EEFA 0%,#A9C6DF 46%,#6C8DA9 100%)}.hero-bg.hero-snow .wx-sky{background:linear-gradient(100deg,#E8F7FF 0%,#BADBF3 46%,#82AFD2 100%)}.hero-bg.hero-storm .wx-sky{background:linear-gradient(100deg,#DFE9F4 0%,#A2B7CE 46%,#617B96 100%)}.hero-bg.hero-rain-night .wx-sky{background:linear-gradient(150deg,#2A3039 0%,#1B2129 55%,#0F1318 100%)}.hero-bg.hero-snow-night .wx-sky{background:linear-gradient(150deg,#2E353E 0%,#1E242C 55%,#11161B 100%)}.hero-bg.hero-storm-night .wx-sky{background:linear-gradient(150deg,#232A33 0%,#151B22 55%,#0A0E12 100%)}.hero-bg.hero-clear-day .wx-sun{opacity:.85;animation:heroSun 9s ease-in-out infinite}.hero-bg.hero-partly-day .wx-sun{opacity:.65}.hero-bg.hero-clear-night .wx-moonglow,.hero-bg.hero-partly-night .wx-moonglow{opacity:.8;animation:heroMoon 9s ease-in-out infinite}.hero-bg.hero-clear-night .wx-stars,.hero-bg.hero-partly-night .wx-stars{opacity:1;filter:brightness(1.55);animation:heroTwinkle 4.5s ease-in-out infinite alternate}.hero-bg.hero-clear-night .wx-shoot{opacity:1;animation:heroShoot 8.5s linear infinite}.hero-bg.hero-partly-day .wx-clouds{opacity:.9}#heroBg.hero-rain-night .wx-clouds,#heroBg.hero-snow-night .wx-clouds,#heroBg.hero-storm-night .wx-clouds{opacity:.85!important;filter:blur(10px)!important;background:radial-gradient(ellipse 30% 38% at 30% 32%,rgba(126,136,146,.55) 0%,rgba(92,102,112,.4) 46%,rgba(60,68,76,0) 74%),radial-gradient(ellipse 42% 44% at 73% 24%,rgba(136,146,156,.5) 0%,rgba(86,96,106,.35) 48%,rgba(56,64,72,0) 76%),radial-gradient(ellipse 46% 32% at 52% 68%,rgba(64,72,80,.7) 0%,rgba(74,82,90,.35) 52%,rgba(74,82,90,0) 76%),radial-gradient(ellipse 24% 26% at 88% 58%,rgba(120,130,140,.45) 0%,rgba(70,78,86,.25) 58%,rgba(70,78,86,0) 76%);}#heroBg.hero-rain-night .wx-clouds::after,#heroBg.hero-snow-night .wx-clouds::after,#heroBg.hero-storm-night .wx-clouds::after{background:radial-gradient(ellipse 26% 28% at 22% 62%,rgba(110,120,130,.4) 0%,rgba(70,78,86,.25) 58%,rgba(70,78,86,0) 74%),radial-gradient(ellipse 32% 26% at 58% 24%,rgba(120,130,140,.4) 0%,rgba(74,82,90,.3) 62%,rgba(74,82,90,0) 78%),radial-gradient(ellipse 24% 24% at 84% 46%,rgba(110,120,130,.35) 0%,rgba(70,78,86,.22) 58%,rgba(70,78,86,0) 74%);filter:blur(11px);}.hero-bg.hero-partly-night .wx-clouds{opacity:.8}.hero-bg.hero-overcast .wx-clouds{opacity:1;filter:blur(7px)}.hero-bg.hero-rain .wx-clouds,.hero-bg.hero-rain-night .wx-clouds{opacity:1;filter:blur(8px)}.hero-bg.hero-snow .wx-clouds,.hero-bg.hero-snow-night .wx-clouds{opacity:.7}.hero-bg.hero-storm .wx-clouds,.hero-bg.hero-storm-night .wx-clouds{opacity:1;filter:blur(9px)}.hero-bg.hero-overcast .wx-clouds,.hero-bg.hero-rain .wx-clouds,.hero-bg.hero-storm .wx-clouds{background:radial-gradient(ellipse 30% 36% at 30% 32%,#FFFFFF 0%,#F7FBFF 34%,rgba(116,148,180,.85) 60%,rgba(116,148,180,0) 74%),radial-gradient(ellipse 42% 42% at 73% 24%,#FFFFFF 0%,#EDF6FE 36%,rgba(94,128,162,.8) 63%,rgba(94,128,162,0) 77%),radial-gradient(ellipse 46% 32% at 52% 68%,rgba(106,139,171,.75) 0%,rgba(143,172,199,.45) 48%,rgba(143,172,199,0) 74%),radial-gradient(ellipse 24% 26% at 88% 58%,#FFFFFF 0%,rgba(120,154,186,.55) 55%,rgba(120,154,186,0) 76%);filter:blur(7px);}.hero-bg.hero-fog .wx-fog{opacity:1}.hero-bg.hero-snow .wx-snow,.hero-bg.hero-snow-night .wx-snow{opacity:0}.hero-bg.hero-storm .wx-flash,.hero-bg.hero-storm-night .wx-flash{animation:heroFlash 7.5s ease-in-out infinite}.hero-bg.hero-rain .wx-raincanvas,.hero-bg.hero-rain-night .wx-raincanvas,.hero-bg.hero-storm .wx-raincanvas,.hero-bg.hero-storm-night .wx-raincanvas,.hero-bg.hero-snow .wx-raincanvas,.hero-bg.hero-snow-night .wx-raincanvas{opacity:1}.hero-bg.hero-rain .wx-sun,.hero-bg.hero-rain-night .wx-sun,.hero-bg.hero-snow .wx-sun,.hero-bg.hero-snow-night .wx-sun{display:none}@keyframes heroSun{0%,100%{transform:scale(1);opacity:.62}50%{transform:scale(1.14);opacity:.95}}@keyframes heroMoon{0%,100%{transform:scale(1);opacity:.55}50%{transform:scale(1.1);opacity:.9}}@keyframes heroSky{0%{background-position:0% 38%}100%{background-position:100% 62%}}@keyframes heroTwinkle{0%{opacity:.4}100%{opacity:.95}}@keyframes heroShoot{0%{transform:translate3d(0,0,0) rotate(14deg);opacity:0}8%{opacity:.85}32%{transform:translate3d(120vw,28vh,0) rotate(14deg);opacity:0}100%{transform:translate3d(120vw,28vh,0) rotate(14deg);opacity:0}}@keyframes heroCloud{0%{transform:translate3d(-4%,0,0) scale(1)}100%{transform:translate3d(11%,2.5%,0) scale(1.06)}}@keyframes heroCloud2{0%{transform:translate3d(6%,1%,0) scale(1.02)}100%{transform:translate3d(-7%,-1%,0) scale(1.08)}}@keyframes heroFog{0%{transform:translate3d(-4%,0,0)}100%{transform:translate3d(7%,1%,0)}}@keyframes heroSnow{from{background-position:0 -92px}to{background-position:0 112%}}@keyframes heroFlash{0%,84%,100%{opacity:0}85.5%{opacity:.55}86.5%{opacity:0}89%{opacity:.35}90%{opacity:0}}@media (max-width:700px){.wx-veil{background:radial-gradient(ellipse 70% 50% at 0% 30%,rgba(255,255,255,.6) 0%,rgba(255,255,255,.3) 46%,rgba(255,255,255,0) 70%);}.wx-clouds{filter:blur(10px)}}.hero{--hero-px:26px;--hero-py:24px;--hero-pb:20px;overflow:hidden;padding:var(--hero-py) var(--hero-px) var(--hero-pb);background:radial-gradient(720px 320px at 88% -10%,#E4F4FF 0%,rgba(228,244,255,0) 62%),radial-gradient(520px 260px at 4% 110%,#EFF9FF 0%,rgba(239,249,255,0) 60%),#fff;}.hero:after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:var(--radius);box-shadow:inset 0 1px 0 rgba(255,255,255,.9);}.hero-top{display:flex;align-items:center;justify-content:space-between;gap:10px 14px;flex-wrap:wrap;position:relative;z-index:2}.loc-chip{white-space:nowrap;flex-shrink:0;display:inline-flex;align-items:center;gap:8px;border:1px solid #DDEBF8;background:rgba(255,255,255,.78);border-radius:13px;padding:8px 12px;cursor:pointer;color:var(--navy);font-size:14.5px;font-weight:800;letter-spacing:-.3px;transition:box-shadow .18s,border-color .18s,background .18s;}.loc-chip:hover{background:#fff;border-color:#C7E1F7;box-shadow:0 6px 16px -10px rgba(12,58,100,.5)}.loc-chip svg{width:16px;height:16px;color:var(--blue)}.loc-chip .chev{width:13px;height:13px;color:var(--muted-2)}.hero-badges{display:flex;align-items:center;gap:8px}.badge{white-space:nowrap;display:inline-flex;align-items:center;gap:6px;height:29px;padding:0 11px;border-radius:99px;background:#F2F9FF;border:1px solid #E1EEFA;color:var(--muted);font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;}.badge.night{background:#EEF3FA;color:#4C6B8A;border-color:#DFE9F5}.badge svg{width:13px;height:13px}.hero-main{display:grid;grid-template-columns:minmax(0,1fr) 186px;align-items:center;gap:10px;margin-top:6px;position:relative;z-index:2}.hero-temp .temp-row{display:flex;align-items:flex-start;gap:2px}.hero-temp .temp-val{text-shadow:0 2px 18px rgba(255,255,255,.55),0 1px 2px rgba(255,255,255,.45);font-size:clamp(66px,8.6vw,104px);font-weight:800;letter-spacing:-.065em;line-height:.94;color:var(--navy);}.hero-temp .deg{font-size:clamp(28px,3.2vw,40px);font-weight:700;color:var(--navy-2);margin-top:8px;letter-spacing:-.03em}.hero-temp .condition{text-shadow:0 1px 10px rgba(255,255,255,.65);font-size:clamp(20px,2vw,25px);font-weight:800;letter-spacing:-.5px;margin-top:4px}.hero-temp .feels{text-shadow:0 1px 8px rgba(255,255,255,.75);font-size:13.5px;color:var(--muted);font-weight:600;margin-top:6px}.hero-temp .feels b{color:var(--navy-2);font-weight:800}.hero-art{display:grid;place-items:center;position:relative;min-height:150px}.hero-art .glow{display:none!important;position:absolute;width:116px;height:116px;border-radius:50%;background:radial-gradient(circle,#EAF6FF 0%,rgba(234,246,255,.55) 48%,rgba(234,246,255,0) 70%);}.hero-art svg{width:116px;height:116px;position:relative;filter:drop-shadow(0 22px 26px rgba(15,74,130,.18));animation:floaty 7s ease-in-out infinite}@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;position:relative;z-index:2;}.hstat{display:flex;align-items:center;gap:11px;min-width:0}.hstat .ico-tile{width:38px;height:38px;border-radius:12px;flex-shrink:0;display:grid;place-items:center;background:linear-gradient(160deg,#F1F9FF,#E5F2FD);border:1px solid #E1EEFA;color:var(--blue-d);}.hstat .ico-tile svg{width:18px;height:18px}.hstat b{display:block;font-size:15px;font-weight:800;letter-spacing:-.3px;white-space:nowrap}.hstat span{display:block;font-size:11.5px;color:var(--muted);font-weight:600;margin-top:2px}.hero-bottom{position:relative;z-index:3;background:#fff;margin:18px calc(var(--hero-px) * -1) calc(var(--hero-pb) * -1);padding:18px var(--hero-px) var(--hero-pb);border-top:1px solid var(--line-2);border-radius:0 0 var(--radius) var(--radius);}.hero-foot{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:16px;position:relative;z-index:2;font-size:11.5px;color:var(--muted-2);font-weight:600;}.hero-foot .sep{width:4px;height:4px;border-radius:50%;background:#C9DCEC;flex-shrink:0}.hero-foot .hl{color:var(--navy-2);font-weight:800}.hourly-scroll{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 8px;scroll-snap-type:x proximity;scrollbar-width:thin;scrollbar-color:#CFE4F6 transparent;}.hourly-scroll::-webkit-scrollbar{height:5px}.hourly-scroll::-webkit-scrollbar-thumb{background:#D8E8F6;border-radius:99px}.hour{position:relative;overflow:hidden;flex:0 0 auto;width:88px;scroll-snap-align:start;display:flex;flex-direction:column;align-items:center;gap:7px;padding:12px 6px 52px;border-radius:18px;border:1px solid transparent;transition:background .18s,border-color .18s,transform .18s;}.hour:hover{background:#F8FCFF;border-color:#EBF4FC;transform:translateY(-1px)}.hour.now{background:linear-gradient(180deg,#EFF8FF,#E6F3FE);border-color:#D5EAFB}.hour .h-time{font-size:12.5px;font-weight:800;color:var(--muted);letter-spacing:.01em}.hour.now .h-time{color:var(--blue-d)}.hour .wx-ico{width:42px;height:42px;filter:drop-shadow(0 3px 5px rgba(18,74,120,.10))}.hour .h-pop{display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:800;color:var(--blue);min-height:14px}.hour .h-pop svg{width:10px;height:10px}.hour .h-temp{font-size:17.5px;font-weight:800;letter-spacing:-.4px;color:var(--navy)}.hour-precip{position:absolute;left:10px;right:10px;bottom:8px;height:38px;pointer-events:none}.hour-bar{position:absolute;left:0;right:0;bottom:0;border-radius:3px 3px 2px 2px}.hour-bar.rain{background:linear-gradient(180deg,#B7E2FF 0%,#59AEEE 45%,#0F6FC8 100%)}.hour-bar.snow{background:linear-gradient(180deg,#DCE2E7 0%,#C6D0D8 50%,#ADBAC5 100%);border-top:1px solid #B8C4CE}.hour-bar.back{z-index:1}.hour-bar.front{z-index:2;left:6px;right:6px}.st-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;align-items:stretch}.st{position:relative;overflow:hidden;border:1px solid #E3EEF8;border-radius:6px;height:100%;background:linear-gradient(180deg,#FCFDFF 0%,#F4FAFF 100%);padding:14px 10px 84px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;transition:transform .18s,box-shadow .18s,border-color .18s;}.st:hover{transform:translateY(-2px);box-shadow:0 14px 26px -20px rgba(12,58,100,.6);border-color:#D8EAF8}.st .st-name{font-size:12px;font-weight:800;color:var(--muted);letter-spacing:.02em}.st .st-day{font-size:10px;font-weight:700;color:var(--muted-2);text-transform:uppercase;letter-spacing:.1em}.st .st-temp{font-size:22px;font-weight:800;letter-spacing:-.6px;margin-top:1px}.st .st-pop{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:800;color:var(--blue)}.st .st-pop svg{width:11px;height:11px}.st-precip{position:absolute;left:0;right:0;bottom:0;height:76px;pointer-events:none}.st-bar{position:absolute;left:0;right:0;bottom:0;border-radius:0}.st-bar.rain{background:linear-gradient(180deg,#B7E2FF 0%,#59AEEE 45%,#0F6FC8 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.55)}.st-bar.snow{background:linear-gradient(180deg,#DCE2E7 0%,#C6D0D8 50%,#ADBAC5 100%);border:1px solid #B8C4CE;border-bottom:0}.st-bar.back{z-index:1}.st-bar.front{z-index:2;left:6px;right:6px}.st-bar-lab{position:absolute;left:0;right:0;bottom:100%;margin-bottom:2px;text-align:center;font-size:9.5px;font-weight:800;color:#1568B0;white-space:nowrap;line-height:1.1;pointer-events:none}.st-labels{position:absolute;left:0;right:0;z-index:3;display:flex;flex-direction:column;align-items:center;gap:0;pointer-events:none;line-height:1.15;font-size:9.5px;font-weight:800;text-align:center}.st-labels .r{color:#1568B0}.st-labels .s{color:#5E6B76}.hour-labels{position:absolute;left:0;right:0;z-index:3;display:flex;flex-direction:column;align-items:center;gap:0;pointer-events:none;line-height:1.1;font-size:9.5px;font-weight:800;text-align:center}.hour-labels .r{color:#1568B0}.hour-labels .s{color:#5E6B76}.st-bar.snow .st-bar-lab{color:#5E6B76}.hour-bar-lab{position:absolute;left:0;right:0;bottom:100%;margin-bottom:1px;text-align:center;font-size:9.5px;font-weight:800;color:#1568B0;white-space:nowrap;line-height:1;pointer-events:none}.hour-bar-lab.lift{margin-bottom:11px}.hour-bar.snow .hour-bar-lab{color:#5E6B76}.st.no-precip{padding-bottom:16px}.st.open{border-color:#BBDCF4;box-shadow:0 12px 26px -20px rgba(12,58,100,.55)}.st.today{background:linear-gradient(180deg,#F1F9FF 0%,#E7F4FE 100%);border-color:#D3E8FA}.day-list{display:flex;flex-direction:column}.day{border-top:1px solid var(--line-2)}.day:first-child{border-top:0}.day-row{display:grid;grid-template-columns:98px minmax(0,1fr) 62px auto 18px;align-items:center;gap:12px;padding:13px 8px;cursor:pointer;border-radius:8px;transition:background .16s;}.day-row:hover{background:#F8FCFF}.day .d-name{font-size:14px;font-weight:800;letter-spacing:-.2px;white-space:nowrap}.day .d-name small{display:block;font-size:10.5px;font-weight:700;color:var(--muted-2);margin-top:2px;letter-spacing:.02em}.day .d-pair{display:flex;align-items:center;gap:20px;min-width:0}.day .d-cell{display:flex;align-items:center;gap:9px}.day .d-cell .wx-wrap{width:40px;height:40px}.day .d-cell .wx-img{width:40px;height:40px}.day .d-temp{font-size:26px;font-weight:800;letter-spacing:-1px;line-height:1;min-width:38px;text-align:right}.day .d-temp.lo{color:var(--muted)}.day .d-pop{justify-self:center;font-size:13px;font-weight:800;color:var(--navy);text-align:center}.day .d-pop.low{color:var(--muted-2)}.day .d-amts{display:flex;flex-direction:column;align-items:flex-end;gap:2px;min-width:84px}.day .d-amt{display:flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;color:var(--muted-2)}.day .d-amt svg{width:11px;height:11px}.day .d-amt.rain{color:#1B86DF}.day .d-amt.snow{color:#5E7893}.day .d-chev{width:16px;height:16px;color:#9FB6CA;transition:transform .2s}.day .d-chev svg{width:16px;height:16px;display:block}.day.open .d-chev{transform:rotate(180deg)}.day-detail{background:linear-gradient(180deg,#F3F9FF,#EDF6FE);border:1px solid #DFEDFA;border-radius:10px;padding:4px 16px 14px;margin:2px 0 12px;}.dd-title{font-size:14px;font-weight:800;padding:10px 0 6px;color:var(--navy)}.dd-sec{padding:10px 0;border-top:1px solid #DFEDFA}.dd-sec:first-of-type{border-top:0}.dd-label{font-size:10px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:var(--muted-2);margin-bottom:8px}.dd-grid{display:grid;grid-template-columns:minmax(150px,1.1fr) minmax(150px,1fr) minmax(120px,.9fr);gap:14px;align-items:start}.dd-main{display:flex;align-items:center;gap:14px}.dd-main > div{padding-left:4px}.dd-main .wx-wrap{width:58px;height:58px}.dd-main .wx-img{width:58px;height:58px}.dd-temp{font-size:32px;font-weight:800;letter-spacing:-1.4px;line-height:1}.dd-feels{font-size:10.5px;font-weight:700;color:var(--muted);line-height:1.3}.dd-feels b{display:inline;font-size:12.5px;margin-left:3px;color:var(--navy-2)}.dd-list{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:700;color:var(--navy-2)}.dd-list span{display:flex;align-items:center;gap:6px}.dd-list svg{width:13px;height:13px;color:var(--blue-d)}.dd-desc{margin-top:10px;font-size:13.5px;line-height:1.4;font-weight:600;color:var(--navy-2)}.side-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}.side-head h2{margin:0;font-size:14.5px;font-weight:800;letter-spacing:-.3px}.side-head .hint{font-size:10.5px;font-weight:800;color:var(--muted-2);letter-spacing:.1em;text-transform:uppercase}.tile-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.tile{background:linear-gradient(165deg,#FAFDFF,#F4FAFF);border:1px solid #EBF4FB;border-radius:17px;padding:12px;display:flex;flex-direction:column;gap:8px;min-width:0;}.tile .t-ico{width:31px;height:31px;border-radius:10px;display:grid;place-items:center;background:#fff;border:1px solid #E5F1FA;color:var(--blue-d);box-shadow:var(--shadow-sm);}.tile .t-ico svg{width:16px;height:16px}.tile .t-val{font-size:19px;font-weight:800;letter-spacing:-.5px;line-height:1}.tile .t-val small{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:0;margin-left:2px}.tile .t-label{font-size:11px;font-weight:700;color:var(--muted);margin-top:-2px}.tile .t-meter{height:4px;border-radius:99px;background:#E8F3FB;overflow:hidden;margin-top:2px}.tile .t-meter i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#7FC6F7,#0F7BD6)}.tile .t-meter.warm i{background:linear-gradient(90deg,#FFD27A,#F08A28)}.aqi-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;padding-top:13px;border-top:1px solid var(--line-2);}.aqi-key{font-size:11.5px;font-weight:700;color:var(--muted)}.aqi-chip{display:inline-flex;align-items:center;gap:7px;padding:5px 10px 5px 8px;border-radius:99px;background:#EFF9F4;border:1px solid #DCEFE5}.aqi-chip i{width:7px;height:7px;border-radius:50%;background:#12A67B;box-shadow:0 0 0 3px rgba(18,166,123,.14)}.aqi-chip b{font-size:12px;font-weight:800;letter-spacing:-.2px;color:var(--navy-2)}.aqi-chip span{font-size:10.5px;font-weight:700;color:var(--muted)}.aqi-chip.fair{background:#F6FAEC;border-color:#E7F0D2}.aqi-chip.fair i{background:#8FBF3F;box-shadow:0 0 0 3px rgba(143,191,63,.16)}.aqi-chip.mod{background:#FFF8E8;border-color:#F7EBCF}.aqi-chip.mod i{background:#E7A81B;box-shadow:0 0 0 3px rgba(231,168,27,.16)}.aqi-chip.poor{background:#FFF3E9;border-color:#F8E3D2}.aqi-chip.poor i{background:#E8752A;box-shadow:0 0 0 3px rgba(232,117,42,.16)}.aqi-chip.bad{background:#FFEFEF;border-color:#F7DADA}.aqi-chip.bad i{background:#DA4B4B;box-shadow:0 0 0 3px rgba(218,75,75,.16)}.aqi-chip.vbad{background:#F9EFFA;border-color:#EFDCF2}.aqi-chip.vbad i{background:#9C3FA8;box-shadow:0 0 0 3px rgba(156,63,168,.16)}.sun-card .sun-wrap{position:relative;margin:2px -4px 0}.sun-card svg.arc{width:100%;height:auto;display:block;overflow:visible}.sun-times{display:flex;justify-content:space-between;align-items:flex-end;margin-top:6px}.sun-times .stt{display:flex;flex-direction:column;gap:2px}.sun-times .stt:last-child{text-align:right}.sun-times .stt span{font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted-2)}.sun-times .stt b{font-size:14px;font-weight:800;letter-spacing:-.3px}.sun-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:14px;padding-top:13px;border-top:1px solid var(--line-2);font-size:11.5px;color:var(--muted);font-weight:600;}.sun-meta b{color:var(--navy-2);font-weight:800}.precip-total{display:flex;align-items:baseline;gap:6px;margin-bottom:2px}.precip-total b{font-size:26px;font-weight:800;letter-spacing:-.8px}.precip-total span{font-size:11.5px;font-weight:700;color:var(--muted)}.pchart{display:flex;align-items:flex-end;gap:4px;height:66px;margin-top:10px;position:relative}.pcol{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px;height:100%;position:relative}.pcol i{display:block;width:100%;border-radius:5px 5px 3px 3px;min-height:4px;background:linear-gradient(180deg,#63B7F0,#0F7BD6);transition:height .5s ease;}.pcol i.zero{background:#E8F2FB}.pcol span{font-size:8.5px;font-weight:700;color:var(--muted-2);white-space:nowrap;letter-spacing:-.02em}.pchart-empty{font-size:12px;color:var(--muted);padding:18px 0;text-align:center}.advisory{background:radial-gradient(420px 200px at 100% 0%,#FFF4D9 0%,rgba(255,244,217,0) 60%),linear-gradient(160deg,#FFFDF7,#FFF9EC);border-color:#F6E7C6;}.advisory.calm{background:radial-gradient(420px 200px at 100% 0%,#E9FAF3 0%,rgba(233,250,243,0) 60%),linear-gradient(160deg,#FBFFFD,#F1FCF7);border-color:#D8F0E5}.advisory.blue{background:radial-gradient(420px 200px at 100% 0%,#E7F4FF 0%,rgba(231,244,255,0) 60%),linear-gradient(160deg,#FBFDFF,#EFF8FF);border-color:#D8EAF9}.advisory.danger{background:radial-gradient(420px 200px at 100% 0%,#FFEDED 0%,rgba(255,237,237,0) 60%),linear-gradient(160deg,#FFFBFA,#FFF1F1);border-color:#F8DBDB}.adv-top{display:flex;align-items:center;gap:10px}.adv-ico{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;flex-shrink:0;background:#fff;border:1px solid rgba(12,58,100,.07);color:#C58417;box-shadow:var(--shadow-sm);}.advisory.calm .adv-ico{color:#0F9C74}.advisory.blue .adv-ico{color:var(--blue)}.advisory.danger .adv-ico{color:#D44747}.adv-ico svg{width:18px;height:18px}.adv-top .eyebrow{color:#B58A34}.advisory.calm .adv-top .eyebrow{color:#3E9B7C}.advisory.blue .adv-top .eyebrow{color:#4B8DC0}.advisory.danger .adv-top .eyebrow{color:#C25A5A}.adv-title{font-size:14.5px;font-weight:800;letter-spacing:-.3px;margin-top:10px}.adv-body{font-size:12px;line-height:1.55;color:#6E6553;font-weight:500;margin-top:5px}.advisory.calm .adv-body{color:#4C6E62}.advisory.blue .adv-body{color:#526F88}.advisory.danger .adv-body{color:#8A5B5B}.city-list{display:flex;flex-direction:column;gap:2px;margin:0 -8px}.city-row{display:flex;align-items:center;gap:11px;border:0;background:none;cursor:pointer;padding:9px 8px;border-radius:14px;text-align:left;transition:background .16s;width:100%;}.city-row:hover{background:#F5FAFF}.city-row.active{background:#EFF8FF}.city-row .wx-ico{width:32px;height:32px;flex-shrink:0}.city-row .c-info{min-width:0;flex:1}.city-row .c-info b{display:block;font-size:13px;font-weight:800;letter-spacing:-.2px}.city-row .c-info span{display:block;font-size:11px;color:var(--muted);font-weight:600;margin-top:1px}.city-row .c-temp{font-size:17px;font-weight:800;letter-spacing:-.5px}.city-row .c-temp small{font-size:10px;font-weight:700;color:var(--muted-2)}#statusMsg{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(12px);z-index:2000;background:#fff;color:var(--navy);border:1px solid var(--line);border-left:4px solid var(--blue);padding:11px 18px;border-radius:14px;font-size:12.5px;font-weight:600;box-shadow:0 20px 40px -22px rgba(12,58,100,.7);display:none;max-width:min(560px,90vw);opacity:0;transition:opacity .25s,transform .25s;}#statusMsg.show{display:block;opacity:1;transform:translateX(-50%) translateY(0)}#statusMsg.error{border-left-color:var(--red)}#statusMsg.ok{border-left-color:var(--green)}.footer{max-width:1420px;margin:0 auto;padding:26px 28px 46px;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;color:var(--muted-2);font-size:11.5px;font-weight:600;}.footer .f-brand{display:flex;align-items:center;gap:9px;color:var(--muted)}.footer .f-brand img{width:26px;height:26px;border-radius:50%;filter:drop-shadow(0 2px 5px rgba(12,58,100,.18))}.footer .f-links{display:flex;gap:16px}.footer .f-links a:hover{color:var(--blue-d)}.skeleton{display:inline-block;border-radius:8px;color:transparent!important;background:linear-gradient(90deg,#EEF5FB 25%,#F7FBFF 37%,#EEF5FB 63%);background-size:400% 100%;animation:shimmer 1.4s infinite linear;}@keyframes shimmer{0%{background-position:100% 0}100%{background-position:0 0}}.bottom-nav{display:none}@media (max-width:1180px){.dashboard{grid-template-columns:minmax(0,1fr) 322px}.page{padding:22px 20px 32px}.topbar-inner{padding:11px 20px;gap:14px}.nav a{padding:8px 10px;font-size:12.5px}.day{grid-template-columns:58px 34px minmax(0,1fr) 52px minmax(80px,1fr) 84px;gap:9px}}@media (max-width:1000px){.dashboard{grid-template-columns:1fr}.col-side{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}.col-side .card.cities-card{grid-column:1/-1}.search{max-width:340px}.nav{display:none}.top-actions{margin-left:auto}.day{grid-template-columns:62px 36px minmax(0,1fr) 56px minmax(90px,1fr) 90px}}@media (max-width:820px){.page{padding:18px 14px 40px}#home,#forecast,#dailyTitle,#cities{scroll-margin-top:152px}.topbar-inner{padding:10px 14px;gap:10px;flex-wrap:wrap}.brand-text small{display:none}.search{order:3;flex:1 0 100%;max-width:none;height:40px}.kbd{display:none}.col-side{grid-template-columns:1fr}.hero-main{grid-template-columns:minmax(0,1fr) 104px}.hero-art{min-height:120px}.hero-art .glow{width:112px;height:112px}.hero-art svg{width:92px;height:92px}.hero-stats{grid-template-columns:1fr;gap:11px;padding-top:15px}.hstat b{font-size:14px}.st-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.day{grid-template-columns:62px 30px minmax(0,1fr) 48px 72px;gap:7px;padding:10px 2px}.day .d-name{font-size:11.5px}.day .d-name small{font-size:9px}.day .d-pop{font-size:10.5px}.day .d-cond{display:none}.day .d-temps{font-size:12px;gap:6px}.card-pad{padding:20px 18px}#map{height:420px}.map-legend{display:flex;gap:10px;align-items:center;padding:8px 10px;max-width:calc(100% - 74px);left:10px;top:10px}.map-legend .ml-title{display:none}.map-legend .rl-group{flex:1;display:flex;flex-direction:column;gap:4px;margin:0;min-width:0}.map-legend .rl-label{width:auto;font-size:9px;letter-spacing:.04em}.map-legend .rl-bar{width:100%;min-width:0;height:7px;flex:0 0 7px}.temp-legend{left:10px;top:10px;max-width:calc(100% - 74px);padding:8px 10px}.temp-legend .tl-top{margin-bottom:5px}.temp-legend .ticks{font-size:7.5px}.time-label{min-width:0;font-size:10.5px}.time-label small{display:none}.bottom-nav{display:flex;position:fixed;left:12px;right:12px;bottom:12px;z-index:1300;background:rgba(255,255,255,.95);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--line);border-radius:22px;padding:7px;gap:2px;box-shadow:0 20px 40px -18px rgba(12,58,100,.55);}.bottom-nav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 4px;border-radius:16px;font-size:9.5px;font-weight:800;color:var(--muted);letter-spacing:.01em;transition:background .16s,color .16s;}.bottom-nav a svg{width:19px;height:19px}.bottom-nav a.active{color:var(--blue-d);background:var(--blue-soft)}.footer{padding:18px 16px 92px;font-size:10.5px}.hero-foot{gap:6px 8px}.hero-foot .sep{display:none}.advisory .adv-body{font-size:11.5px}}@media (max-width:700px){.badge-time{display:none}}@media (max-width:560px){.hero{--hero-px:18px;--hero-py:20px;--hero-pb:16px;padding:var(--hero-py) var(--hero-px) var(--hero-pb)}.hero-badges{gap:6px}.badge{height:27px;padding:0 8px;font-size:10px;letter-spacing:.03em}.loc-chip{font-size:13px;gap:6px;padding:7px 10px}.loc-chip svg{width:14px;height:14px}.loc-chip .chev{width:12px;height:12px}.hero-temp .temp-val{font-size:64px}.hero-main{grid-template-columns:minmax(0,1fr) 88px}.hero-art svg{width:78px;height:78px}.hero-art .glow{width:92px;height:92px}.loc-chip{font-size:13px;padding:7px 10px}.day{grid-template-columns:58px 26px minmax(0,1fr) 44px 70px}.day .d-name{font-size:10.5px}.day .d-name small{font-size:8.5px}.day .wx-ico{width:28px;height:28px}.st-grid{gap:8px}.st .wx-ico{width:38px;height:38px}.st .st-temp{font-size:18px}.card-head h2{font-size:15px}#map{height:360px}.timeline{gap:9px;padding:8px 10px}.time-label{font-size:10px;min-width:0;flex-shrink:0}.map-legend{max-width:calc(100% - 72px);padding:9px 10px}.map-legend .rl-bar{min-width:70px}.map-tools{top:12px;right:12px;transform:scale(.92);transform-origin:top right}}@media (prefers-reduced-motion:reduce){*:not(.hero-bg):not(.hero-bg *){animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}html{scroll-behavior:auto}}[hidden]{display:none!important}.save-city{width:32px;height:32px;border-radius:10px;border:1px solid #DDEBF8;background:#fff;display:grid;place-items:center;color:#93AAC0;cursor:pointer;flex-shrink:0;transition:all .18s;}.save-city svg{width:16px;height:16px}.save-city:hover{background:#FFF9EC;border-color:#F1DFB4;color:#D79A16}.save-city.saved{background:#FFF6E2;border-color:#F1DCA9;color:#D79A16}.city-empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding:18px 10px 12px;color:var(--muted);}.city-empty .ce-ico{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:var(--blue-soft);color:var(--blue);margin-bottom:2px;}.city-empty .ce-ico svg{width:20px;height:20px}.city-empty b{font-size:12.5px;color:var(--navy-2);font-weight:800}.city-empty span{font-size:11px;line-height:1.5;max-width:230px}.city-empty button{margin-top:4px;border:1px solid #CFE5F8;background:var(--blue-soft);color:var(--blue-d);font-size:11px;font-weight:800;border-radius:9px;padding:6px 10px;cursor:pointer;}.city-row{cursor:pointer}.city-del{width:22px;height:22px;border-radius:7px;border:0;background:none;color:#A6BACD;display:grid;place-items:center;cursor:pointer;flex-shrink:0;font-size:15px;line-height:1;transition:background .15s,color .15s;}.city-del:hover{background:#FFEFEF;color:#D75050}.city-del svg{width:12px;height:12px}.info-page{padding-top:26px}.info-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;margin:0 0 22px}.info-head h1{margin:10px 0 5px;font-size:clamp(25px,3vw,33px);font-weight:800;letter-spacing:-1px;line-height:1.05}.info-head p{margin:0;font-size:12.5px;color:var(--muted);font-weight:600}.back-link{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;border-radius:10px;padding:7px 11px;font-size:11.5px;font-weight:800;color:var(--muted);cursor:pointer;transition:all .16s;}.back-link:hover{color:var(--blue-d);border-color:#CFE5F8;background:var(--blue-soft-2)}.back-link svg{width:13px;height:13px}.info-place{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:9px 12px;font-size:12.5px;font-weight:800;box-shadow:var(--shadow-sm);}.info-place svg{width:15px;height:15px;color:var(--blue)}.info-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:22px;align-items:start}.info-span2{grid-column:1/-1}.info-tiles{grid-template-columns:repeat(3,minmax(0,1fr))}.info-tiles .tile{padding:14px}.info-tiles .t-val{font-size:21px}.acc-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.acc-block{border:1px solid #E9F2FA;border-radius:16px;padding:13px 13px 12px;background:linear-gradient(160deg,#FBFDFF,#F4FAFF);min-width:0}.acc-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:9px}.acc-title{font-size:12.5px;font-weight:800;letter-spacing:-.2px;white-space:nowrap}.acc-title em{font-style:normal;font-size:9.5px;color:var(--muted-2);font-weight:800;letter-spacing:.09em;text-transform:uppercase;margin-left:3px}.acc-total{font-size:11px;font-weight:800;color:var(--blue-d);white-space:nowrap}.acc-scale{display:flex;flex-wrap:wrap;gap:4px}.acc-chip{font-size:10px;font-weight:700;color:var(--muted);border:1px solid #E7F1FA;background:#fff;border-radius:6px;padding:2px 4px;line-height:1.15;letter-spacing:-.02em}.acc-chip.on{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 4px 10px -6px rgba(15,123,214,.9)}.acc-note{font-size:10.5px;color:var(--muted-2);font-weight:600;margin-top:12px;line-height:1.5}.adv-tips{margin:12px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px}.adv-tips li{font-size:11.5px;font-weight:600;color:#6E6553;display:flex;align-items:flex-start;gap:8px;line-height:1.45}.adv-tips li:before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;margin-top:5px;flex-shrink:0;opacity:.6}.advisory.calm .adv-tips li{color:#4C6E62}.advisory.blue .adv-tips li{color:#526F88}.advisory.danger .adv-tips li{color:#8A5B5B}.info-page .sun-card .sun-times b{font-size:15px}.info-page .sun-wrap{max-width:380px;margin:0 auto}.info-page .pchart{height:96px}.info-page .precip-total b{font-size:30px}@media (max-width:1000px){.info-grid{grid-template-columns:1fr}.info-span2{grid-column:auto}.info-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.acc-grid{grid-template-columns:1fr}}@media (max-width:560px){.info-head h1{font-size:26px}.info-page{padding-bottom:96px}.info-tiles .tile{padding:12px}}.wx-img{width:42px;height:42px;object-fit:contain;display:block;flex-shrink:0;filter:drop-shadow(0 4px 6px rgba(18,74,120,.12))}.hour .wx-img{width:38px;height:38px}.st .wx-img{width:52px;height:52px}.day .wx-img{width:34px;height:34px}.city-row .wx-img{width:30px;height:30px}.hero-wx-img{width:106px;height:106px;object-fit:contain;position:relative;filter:drop-shadow(0 2px 2px rgba(15,40,70,.30));animation:none;image-rendering:auto}.wind-badge{position:absolute;right:-4px;top:-4px;width:25px;height:25px;object-fit:contain;background:rgba(255,255,255,.92);border:1px solid #E1EEFA;border-radius:50%;padding:2px;box-shadow:0 5px 12px -5px rgba(12,58,100,.45);z-index:2;}.hero-art .wind-badge{width:30px;height:30px;right:10px;top:14px}.wx-wrap{position:relative;display:inline-grid;place-items:center;flex-shrink:0}.hour .wx-wrap{width:42px;height:42px}.st .wx-wrap{width:54px;height:54px}.day .wx-wrap{width:36px;height:36px}.city-row .wx-wrap{width:32px;height:32px}.wind-mini{width:17px;height:17px;object-fit:contain;flex-shrink:0;vertical-align:-3px;margin-right:4px}.badge-wx{width:14px;height:14px;object-fit:contain;display:block}.hour .wind-badge{width:18px;height:18px;padding:1px;right:-4px;top:-4px}.day .wind-badge{width:18px;height:18px;padding:1px;right:-4px;top:-4px}.city-row .wind-badge{width:15px;height:15px;padding:1px;right:-2px;top:-2px}.st{cursor:pointer;position:relative}.st .st-chev{position:absolute;top:9px;right:9px;width:14px;height:14px;color:#A6BACD;transition:transform .2s ease;}.st .st-chev svg{width:14px;height:14px;display:block}.st.open{border-color:#B9DCF8;box-shadow:0 16px 30px -22px rgba(12,58,100,.65)}.st.open .st-chev{transform:rotate(180deg);color:var(--blue)}.st-detail{margin-top:16px;border-top:1px solid var(--line-2);padding-top:16px;animation:stReveal .35s cubic-bezier(.22,.9,.32,1) both;}@keyframes stReveal{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}.st-detail-head{display:flex;align-items:center;gap:14px}.st-detail-head .st-detail-icon{width:64px;height:64px;position:relative;flex-shrink:0;display:grid;place-items:center}.st-detail-head img{width:64px;height:64px;object-fit:contain;filter:drop-shadow(0 8px 12px rgba(18,74,120,.14))}.st-detail-head .wind-badge{width:25px;height:25px;right:-4px;top:-4px;padding:2px}.st-detail-head .dh-main{min-width:0;flex:1}.st-detail-head .dh-period{font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:var(--muted-2)}.st-detail-head h3{margin:2px 0 3px;font-size:21px;font-weight:800;letter-spacing:-.6px}.st-detail-head .dh-feels{font-size:12px;color:var(--muted);font-weight:600}.st-detail-head .dh-feels b{color:var(--navy-2);font-weight:800}.st-detail-close{border:1px solid var(--line);background:#fff;border-radius:10px;width:34px;height:34px;display:grid;place-items:center;color:var(--muted);cursor:pointer;flex-shrink:0;}.st-detail-close svg{width:16px;height:16px;transform:rotate(180deg)}.st-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 26px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line-2)}.st-detail-item{display:flex;align-items:center;gap:10px;min-width:0}.st-detail-item .di{width:30px;height:30px;border-radius:9px;background:#F4FAFF;border:1px solid #E9F2FA;display:grid;place-items:center;color:var(--blue-d);flex-shrink:0}.st-detail-item .di svg{width:15px;height:15px}.st-detail-item b{display:block;font-size:14px;font-weight:800;letter-spacing:-.2px;white-space:nowrap}.st-detail-item span{display:block;font-size:10.5px;color:var(--muted);font-weight:600;margin-top:1px}.st-detail-hum{display:flex;align-items:center;gap:9px;justify-content:center;margin-top:15px;padding-top:13px;border-top:1px solid var(--line-2);font-size:12.5px;font-weight:700;color:var(--muted)}.st-detail-hum svg{width:15px;height:15px;color:var(--blue)}.st-detail-hum b{color:var(--navy-2)}@media (max-width:820px){.hero-wx-img{width:86px;height:86px}.hero-art .wind-badge{width:28px;height:28px;right:2px;top:10px}.st-detail-grid{grid-template-columns:1fr;gap:9px}.st-detail-head h3{font-size:18px}.st-detail-head img,.st-detail-head .st-detail-icon{width:58px;height:58px}}@media (max-width:720px){.st-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.day-row{grid-template-columns:60px minmax(0,1fr) 44px auto 12px;gap:5px;padding:10px 3px}.day .d-name{font-size:12.5px}.day .d-name small{font-size:9.5px}.day .d-pair{gap:6px}.day .d-cell{gap:4px}.day .d-cell .wx-wrap,.day .d-cell .wx-img{width:27px;height:27px}.day .d-temp{font-size:18px;min-width:24px}.day .d-pop{font-size:11px}.day .d-amts{min-width:62px;gap:1px}.day .d-amt{font-size:9.5px;gap:3px}.day .d-amt svg{width:9px;height:9px}.dd-grid{grid-template-columns:1fr 1fr;gap:10px}.dd-main{grid-column:1/-1}.dd-desc{grid-column:1/-1}}.hero.dark-sky .temp-val,.hero.dark-sky .condition,.hero.dark-sky .feels{color:#F3F7FF;text-shadow:0 2px 20px rgba(0,0,0,.55)}.hero.dark-sky .feels b{color:#FFFFFF}.hero.dark-sky .deg{color:#CFE0FF}.hero.dark-sky .temp-row .deg{text-shadow:0 2px 16px rgba(0,0,0,.45)}.hero.dark-sky .loc-chip{color:#EAF2FF;background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.22)}.hero.dark-sky .loc-chip .chev{color:#DCE8F8}.hero.dark-sky .badge{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.22);color:#EAF2FF}.hero.dark-sky .save-city{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.22);color:#EAF2FF}.hero.dark-sky .wx-veil{background:linear-gradient(100deg,rgba(6,10,18,.58) 0%,rgba(6,10,18,.34) 38%,rgba(6,10,18,0) 72%),linear-gradient(180deg,rgba(6,10,18,.10) 0%,rgba(6,10,18,0) 60%,rgba(6,10,18,.28) 100%)!important;}.hero.dark-sky .hero-art .glow{display:none}.hero.dark-sky .hero-wx-img{filter:drop-shadow(0 2px 3px rgba(0,0,0,.55))}#heroBg.hero-rain-night .wx-clouds,#heroBg.hero-snow-night .wx-clouds,#heroBg.hero-storm-night .wx-clouds{opacity:.85!important;filter:blur(10px)!important;background:radial-gradient(ellipse 30% 38% at 30% 32%,rgba(126,136,146,.55) 0%,rgba(92,102,112,.4) 46%,rgba(60,68,76,0) 74%),radial-gradient(ellipse 42% 44% at 73% 24%,rgba(136,146,156,.5) 0%,rgba(86,96,106,.35) 48%,rgba(56,64,72,0) 76%),radial-gradient(ellipse 46% 32% at 52% 68%,rgba(64,72,80,.7) 0%,rgba(74,82,90,.35) 52%,rgba(74,82,90,0) 76%),radial-gradient(ellipse 24% 26% at 88% 58%,rgba(120,130,140,.45) 0%,rgba(70,78,86,.25) 58%,rgba(70,78,86,0) 76%);}#heroBg.hero-rain-night .wx-clouds::after,#heroBg.hero-snow-night .wx-clouds::after,#heroBg.hero-storm-night .wx-clouds::after{background:radial-gradient(ellipse 26% 28% at 22% 62%,rgba(110,120,130,.4) 0%,rgba(70,78,86,.25) 58%,rgba(70,78,86,0) 74%),radial-gradient(ellipse 32% 26% at 58% 24%,rgba(120,130,140,.4) 0%,rgba(74,82,90,.3) 62%,rgba(74,82,90,0) 78%),radial-gradient(ellipse 24% 24% at 84% 46%,rgba(110,120,130,.35) 0%,rgba(70,78,86,.22) 58%,rgba(70,78,86,0) 74%);filter:blur(11px);}#heroBg.hero-rain-night .wx-clouds,#heroBg.hero-snow-night .wx-clouds,#heroBg.hero-storm-night .wx-clouds{opacity:.85!important;filter:blur(10px)!important;background:radial-gradient(ellipse 30% 38% at 30% 32%,rgba(126,136,146,.55) 0%,rgba(92,102,112,.4) 46%,rgba(60,68,76,0) 74%),radial-gradient(ellipse 42% 44% at 73% 24%,rgba(136,146,156,.5) 0%,rgba(86,96,106,.35) 48%,rgba(56,64,72,0) 76%),radial-gradient(ellipse 46% 32% at 52% 68%,rgba(64,72,80,.7) 0%,rgba(74,82,90,.35) 52%,rgba(74,82,90,0) 76%),radial-gradient(ellipse 24% 26% at 88% 58%,rgba(120,130,140,.45) 0%,rgba(70,78,86,.25) 58%,rgba(70,78,86,0) 76%)!important;}#heroBg.hero-rain-night .wx-clouds::after,#heroBg.hero-snow-night .wx-clouds::after,#heroBg.hero-storm-night .wx-clouds::after{background:radial-gradient(ellipse 26% 28% at 22% 62%,rgba(110,120,130,.4) 0%,rgba(70,78,86,.25) 58%,rgba(70,78,86,0) 74%),radial-gradient(ellipse 32% 26% at 58% 24%,rgba(120,130,140,.4) 0%,rgba(74,82,90,.3) 62%,rgba(74,82,90,0) 78%),radial-gradient(ellipse 24% 24% at 84% 46%,rgba(110,120,130,.35) 0%,rgba(70,78,86,.22) 58%,rgba(70,78,86,0) 74%)!important;filter:blur(11px)!important;}.features-page{max-width:1180px;margin:0 auto;padding:26px 22px 90px}.features-head{margin-bottom:22px}.features-head h1{font-size:34px;font-weight:800;letter-spacing:-1.2px;margin:10px 0 6px}.features-head p{font-size:14px;color:var(--muted);font-weight:600;margin:0}.features-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}.features-grid > .card{min-width:0}.severe-card{grid-column:1/-1}@media (max-width:860px){.features-grid{grid-template-columns:1fr}.features-page{padding:20px 14px 92px}.features-head h1{font-size:28px}}.risk-filters{display:flex;flex-wrap:wrap;gap:7px;margin:6px 0 16px}.risk-filter{border:1px solid #DDEBF7;background:#F7FBFF;color:var(--muted);cursor:pointer;font-size:11.5px;font-weight:800;padding:8px 12px;border-radius:99px;transition:all .16s;}.risk-filter:hover{color:var(--navy-2);border-color:#CBE2F4}.risk-filter.on{background:var(--blue-d);border-color:var(--blue-d);color:#fff}.risk-body{display:grid;grid-template-columns:minmax(260px,340px) minmax(0,1fr);gap:20px;align-items:center}.risk-gauge{width:100%;max-width:360px;margin:0 auto}.risk-gauge svg{width:100%;height:auto;display:block;filter:drop-shadow(0 10px 18px rgba(12,58,100,.12))}.risk-info{min-width:0}.risk-badge{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:6px 11px;border-radius:99px;background:#E7F6EA;color:#1E7A32}.risk-badge.marg{background:#FFF4CC;color:#8A6A00}.risk-badge.mod{background:#FFE4CC;color:#A85000}.risk-badge.high{background:#FBE0DE;color:#A61F1F}.risk-title{font-size:20px;font-weight:800;letter-spacing:-.5px;margin:9px 0 5px}.risk-desc{font-size:13px;line-height:1.45;color:var(--navy-2);font-weight:600;margin:0 0 12px}.risk-days{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.risk-day{border:1px solid #E4EFF8;border-radius:10px;padding:9px 10px;background:#FBFDFF}.risk-day b{display:block;font-size:11px;font-weight:800;color:var(--navy-2);margin-bottom:3px}.risk-day span{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:800;color:var(--muted)}.risk-day i{width:8px;height:8px;border-radius:50%;display:inline-block}.risk-scale{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;font-size:10.5px;font-weight:700;color:var(--muted)}.risk-scale span{display:inline-flex;align-items:center;gap:5px}.risk-scale i{width:9px;height:9px;border-radius:50%}.rl-low{background:#2E9A41}.rl-marg{background:#F2C230}.rl-mod{background:#F08A28}.rl-high{background:#D9362B}@media (max-width:720px){.risk-body{grid-template-columns:1fr}.risk-days{grid-template-columns:1fr 1fr 1fr}}.hero-alerts{display:flex;flex-direction:column;gap:8px;margin-top:16px;position:relative;z-index:2}.wx-alert{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:10px;border:1px solid #D7DEE5;background:#EEF1F4;color:#111;font-size:12px;line-height:1.35;}.wx-alert .wa-ico{width:16px;height:16px;flex-shrink:0;margin-top:1px}.wx-alert .wa-body{min-width:0}.wx-alert b{display:block;font-size:12.5px;font-weight:800;margin-bottom:1px}.wx-alert span{display:block;font-weight:600;opacity:.92}.wx-alert.yellow{background:#FFD84D;border-color:#E8BE1F;color:#111}.wx-alert.orange{background:#F28A22;border-color:#D97313;color:#fff}.wx-alert.red{background:#D62828;border-color:#B71C1C;color:#fff}.wx-alert.orange .wa-ico,.wx-alert.red .wa-ico{color:#fff}.wx-alert.yellow .wa-ico{color:#111}.lg-rain{width:8px;height:8px;border-radius:50%;display:inline-block;background:linear-gradient(180deg,#8FD0FF,#0F6FC8);margin-right:4px}.lg-snow{width:8px;height:8px;border-radius:50%;display:inline-block;background:linear-gradient(180deg,#F1F4F6,#B3BFC8);border:1px solid #C0CBD4;margin-right:4px}.hero-alerts[hidden]{display:none}
+.page-tabs{position:relative;z-index:40;display:flex;gap:7px;justify-content:center;padding:10px 16px;background:rgba(248,252,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid #E1EDF6}
+.page-tabs button{border:1px solid #DDEBF7;background:#fff;color:var(--muted);font-size:12px;font-weight:800;padding:8px 18px;border-radius:99px;cursor:pointer;transition:all .16s}
+.page-tabs button:hover{color:var(--navy-2);border-color:#CBE2F4}
+.page-tabs button.on{background:var(--blue-d);border-color:var(--blue-d);color:#fff}
+.settings-page{max-width:1180px;margin:0 auto;padding:26px 22px 90px}
+.settings-card{max-width:760px;margin:0 auto}
+.setting-row{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:16px 0;border-top:1px solid var(--line-2)}
+.setting-row:first-of-type{border-top:0}
+.setting-row b{display:block;font-size:14px;font-weight:800;color:var(--navy)}
+.setting-row span{display:block;font-size:11.5px;color:var(--muted);font-weight:600;margin-top:2px}
+.seg{display:inline-flex;background:#F2F8FE;border:1px solid #DFEBF7;border-radius:10px;padding:3px;gap:3px;flex:0 0 auto}
+.seg button{border:0;background:transparent;padding:7px 12px;border-radius:7px;font-weight:800;font-size:12px;color:var(--muted);cursor:pointer}
+.seg button.on{background:#fff;color:var(--navy);box-shadow:0 2px 6px rgba(12,58,100,.12)}
+@media(max-width:600px){.setting-row{flex-direction:column;align-items:flex-start}.settings-page{padding:20px 14px 92px}.page-tabs button{padding:8px 14px}}
+.wa-body{flex:1;min-width:0}
+.wa-sum{display:block}
+.wa-full{display:none;margin-top:5px;font-weight:500;white-space:pre-line}
+.wx-alert.open .wa-full{display:block}
+.wa-toggle{flex:0 0 auto;width:26px;height:26px;border:0;border-radius:50%;background:rgba(0,0,0,.08);color:inherit;display:grid;place-items:center;cursor:pointer;margin-top:1px}
+.wx-alert.orange .wa-toggle,.wx-alert.red .wa-toggle{background:rgba(255,255,255,.22)}
+.wa-toggle svg{width:14px;height:14px;transition:transform .18s}
+.wx-alert.open .wa-toggle svg{transform:rotate(180deg)}
+#precipCard{grid-column:1/-1}
+
+#precipCard{min-height:360px}
+#precipCard .precip-total{position:static!important;display:flex!important;flex-wrap:wrap;align-items:baseline;gap:6px;margin:10px 0 18px!important}
+#precipCard #precipChart{position:relative!important;height:190px!important;min-height:190px!important;margin-top:0!important;padding-top:6px!important;display:flex!important;align-items:flex-end!important;justify-content:space-between;gap:6px;overflow:visible!important}
+#precipCard #precipChart .pcol{height:100%!important;display:flex!important;flex-direction:column!important;justify-content:flex-end!important;align-items:center;gap:6px!important}
+#precipCard #precipChart .pbars{height:140px!important;min-height:140px!important;align-items:flex-end!important}
+#precipCard #precipChart .pbar{max-height:140px}
+#precipCard #precipChart .plab{margin-top:0!important}
+</style>
+</head><body id="top"><svg id="iconDefs" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden"><defs><radialGradient id="gSun" cx="34%" cy="27%" r="72%"><stop offset="0%" stop-color="#FFFDF0"/><stop offset="26%" stop-color="#FFF2B0"/><stop offset="58%" stop-color="#FFD24D"/><stop offset="84%" stop-color="#FFB01F"/><stop offset="100%" stop-color="#F08A00"/></radialGradient><radialGradient id="gSunHalo" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="rgba(255,218,120,.42)"/><stop offset="52%" stop-color="rgba(255,210,100,.16)"/><stop offset="100%" stop-color="rgba(255,210,100,0)"/></radialGradient><radialGradient id="gMoonHalo" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="rgba(255,222,142,.34)"/><stop offset="55%" stop-color="rgba(255,216,128,.12)"/><stop offset="100%" stop-color="rgba(255,216,128,0)"/></radialGradient><linearGradient id="gRay" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FFD86B"/><stop offset="100%" stop-color="#F1A51A"/></linearGradient><linearGradient id="gMoon" x1="18%" y1="6%" x2="86%" y2="96%"><stop offset="0%" stop-color="#FFE7A3"/><stop offset="48%" stop-color="#FFCE58"/><stop offset="100%" stop-color="#DFA11F"/></linearGradient><linearGradient id="gCloud" x1="22%" y1="4%" x2="70%" y2="100%"><stop offset="0%" stop-color="#FDFEFF"/><stop offset="30%" stop-color="#E7F1FA"/><stop offset="100%" stop-color="#93B2CB"/></linearGradient><linearGradient id="gCloud2" x1="20%" y1="0%" x2="72%" y2="100%"><stop offset="0%" stop-color="#FDFEFF"/><stop offset="28%" stop-color="#E3EFF9"/><stop offset="100%" stop-color="#8FAFC9"/></linearGradient><linearGradient id="gDrop" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#8FD3FF"/><stop offset="100%" stop-color="#1683DC"/></linearGradient><linearGradient id="gBolt" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FFE071"/><stop offset="100%" stop-color="#F08A11"/></linearGradient><linearGradient id="gFlake" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#FFFFFF"/><stop offset="100%" stop-color="#A9D5F2"/></linearGradient><filter id="softShadow" x="-30%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="1.4" stdDeviation="1.6" flood-color="#1B4B74" flood-opacity=".18"/></filter><path id="cCloud" d="M18.6 47C11.6 47 6 41.4 6 34.4c0-6.4 4.7-11.7 10.8-12.5C18.7 14.2 25.2 9 32.8 9c9.5 0 17.2 7.7 17.2 17.2 0 .5 0 1-.1 1.5C56.8 29.1 60 33.4 60 38.3 60 43.1 56.2 47 51.4 47H18.6z"/><path id="cCloudSmall" d="M18.6 47C11.6 47 6 41.4 6 34.4c0-6.4 4.7-11.7 10.8-12.5C18.7 14.2 25.2 9 32.8 9c9.5 0 17.2 7.7 17.2 17.2 0 .5 0 1-.1 1.5C56.8 29.1 60 33.4 60 38.3 60 43.1 56.2 47 51.4 47H18.6z"/><g id="cSunRays" stroke="url(#gRay)" stroke-width="4.2" stroke-linecap="round"><path d="M32 4.5v6.5M32 53v6.5M4.5 32H11M53 32h6.5M12.6 12.6l4.6 4.6M46.8 46.8l4.6 4.6M12.6 51.4l4.6-4.6M46.8 17.2l4.6-4.6"/></g><path id="cMoon" d="M38.6 8.2A25 25 0 1 0 55.8 42 19.6 19.6 0 0 1 38.6 8.2z"/><g id="cDrops"><path d="M22.4 48.4c2 2.4 3 4.2 3 5.8a3 3 0 0 1-6 0c0-1.6 1-3.4 3-5.8z" fill="url(#gDrop)"/><path d="M34.4 50.4c2 2.4 3 4.2 3 5.8a3 3 0 0 1-6 0c0-1.6 1-3.4 3-5.8z" fill="url(#gDrop)"/><path d="M46.4 48.4c2 2.4 3 4.2 3 5.8a3 3 0 0 1-6 0c0-1.6 1-3.4 3-5.8z" fill="url(#gDrop)"/></g><g id="cFlakes" stroke="#9FD2F2" stroke-width="2.3" stroke-linecap="round"><path d="M20 51v7M17 52.6l6 4M23 52.6l-6 4"/><path d="M32 53v7M29 54.6l6 4M35 54.6l-6 4"/><path d="M44 51v7M41 52.6l6 4M47 52.6l-6 4"/></g></defs><symbol id="ico-partly-night" viewBox="0 0 64 64"><g transform="translate(22,0) scale(.66)"><use href="#cMoon" fill="url(#gMoon)"/></g><ellipse cx="31" cy="48" rx="18" ry="2.2" fill="#8FB1C8" opacity=".16"/><g transform="translate(-3,14) scale(.93)"><use href="#cCloud" fill="url(#gCloud2)" stroke="#9BB9D0" stroke-width="1.3"/></g></symbol><symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></symbol><symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/></symbol><symbol id="i-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></symbol><symbol id="i-wind" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9h11a3 3 0 1 0-3-3"/><path d="M3 14h14a3 3 0 1 1-3 3"/><path d="M3 19h7"/></symbol><symbol id="i-drop" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s6 6.4 6 10.6A6 6 0 0 1 6 13.6C6 9.4 12 3 12 3z"/></symbol><symbol id="i-gauge" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18a9 9 0 1 1 16 0"/><path d="M12 14.5 15.5 9"/><circle cx="12" cy="15.5" r="1.6" fill="currentColor" stroke="none"/></symbol><symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.8-6.5 10-6.5S22 12 22 12s-3.8 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.8"/></symbol><symbol id="i-uv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol><symbol id="i-arrow-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></symbol><symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 21v-7h6v7"/></symbol><symbol id="i-cities" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V9l6-4 6 4v12"/><path d="M15 21V11h6v10"/><path d="M7 12h1M7 16h1M11 12h1M11 16h1M18 14h1M18 18h1"/></symbol><symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></symbol><symbol id="i-thermo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.8V5a2 2 0 1 0-4 0v9.8a4 4 0 1 0 4 0z"/><path d="M12 9v5"/></symbol><symbol id="i-umbrella" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 0 1 9 9H3a9 9 0 0 1 9-9z"/><path d="M12 12v6.5a2.5 2.5 0 0 0 5 0"/></symbol><symbol id="i-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 2.5 17.4A2 2 0 0 0 4.2 20.4h15.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><circle cx="12" cy="16.6" r=".9" fill="currentColor" stroke="none"/></symbol><symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="16" cy="7" r="2.2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="10" cy="17" r="2.2" fill="none" stroke="currentColor" stroke-width="2"/></symbol><symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m4 12.5 5 5L20 6.5"/></symbol><symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14-4.5L3 9"/><path d="M4 13a8 8 0 0 0 14 4.5L21 15"/><path d="M3 4v5h5M21 20v-5h-5"/></symbol><symbol id="i-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m6 6 12 12M18 6 6 18"/></symbol><symbol id="i-target" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></symbol><symbol id="i-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3.2 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1L3.2 9.6l6.1-.9z"/></symbol><symbol id="i-star-fill" viewBox="0 0 24 24" fill="currentColor"><path d="m12 3.2 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1L3.2 9.6l6.1-.9z"/></symbol><symbol id="i-arrow-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H6M11 6l-6 6 6 6"/></symbol><symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7.5" height="7.5" rx="1.6" fill="currentColor"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.6" fill="currentColor"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.6" fill="currentColor"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.6" fill="currentColor"/></symbol><symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3 2.8 20h18.4L12 3Z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.2" r="1.1" fill="currentColor"/></symbol><symbol id="i-snow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 2v20M3.3 7l17.4 10M20.7 7 3.3 17M12 6l-3-2.2M12 6l3-2.2M12 18l-3 2.2M12 18l3 2.2M6.5 9.2 4 8.5M6.5 14.8 4 15.5M17.5 9.2 20 8.5M17.5 14.8 20 15.5"/></symbol><symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="7.7" r="1" fill="currentColor" stroke="none"/></symbol></svg><header class="topbar"><div class="topbar-inner"><a class="brand" href="#top" aria-label="Maple Weather home"><span class="brand-mark"><img src="Maple_Weather_Logo.png" alt="Maple Weather logo"/></span><span class="brand-text"><strong>Maple Weather</strong><small>Canada</small></span></a><div class="search" id="searchWrap"><svg><use href="#i-search"/></svg><input id="citySearch" type="search" placeholder="Search for cities" autocomplete="off" aria-label="Search for cities"/><span class="kbd">⌘K</span><div class="suggest" id="suggest" role="listbox" aria-label="City suggestions"></div></div><nav class="nav" id="mainNav" aria-label="Sections"><a href="#home" data-page="home" class="active">Home</a><a href="#forecast" data-page="home">Forecast</a><a href="#cities" data-page="home">Cities</a><a href="#features" data-page="features">Features</a><a href="#settings" data-page="settings">Settings</a></nav><div class="top-actions"><span class="live-pill"><i></i>Live</span><button class="unit-toggle" id="unitToggle" aria-label="Toggle temperature units"><span data-unit="C" class="on">°C</span><span data-unit="F">°F</span></button><button class="icon-btn" id="refreshBtn" title="Refresh data" aria-label="Refresh data"><svg><use href="#i-refresh"/></svg></button></div></div></header><nav class="page-tabs" aria-label="Pages"><button data-page="home" class="on">Home</button><button data-page="features">Features</button><button data-page="settings">Settings</button></nav><main class="page" id="dashboardPage"><div class="dashboard"><div class="col-main"><section class="card hero fade-up" id="home" aria-labelledby="heroPlace"><div class="hero-bg" id="heroBg"><span class="wx-layer wx-sky"></span><span class="wx-layer wx-sun"></span><span class="wx-layer wx-moonglow"></span><span class="wx-layer wx-stars"></span><span class="wx-layer wx-shoot"></span><span class="wx-layer wx-clouds"></span><span class="wx-layer wx-fog"></span><span class="wx-layer wx-snow"></span><span class="wx-layer wx-flash"></span><canvas class="wx-raincanvas" id="heroFX"></canvas><span class="wx-layer wx-veil"></span></div><div class="hero-top"><button class="loc-chip" id="locChip" aria-label="Change location"><svg><use href="#i-pin"/></svg><span id="heroPlace">Calgary, Alberta</span><svg class="chev"><use href="#i-chev"/></svg></button><div class="hero-badges"><button class="save-city" id="saveCityBtn" title="Save this city" aria-label="Save this city to your list" aria-pressed="false"><svg><use href="#i-star"/></svg></button><button class="save-city" id="geoBtn" title="Use my location" aria-label="Use my current location"><svg><use href="#i-target"/></svg></button><span class="badge night" id="dayBadge">Night</span><span class="badge badge-time"><svg><use href="#i-clock"/></svg><span id="heroLocalTime">--:--</span></span></div></div><div class="hero-main"><div class="hero-temp"><div class="temp-row"><span class="temp-val" id="curTemp">—</span><span class="deg" id="curUnit">°C</span></div><div class="condition" id="curCond">Loading forecast…</div><div class="feels">Feels like <b id="curFeels">—</b></div></div><div class="hero-art" id="heroArt"><span class="glow"></span><svg><use href="#ico-partly-night"/></svg></div></div><div class="hero-bottom"><div class="hero-stats"><div class="hstat"><span class="ico-tile"><svg><use href="#i-wind"/></svg></span><div><b id="curWind">—</b><span id="curWindLabel">Wind</span></div></div><div class="hstat"><span class="ico-tile"><svg><use href="#i-drop"/></svg></span><div><b id="curHum">—</b><span>Humidity</span></div></div><div class="hstat"><span class="ico-tile"><svg><use href="#i-gauge"/></svg></span><div><b id="curPress">—</b><span>Pressure</span></div></div></div><div class="hero-alerts" id="heroAlerts" hidden></div><div class="hero-foot"><span id="updatedAt">Updating…</span><span class="sep"></span><span>Today <b class="hl" id="heroHigh">—</b> high · <b class="hl" id="heroLow">—</b> low</span><span class="sep"></span><span>Sunrise <b class="hl" id="heroSunrise">—</b></span></div></div></section><section class="card card-pad fade-up" id="forecast" style="animation-delay:.05s" aria-labelledby="hourlyTitle"><div class="card-head"><div><h2 id="hourlyTitle">Hourly Forecast</h2><div class="sub" id="hourlySub">Next 24 hours</div></div><button class="link-more" data-scroll="dailyTitle">View More <svg><use href="#i-arrow-right"/></svg></button></div><div class="hourly-scroll" id="hourly"></div></section><section class="card card-pad fade-up" style="animation-delay:.1s" aria-labelledby="stTitle"><div class="card-head"><div><h2 id="stTitle">Short-Term Forecast</h2><div class="sub">Today's periods at a glance</div></div><span class="badge" id="stBadge">Next 4 periods</span></div><div class="st-grid" id="shortTerm"></div><div class="st-detail" id="stDetail" hidden></div></section><section class="card card-pad fade-up" style="animation-delay:.15s" aria-labelledby="dailyTitle"><div class="card-head"><div><h2 id="dailyTitle">10-Day Forecast</h2><div class="sub">Daily highs, lows and precipitation chance</div></div></div><div class="day-list" id="daily"></div></section></div><aside class="col-side"><section class="card card-pad cities-card fade-up" id="cities" style="animation-delay:.24s" aria-labelledby="citiesTitle"><div class="side-head"><h2 id="citiesTitle">Cities</h2><button class="link-more" id="addCity">Add city <svg><use href="#i-arrow-right"/></svg></button></div><div class="city-list" id="cityList"></div></section></aside></div></main><div class="page features-page" id="featuresPage" hidden role="main"><div class="features-head"><button class="back-link" data-page="home"><svg><use href="#i-arrow-left"/></svg> Back to dashboard
+</button><h1>Features</h1><p>Air conditions, daylight, short-term precipitation, advisories and the 3-day severe weather outlook.</p></div><div class="features-grid"><section class="card card-pad fade-up" style="animation-delay:.08s" aria-labelledby="airTitle"><div class="side-head"><h2 id="airTitle">Air Conditions</h2><span class="hint" id="airHint">Real-time</span></div><div class="tile-grid" id="airGrid"></div><div class="aqi-row" id="aqiRow"><span class="aqi-key">Air quality</span><span class="aqi-chip" id="aqiChip"><i></i><b id="aqiValue">—</b><span id="aqiLabel">checking</span></span></div></section><section class="card card-pad sun-card fade-up" style="animation-delay:.12s" aria-labelledby="sunTitle"><div class="side-head"><h2 id="sunTitle">Sun &amp; Daylight</h2><span class="hint" id="daylightLen">—</span></div><div class="sun-wrap" id="sunWrap"></div><div class="sun-times"><div class="stt"><span>Sunrise</span><b id="sunrise">—</b></div><div class="stt"><span>Sunset</span><b id="sunset">—</b></div></div><div class="sun-meta"><span>UV index today <b id="uvMax">—</b></span><span id="uvNote">—</span></div></section><section id="precipCard" class="card card-pad fade-up" style="animation-delay:.16s" aria-labelledby="precipTitle"><div class="side-head"><h2 id="precipTitle">Precipitation · 12 h</h2><span class="hint" id="precipPeak">—</span></div><div class="precip-total"><b id="precipSum">0 mm</b><span id="precipSumLabel">expected</span></div><div class="pchart" id="precipChart"></div></section><section class="card card-pad advisory fade-up" id="advisoryCard" style="animation-delay:.2s" aria-labelledby="advTitle"><div class="adv-top"><span class="adv-ico" id="advIcon"><svg><use href="#i-check"/></svg></span><span class="eyebrow" id="advEyebrow">Maple Advisory</span></div><div class="adv-title" id="advTitle">All clear</div><div class="adv-body" id="advBody">Weather looks settled across the region.</div></section><section class="card card-pad severe-card fade-up" id="severeCard" style="animation-delay:.24s" aria-labelledby="severeTitle"><div class="side-head"><h2 id="severeTitle">3-Day Severe Weather Risk</h2><span class="hint" id="severeHint">Next 3 days</span></div><div class="risk-filters" id="riskFilters" role="tablist" aria-label="Severe weather hazard"><button class="risk-filter on" data-risk="thunder">Thunderstorm</button><button class="risk-filter" data-risk="tornado">Tornado</button><button class="risk-filter" data-risk="flood">Flooding</button><button class="risk-filter" data-risk="snow">Snowfall</button><button class="risk-filter" data-risk="ice">Freezing rain</button></div><div class="risk-body"><div class="risk-gauge" id="riskGauge"></div><div class="risk-info"><div class="risk-badge" id="riskBadge">Low Risk</div><div class="risk-title" id="riskTitle">Thunderstorm risk</div><p class="risk-desc" id="riskDesc">No severe thunderstorms expected in the next three days.</p><div class="risk-days" id="riskDays"></div></div></div><div class="risk-scale"><span><i class="rl-low"></i>Low</span><span><i class="rl-marg"></i>Marginal</span><span><i class="rl-mod"></i>Moderate</span><span><i class="rl-high"></i>High</span></div></section></div></div><div class="page settings-page" id="settingsPage" hidden role="main"><div class="features-head"><button class="back-link" data-page="home"><svg><use href="#i-arrow-left"/></svg> Back to dashboard
+</button><h1>Settings</h1><p>Choose the units used across the forecast and features.</p></div><div class="settings-card card card-pad"><div class="side-head"><h2>Units</h2><span class="hint">Saved on this device</span></div><div class="setting-row"><div><b>Temperature</b><span>Celsius or Fahrenheit</span></div><div class="seg" data-setting="temp"><button data-value="C">°C</button><button data-value="F">°F</button></div></div><div class="setting-row"><div><b>Precipitation</b><span>Millimetres / centimetres or inches</span></div><div class="seg" data-setting="precip"><button data-value="metric">mm / cm</button><button data-value="imperial">inches</button></div></div><div class="setting-row"><div><b>Wind speed</b><span>Kilometres per hour or miles per hour</span></div><div class="seg" data-setting="wind"><button data-value="kmh">km/h</button><button data-value="mph">mph</button></div></div><div class="setting-row"><div><b>Pressure</b><span>Hectopascals or inches of mercury</span></div><div class="seg" data-setting="pressure"><button data-value="hpa">hPa</button><button data-value="inhg">inHg</button></div></div></div></div><footer class="footer"><div class="f-brand"><img src="Maple_Weather_Logo.png" alt=""/><span><b>Maple Weather</b> — forecasts for Canada, coast to coast.</span></div><div class="f-links"><a href="#forecast">Forecast</a><a href="#cities">Cities</a><a href="#features">Features</a><a href="#settings">Settings</a><a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a></div></footer><nav class="bottom-nav" aria-label="Mobile navigation"><a href="#home" data-page="home" class="active"><svg><use href="#i-home"/></svg>Home</a><a href="#forecast" data-page="home"><svg><use href="#i-uv"/></svg>Forecast</a><a href="#features" data-page="features"><svg><use href="#i-grid"/></svg>Features</a><a href="#settings" data-page="settings"><svg><use href="#i-sliders"/></svg>Settings</a><a href="#cities" data-page="home"><svg><use href="#i-cities"/></svg>Cities</a></nav><div id="statusMsg" role="status" aria-live="polite"></div>
+<script>
+
+(function () {
+'use strict';
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const icon = (id, cls = 'wx-ico') =>
+`<svg class="${cls}"><use href="#${id}"/></svg>`;
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) =>
+({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const round1 = (n) => Math.round(n * 10) / 10;
+const DEFAULT_PLACE = { name: 'Calgary', admin: 'Alberta', country: 'Canada', lat: 51.0447, lon: -114.0719 };
+const state = {
+unit: (lsGet('mw:unit') === 'F') ? 'F' : 'C',
+precipUnit: (lsGet('mw:precipUnit') === 'imperial') ? 'imperial' : 'metric',
+windUnit: (lsGet('mw:windUnit') === 'mph') ? 'mph' : 'kmh',
+pressUnit: (lsGet('mw:pressUnit') === 'inhg') ? 'inhg' : 'hpa',
+place: null,
+data: null,
+hourIdx: 0,
+openPeriod: null,
+openDay: null,
+periods: [],
+cityCache: null,
+savedCities: [],
+aqi: null,
+showTempLabels: true
+};
+
+const CONDITION_LABELS = {
+clear: { day: 'Sunny', night: 'Clear' },
+mainly: { day: 'Mainly sunny', night: 'Mainly clear' },
+partly: 'Partly cloudy',
+mostly: 'Mostly cloudy',
+cloudy: 'Cloudy',
+fog: 'Fog',
+drizzle: 'Light drizzle',
+rain: 'Rain',
+'heavy-rain': 'Heavy rain',
+snow: 'Snow',
+'heavy-snow': 'Heavy snow',
+sleet: 'Freezing rain',
+storm: 'Thunderstorm'
+};
+const POP_BANDS = {
+clear: [0, 10], mainly: [10, 10], partly: [20, 20],
+mostly: [20, 30], cloudy: [20, 30], fog: [20, 30],
+drizzle: [40, 60], rain: [40, 80], 'heavy-rain': [70, 100],
+snow: [40, 80], 'heavy-snow': [70, 100], sleet: [40, 80], storm: [70, 100],
+'chance-rain': [40, 80], 'chance-snow': [40, 80], 'chance-rain-snow': [40, 80],
+'risk-storm': [70, 100], windy: [0, 30], blizzard: [70, 100], mixed: [40, 80]
+};
+function popBand(key, raw) {
+const band = POP_BANDS[key] || [0, 100];
+const rounded = raw == null ? band[0] : Math.round(raw / 10) * 10;
+return clamp(rounded, band[0], band[1]);
+}
+const WX_ICONS = {
+clear: { day: 'wx-clear-day-v17.png', night: 'wx-clear-night-v17.png' },
+mainly: { day: 'wx-mainly-day-v17.png', night: 'wx-mainly-night-v17.png' },
+partly: { day: 'wx-partly-day-v17.png', night: 'wx-partly-night-v17.png' },
+mostly: { day: 'wx-mostly-day-v17.png', night: 'wx-mostly-night-v17.png' },
+cloudy: 'wx-cloudy-v17.png',
+fog: 'wx-fog-v17.png',
+drizzle: 'wx-light-rain-v17.png',
+rain: 'wx-rain-v17.png',
+'heavy-rain': 'wx-rain-v17.png',
+snow: 'wx-light-snow-v17.png',
+'heavy-snow': 'wx-heavy-snow-v17.png',
+blizzard: 'wx-blizzard-v17.png',
+sleet: 'wx-freezing-rain-v17.png',
+mixed: 'wx-rain-snow-v17.png',
+storm: 'wx-thunderstorm-v17.png',
+windy: 'wx-windy-v17.png',
+'chance-rain': { day: 'wx-chance-rain-day-v17.png', night: 'wx-chance-rain-night-v17.png' },
+'chance-snow': { day: 'wx-chance-flurries-day-v17.png', night: 'wx-chance-flurries-night-v17.png' },
+'chance-rain-snow': { day: 'wx-chance-rain-snow-day-v17.png', night: 'wx-chance-rain-snow-night-v17.png' },
+'risk-storm': { day: 'wx-risk-storm-day-v17.png', night: 'wx-risk-storm-night-v17.png' }
+};
+function iconFile(key, isDay) {
+const entry = WX_ICONS[key] || WX_ICONS.cloudy;
+const file = typeof entry === 'string' ? entry : entry[isDay ? 'day' : 'night'];
+return file;
+}
+function wxImg(key, isDay, cls, alt) {
+return '<img class="' + (cls || 'wx-img') + '" src="' + iconFile(key, isDay) +
+'" alt="' + esc(alt || '') + '" loading="lazy" draggable="false">';
+}
+function windBadge(cls) {
+return '<img class="wind-badge ' + (cls || '') + '" src="wx-windy-v17.png" alt="Windy" loading="lazy" draggable="false">';
+}
+function makeCondition(key, isDay, label) {
+const entry = CONDITION_LABELS[key];
+const text = label || (typeof entry === 'object' ? entry[isDay ? 'day' : 'night'] : entry) || 'Cloudy';
+return { key, label: text };
+}
+function cloudKey(cover) {
+if (cover == null) return null;
+if (cover < 15) return 'clear';
+if (cover < 40) return 'mainly';
+if (cover < 70) return 'partly';
+if (cover < 90) return 'mostly';
+return 'cloudy';
+}
+function conditionInfo(code, isDay, cloudCover, precipRate, snowRate, temp) {
+code = +code || 0;
+precipRate = precipRate || 0;
+snowRate = snowRate || 0;
+const SNOW_CODES = [71, 73, 75, 77, 85, 86];
+const RAIN_CODES = [51, 53, 55, 61, 63, 65, 80, 81, 82];
+const ICE_CODES = [56, 57, 66, 67];
+const subzero = temp != null && temp < -1;
+if (code >= 95 && code <= 99) return makeCondition('storm', isDay);
+if (ICE_CODES.includes(code)) {
+if (temp != null && temp > 1) {
+return precipRate >= 7.5 ? makeCondition('heavy-rain', isDay, 'Heavy rain') : makeCondition('rain', isDay, 'Rain');
+}
+return makeCondition('sleet', isDay, 'Freezing rain');
+}
+if (SNOW_CODES.includes(code)) {
+const heavy = snowRate >= 1.0 || code === 75 || code === 86;
+const label = heavy ? 'Heavy snow' : (snowRate > 0 && snowRate < 0.4 ? 'Light snow' : 'Snow');
+return makeCondition(heavy ? 'heavy-snow' : 'snow', isDay, label);
+}
+if (RAIN_CODES.includes(code)) {
+if (subzero) {
+if (snowRate > 0.02) {
+const heavy = snowRate >= 1.0;
+return makeCondition(heavy ? 'heavy-snow' : 'snow', isDay, heavy ? 'Heavy snow' : 'Snow');
+}
+return makeCondition('sleet', isDay, 'Freezing rain');
+}
+if (precipRate >= 7.5 || code === 65 || code === 82) return makeCondition('heavy-rain', isDay, 'Heavy rain');
+if (precipRate >= 2.5 || code === 63 || code === 81) return makeCondition('rain', isDay, 'Rain');
+if (precipRate < 0.6 && code <= 55) return makeCondition('drizzle', isDay, 'Light drizzle');
+return makeCondition('rain', isDay, 'Light rain');
+}
+if (precipRate > 0.02 && snowRate > 0.02) return makeCondition('mixed', isDay, 'Rain & snow mixed');
+if (snowRate > 0.02) {
+const heavy = snowRate >= 1.2;
+return makeCondition(heavy ? 'heavy-snow' : 'snow', isDay, heavy ? 'Heavy snow' : snowRate < 0.5 ? 'Light snow' : 'Snow');
+}
+if (precipRate > 0.02) {
+if (subzero) {
+if (snowRate > 0.02) {
+const heavy = snowRate >= 1.0;
+return makeCondition(heavy ? 'heavy-snow' : 'snow', isDay, heavy ? 'Heavy snow' : 'Snow');
+}
+return makeCondition('sleet', isDay, 'Freezing rain');
+}
+if (precipRate >= 7.5) return makeCondition('heavy-rain', isDay, 'Heavy rain');
+if (precipRate >= 2.5) return makeCondition('rain', isDay, 'Rain');
+if (precipRate >= 0.5) return makeCondition('drizzle', isDay, 'Light rain');
+return makeCondition('drizzle', isDay, 'Light drizzle');
+}
+if (code === 45 || code === 48) return makeCondition('fog', isDay);
+let key;
+if (code === 0) key = 'clear';
+else if (code === 1) key = (cloudCover != null && cloudCover >= 28) ? 'partly' : 'mainly';
+else if (code === 2) key = (cloudCover != null && cloudCover >= 80) ? 'mostly' : 'partly';
+else if (code === 3) key = (cloudCover != null && cloudCover < 90) ? 'mostly' : 'cloudy';
+else key = cloudKey(cloudCover) || 'cloudy';
+return makeCondition(key, isDay);
+}
+const CLEAR_SKY_KEYS = ['clear', 'mainly', 'partly'];
+const WET_KEYS = ['drizzle', 'rain', 'heavy-rain', 'snow', 'heavy-snow', 'blizzard', 'sleet', 'mixed', 'storm'];
+const isWet = (key) => WET_KEYS.includes(key);
+const isWindy = (wind, gust) => (gust || 0) > 75 || (wind || 0) > 50;
+const CHANCE_LABELS = {
+'chance-rain': 'Chance of rain',
+'chance-snow': 'Chance of snow',
+'chance-rain-snow': 'Chance of rain & snow',
+'risk-storm': 'Risk of a thunderstorm'
+};
+function chanceIconKey(baseKey, stats) {
+const clearBase = CLEAR_SKY_KEYS.includes(baseKey);
+const brief = (stats.rainTotal || 0) <= 4 && (stats.snowTotal || 0) <= 2;
+if (stats.snow && stats.windy) return 'blizzard';
+if (stats.windy && !stats.rain && !stats.snow && !stats.ice && !stats.storm) return 'windy';
+if (clearBase && brief) {
+if (stats.storm) return 'risk-storm';
+if (stats.rain && stats.snow) return 'chance-rain-snow';
+if (stats.snow) return 'chance-snow';
+if (stats.rain) return 'chance-rain';
+}
+if (stats.storm) return 'storm';
+if (stats.ice) return 'sleet';
+if (stats.rain && stats.snow) return 'mixed';
+if (stats.snow) return (stats.snowTotal || 0) >= 1 ? 'heavy-snow' : 'snow';
+if (stats.rain) {
+const amt = stats.rainTotal || 0;
+if (amt < 0.5) return 'drizzle';
+return amt >= 7.5 ? 'heavy-rain' : 'rain';
+}
+return baseKey;
+}
+
+const t = (c) => {
+if (c == null || isNaN(c)) return '—';
+return Math.round(state.unit === 'C' ? c : c * 9 / 5 + 32);
+};
+const tempStr = (c) => t(c) + '°';
+const BAR_H = [5, 7, 9, 12, 15, 18, 21, 24, 27, 30, 32, 34, 36, 38];
+const HOUR_BAR_H = [4, 5, 6, 8, 10, 12, 14, 16, 18, 20, 21, 22, 23, 24];
+function fmtAmount(total, unit) { return amountRange(total, unit); }
+function peakPop(start, n) {
+  const h = state.data && state.data.hourly;
+  if (!h || !h.precipitation_probability) return 0;
+  let m = 0;
+  for (let k = start; k < start + n && k < h.precipitation_probability.length; k++) {
+    const v = h.precipitation_probability[k];
+    if (v != null && v > m) m = v;
+  }
+  return m;
+}
+function dirName(deg) {
+  if (deg == null || isNaN(deg)) return '';
+  const dirs = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+  return dirs[Math.round((((deg % 360) + 360) % 360) / 22.5) % 16];
+}
+function windStr(v) {
+  const n = Number(v) || 0;
+  if (state.windUnit === 'mph') return Math.round(n * 0.621371) + ' mph';
+  return Math.round(n) + ' km/h';
+}
+function pressureStr(v) {
+  const n = Number(v);
+  if (!isFinite(n)) return '—';
+  return state.pressUnit === 'inhg' ? (n * 0.02953).toFixed(2) + ' inHg' : Math.round(n) + ' hPa';
+}
+function precipStr(total, unit) {
+  if (!(total > 0.02)) return '0 ' + (state.precipUnit === 'imperial' ? 'in' : unit);
+  if (state.precipUnit === 'imperial') {
+    const inches = unit === 'mm' ? total / 25.4 : total / 2.54;
+    return (inches < 0.1 ? inches.toFixed(2) : inches.toFixed(1)) + ' in';
+  }
+  return round1(total) + ' ' + unit;
+}
+function fmtClock(iso) {
+if (!iso) return '—';
+const hh = +iso.slice(11, 13), mm = iso.slice(14, 16);
+const ap = hh >= 12 ? 'PM' : 'AM';
+return `${hh % 12 || 12}:${mm} ${ap}`;
+}
+function fmtHour(iso) {
+const hh = +iso.slice(11, 13);
+return `${hh % 12 || 12} ${hh >= 12 ? 'PM' : 'AM'}`;
+}
+const toMin = (iso) => (+iso.slice(11, 13)) * 60 + (+iso.slice(14, 16));
+const shortHour = (iso) => { const h = +iso.slice(11, 13); return (h % 12 || 12) + (h >= 12 ? 'p' : 'a'); };
+const monthDay = (date) => new Date(date + 'T12:00:00Z')
+.toLocaleDateString(undefined, { month: 'short', day: 'numeric', timeZone: 'UTC' });
+const weekday = (date) => new Date(date + 'T12:00:00Z')
+.toLocaleDateString(undefined, { weekday: 'short', timeZone: 'UTC' });
+const longDate = (date) => new Date(date + 'T12:00:00Z')
+.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', timeZone: 'UTC' });
+const placeLabel = (p) => !p ? '' : p.name + (p.admin && p.admin !== p.name ? ', ' + p.admin : '');
+
+let toastTimer = null;
+function toast(msg, kind) {
+const el = $('#statusMsg');
+if (!msg) { el.classList.remove('show'); return; }
+el.textContent = msg;
+el.className = 'show' + (kind ? ' ' + kind : '');
+clearTimeout(toastTimer);
+toastTimer = setTimeout(() => el.classList.remove('show'), kind === 'error' ? 7000 : 3600);
+}
+
+function cacheGet(key, maxAge) {
+try {
+const raw = localStorage.getItem(key);
+if (!raw) return null;
+const o = JSON.parse(raw);
+if (!o || !o.d) return null;
+if (maxAge && Date.now() - o.t > maxAge) return null;
+return o.d;
+} catch (e) { return null; }
+}
+function cacheSet(key, data) {
+try { localStorage.setItem(key, JSON.stringify({ t: Date.now(), d: data })); } catch (e) {}
+}
+async function fetchWeather(place) {
+const cacheKey = 'mw:fc4:' + place.lat.toFixed(2) + ',' + place.lon.toFixed(2);
+const fresh = cacheGet(cacheKey, 5 * 60 * 1000);
+if (fresh) return fresh;
+const params = new URLSearchParams({
+latitude: place.lat.toFixed(4),
+longitude: place.lon.toFixed(4),
+current: 'temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,rain,showers,snowfall,weather_code,cloud_cover,surface_pressure,wind_speed_10m,wind_direction_10m,wind_gusts_10m,dew_point_2m',
+hourly: 'temperature_2m,apparent_temperature,precipitation_probability,precipitation,rain,showers,snowfall,weather_code,cloud_cover,relative_humidity_2m,visibility,uv_index,wind_speed_10m,wind_direction_10m,wind_gusts_10m,is_day,cape',
+daily: 'weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum,rain_sum,showers_sum,snowfall_sum,sunrise,sunset,uv_index_max,wind_speed_10m_max,wind_gusts_10m_max',
+timezone: 'auto',
+forecast_days: '10',
+minutely_15: 'precipitation,rain,snowfall,weather_code'
+});
+try {
+const res = await fetch('https://api.open-meteo.com/v1/forecast?' + params.toString());
+if (!res.ok) throw new Error('Forecast service returned ' + res.status);
+const data = await res.json();
+cacheSet(cacheKey, data);
+return data;
+} catch (err) {
+const stale = cacheGet(cacheKey, 6 * 60 * 60 * 1000);
+if (stale) {
+
+return stale;
+}
+throw err;
+}
+}
+let reqToken = 0;
+async function loadWeather(place, opts) {
+opts = opts || {};
+const token = ++reqToken;
+if (!opts.quiet) $('#curCond').textContent = 'Updating forecast…';
+try {
+const data = await fetchWeather(place);
+if (token !== reqToken) return;
+state.place = {
+name: place.name,
+admin: place.admin || '',
+country: place.country || 'Canada',
+lat: place.lat,
+lon: place.lon
+};
+state.data = data;
+loadAlerts(place);
+state.openPeriod = null;
+let hIdx = data.hourly.time.findIndex((x) => x > data.current.time) - 1;
+if (hIdx < 0) hIdx = 0;
+state.hourIdx = Math.min(hIdx, data.hourly.time.length - 1);
+savePlaceToStorage();
+renderAll();
+updateSaveButton();
+loadAirQuality(state.place);
+if (!opts.quiet) toast('Forecast updated for ' + placeLabel(state.place), 'ok');
+} catch (err) {
+console.error('Maple Weather:', err);
+toast('Could not load the forecast — check your connection and try again.', 'error');
+$('#curCond').textContent = 'Forecast unavailable';
+}
+}
+function showAqi(aqi, label, cls) {
+state.aqi = aqi == null ? null : { value: Math.round(aqi), label, cls };
+const chip = $('#aqiChip');
+if (chip) {
+chip.className = 'aqi-chip' + (cls ? ' ' + cls : '');
+$('#aqiValue').textContent = aqi == null ? '—' : Math.round(aqi);
+$('#aqiLabel').textContent = aqi == null ? 'unavailable' : label + ' · EU AQI';
+}
+const badge = $('#ipAqiBadge');
+if (badge) badge.textContent = aqi == null ? 'AQI —' : 'AQI ' + Math.round(aqi) + ' · ' + label;
+}
+async function loadAirQuality(place) {
+const key = 'mw:aqi2:' + place.lat.toFixed(2) + ',' + place.lon.toFixed(2);
+const cached = cacheGet(key, 20 * 60 * 1000);
+if (cached) { showAqi(cached.aqi, cached.label, cached.cls); return; }
+try {
+const url = 'https://air-quality-api.open-meteo.com/v1/air-quality?latitude=' + place.lat +
+'&longitude=' + place.lon + '&current=european_aqi,pm2_5&timezone=auto';
+const res = await fetch(url);
+if (!res.ok) throw new Error('aqi ' + res.status);
+const j = await res.json();
+const aqi = j.current && j.current.european_aqi;
+if (aqi == null) throw new Error('no aqi');
+let cls = '', label = 'Good';
+if (aqi > 100) { cls = 'vbad'; label = 'Extremely poor'; }
+else if (aqi > 80) { cls = 'bad'; label = 'Very poor'; }
+else if (aqi > 60) { cls = 'poor'; label = 'Poor'; }
+else if (aqi > 40) { cls = 'mod'; label = 'Moderate'; }
+else if (aqi > 20) { cls = 'fair'; label = 'Fair'; }
+cacheSet(key, { aqi, label, cls });
+showAqi(aqi, label, cls);
+} catch (e) {
+const stale = cacheGet(key, 24 * 60 * 60 * 1000);
+if (stale) { showAqi(stale.aqi, stale.label, stale.cls); return; }
+showAqi(null, '', '');
+}
+}
+function applyCityJSON(json) {
+const list = state.savedCities || [];
+const arr = Array.isArray(json) ? json : [json];
+state.cityCache = list.map((c, i) => {
+const cur = arr[i] && arr[i].current;
+return Object.assign({}, c, cur ? {
+temp: cur.temperature_2m, code: cur.weather_code, isDay: cur.is_day,
+cloud: cur.cloud_cover, precip: cur.precipitation, snow: cur.snowfall,
+wind: cur.wind_speed_10m, gust: cur.wind_gusts_10m
+} : {});
+});
+renderCities();
+}
+async function loadCityTemps() {
+const list = state.savedCities || [];
+if (!list.length) {
+state.cityCache = [];
+renderCities();
+return;
+}
+const key = 'mw:ct3:' + list.map((c) => c.lat.toFixed(2) + ',' + c.lon.toFixed(2)).join(';');
+const cached = cacheGet(key, 10 * 60 * 1000);
+if (cached) { applyCityJSON(cached); return; }
+try {
+const lats = list.map((c) => c.lat).join(',');
+const lons = list.map((c) => c.lon).join(',');
+const url = 'https://api.open-meteo.com/v1/forecast?latitude=' + lats + '&longitude=' + lons +
+'&current=temperature_2m,weather_code,is_day,cloud_cover,precipitation,snowfall,wind_speed_10m,wind_gusts_10m&timezone=auto';
+const res = await fetch(url);
+if (!res.ok) throw new Error('city temps ' + res.status);
+const json = await res.json();
+cacheSet(key, json);
+applyCityJSON(json);
+} catch (e) {
+const stale = cacheGet(key, 6 * 60 * 60 * 1000);
+if (stale) { applyCityJSON(stale); return; }
+
+state.cityCache = list.map((c) => Object.assign({}, c));
+renderCities();
+}
+}
+
+const heroFX = { raf: null, mode: null, parts: [], canvas: null, ctx: null, w: 0, h: 0, dpr: 1, ro: null };
+function heroFXResize() {
+const bg = document.getElementById('heroBg');
+if (!bg || !heroFX.canvas) return;
+const w = bg.clientWidth, h = bg.clientHeight;
+const dpr = Math.min(2, window.devicePixelRatio || 1);
+heroFX.w = w; heroFX.h = h; heroFX.dpr = dpr;
+heroFX.canvas.width = Math.round(w * dpr);
+heroFX.canvas.height = Math.round(h * dpr);
+heroFX.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+const mode = heroFX.mode;
+const count = mode === 'snow'
+? Math.max(30, Math.min(90, Math.round(w / 12)))
+: Math.max(44, Math.min(130, Math.round(w / 9)));
+heroFX.parts = [];
+for (let i = 0; i < count; i++) {
+const type = mode === 'mixed' ? (i % 2 === 0 ? 'rain' : 'snow') : (mode === 'snow' ? 'snow' : 'rain');
+heroFX.parts.push(makeParticle(type, w, h, true));
+}
+}
+function makeParticle(type, w, h, anywhere) {
+if (type === 'snow') {
+return {
+type: 'snow',
+x: Math.random() * w,
+y: anywhere ? Math.random() * h : -10,
+r: Math.random() * 1.6 + 1.1,
+spd: Math.random() * 0.7 + 0.45,
+drift: Math.random() * 0.5 - 0.25,
+ph: Math.random() * Math.PI * 2,
+op: Math.random() * 0.45 + 0.45
+};
+}
+return {
+type: 'rain',
+x: Math.random() * w,
+y: anywhere ? Math.random() * h : -20,
+len: Math.random() * 14 + 8,
+spd: Math.random() * 5 + 5,
+op: Math.random() * 0.32 + 0.18,
+wd: Math.random() < 0.25 ? 1.4 : 1
+};
+}
+function heroFXDraw() {
+const { ctx, w, h } = heroFX;
+if (!ctx) return;
+ctx.clearRect(0, 0, w, h);
+for (const p of heroFX.parts) {
+if (p.type === 'snow') {
+ctx.beginPath();
+ctx.arc(p.x, p.y, p.r + 1.4, 0, Math.PI * 2);
+ctx.fillStyle = 'rgba(132,170,206,' + (p.op * 0.35) + ')';
+ctx.fill();
+ctx.beginPath();
+ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+ctx.fillStyle = 'rgba(255,255,255,' + p.op + ')';
+ctx.fill();
+p.ph += 0.02;
+p.y += p.spd;
+p.x += p.drift + Math.sin(p.ph) * 0.25;
+if (p.y > h + 6 || p.x < -10 || p.x > w + 10) {
+Object.assign(p, makeParticle('snow', w, h, false));
+}
+} else {
+ctx.beginPath();
+ctx.moveTo(p.x, p.y);
+ctx.lineTo(p.x + p.len * 0.16, p.y + p.len);
+ctx.strokeStyle = 'rgba(96,148,194,' + p.op + ')';
+ctx.lineWidth = p.wd;
+ctx.lineCap = 'round';
+ctx.stroke();
+p.y += p.spd;
+p.x += p.spd * 0.07;
+if (p.y > h + p.len) Object.assign(p, makeParticle('rain', w, h, false));
+}
+}
+heroFX.raf = requestAnimationFrame(heroFXDraw);
+}
+function startHeroFX(mode) {
+const bg = document.getElementById('heroBg');
+const canvas = document.getElementById('heroFX');
+if (!bg || !canvas) return;
+if (heroFX.raf && heroFX.mode === mode) return;
+stopHeroFX();
+heroFX.mode = mode;
+heroFX.canvas = canvas;
+heroFX.ctx = canvas.getContext('2d');
+heroFXResize();
+if (!heroFX.ro && window.ResizeObserver) {
+heroFX.ro = new ResizeObserver(() => heroFXResize());
+heroFX.ro.observe(bg);
+}
+heroFXDraw();
+}
+function stopHeroFX() {
+if (heroFX.raf) { cancelAnimationFrame(heroFX.raf); heroFX.raf = null; }
+if (heroFX.ro) { heroFX.ro.disconnect(); heroFX.ro = null; }
+if (heroFX.ctx) heroFX.ctx.clearRect(0, 0, heroFX.w, heroFX.h);
+heroFX.parts = [];
+heroFX.mode = null;
+}
+function setHeroWeather(key, isDay) {
+const bg = document.getElementById('heroBg');
+if (!bg) return;
+let cls = 'hero-overcast';
+if (key === 'clear') cls = isDay ? 'hero-clear-day' : 'hero-clear-night';
+else if (key === 'mainly' || key === 'partly') cls = isDay ? 'hero-partly-day' : 'hero-partly-night';
+else if (key === 'cloudy' || key === 'mostly') cls = isDay ? 'hero-cloudy-day' : 'hero-cloudy-night';
+else if (key === 'fog') cls = isDay ? 'hero-fog' : 'hero-fog-night';
+else if (key === 'mixed') cls = isDay ? 'hero-snow' : 'hero-snow-night';
+else if (key === 'snow' || key === 'heavy-snow' || key === 'blizzard') cls = isDay ? 'hero-snow' : 'hero-snow-night';
+else if (key === 'storm') cls = isDay ? 'hero-storm' : 'hero-storm-night';
+else if (key === 'rain' || key === 'heavy-rain' || key === 'drizzle' || key === 'sleet') cls = isDay ? 'hero-rain' : 'hero-rain-night';
+bg.className = 'hero-bg ' + cls;
+const heroCard = bg.closest('.hero');
+const nightCls = ['hero-clear-night', 'hero-partly-night', 'hero-cloudy-night', 'hero-rain-night', 'hero-snow-night', 'hero-storm-night', 'hero-fog-night'];
+if (heroCard) heroCard.classList.toggle('dark-sky', nightCls.includes(cls));
+if (key === 'mixed') startHeroFX('mixed');
+else if (key === 'snow' || key === 'heavy-snow' || key === 'blizzard') startHeroFX('snow');
+else if (key === 'rain' || key === 'heavy-rain' || key === 'drizzle' || key === 'sleet' || key === 'storm') startHeroFX('rain');
+else stopHeroFX();
+}
+function currentCond(c) {
+const mult = 3600 / (c.interval || 900);
+let rate = (c.precipitation || 0) * mult;
+let snowRate = (c.snowfall || 0) * mult;
+let code = c.weather_code;
+if (state.data && state.data.minutely_15 && state.data.minutely_15.time) {
+const m = state.data.minutely_15;
+let mi = m.time.findIndex((t) => t >= c.time);
+if (mi < 0) mi = 0;
+const mp = m.precipitation ? (m.precipitation[mi] || 0) : 0;
+const ms = m.snowfall ? (m.snowfall[mi] || 0) : 0;
+if (mp * 4 > rate) rate = mp * 4;
+if (ms * 4 > snowRate) snowRate = ms * 4;
+const mc = m.weather_code ? m.weather_code[mi] : null;
+const wetCodes = [51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 71, 73, 75, 77, 80, 81, 82, 85, 86, 95, 96, 99];
+if (mc != null && wetCodes.includes(mc) && (rate > 0.01 || snowRate > 0.01)) code = mc;
+}
+const cond = conditionInfo(code, c.is_day, c.cloud_cover, rate, snowRate, c.temperature_2m);
+const cloudKeys = ['clear', 'mainly', 'partly', 'mostly', 'cloudy'];
+if (state.data && cloudKeys.includes(cond.key)) {
+const hour = hourlyCond(state.data.hourly, state.hourIdx);
+if (hour && !cloudKeys.includes(hour.key)) return hour;
+}
+return cond;
+}
+function hourlyCond(h, idx) {
+return conditionInfo(
+h.weather_code[idx],
+h.is_day ? h.is_day[idx] : 1,
+h.cloud_cover ? h.cloud_cover[idx] : null,
+h.precipitation[idx] || 0,
+h.snowfall ? (h.snowfall[idx] || 0) : 0,
+h.temperature_2m ? h.temperature_2m[idx] : null
+);
+}
+function renderHero() {
+const d = state.data; if (!d) return;
+const c = d.current, day = d.daily;
+let cond = currentCond(c);
+const rate = (c.precipitation || 0) * (3600 / (c.interval || 900));
+$('#heroPlace').textContent = placeLabel(state.place);
+$('#curTemp').textContent = t(c.temperature_2m);
+$('#curUnit').textContent = '°' + state.unit;
+$('#curCond').textContent = cond.label;
+$('#curFeels').textContent = tempStr(c.apparent_temperature);
+const windyNow = isWindy(c.wind_speed_10m, c.wind_gusts_10m);
+let heroKey = cond.key;
+if (windyNow) {
+if (cond.key === 'snow' || cond.key === 'heavy-snow') heroKey = 'blizzard';
+else if (!isWet(cond.key)) heroKey = 'windy';
+}
+const heroLabel = heroKey === 'blizzard' ? 'Blizzard' : heroKey === 'windy' ? 'Windy' : cond.label;
+$('#curCond').textContent = heroLabel + (windyNow && heroKey !== 'windy' && heroKey !== 'blizzard' ? ' · Windy' : '');
+$('#heroArt').innerHTML = (isWet(cond.key) ? '' : '<span class="glow"></span>') +
+wxImg(heroKey, c.is_day, 'hero-wx-img') +
+(windyNow && heroKey !== 'windy' && heroKey !== 'blizzard' ? windBadge('') : '');
+setHeroWeather(cond.key, c.is_day);
+const badge = $('#dayBadge');
+badge.className = 'badge' + (c.is_day ? '' : ' night');
+badge.innerHTML = wxImg('clear', c.is_day, 'badge-wx') + (c.is_day ? 'Daytime' : 'Night');
+$('#heroLocalTime').textContent = fmtClock(c.time);
+$('#curWind').textContent = c.wind_speed_10m < 1 ? 'Calm' : (dirName(c.wind_direction_10m) + ' ' + windStr(c.wind_speed_10m)).trim();
+$('#curWindLabel').textContent = c.wind_speed_10m < 1 ? 'Wind' : 'Wind · gusts ' + windStr(c.wind_gusts_10m);
+$('#curHum').textContent = Math.round(c.relative_humidity_2m) + '%';
+$('#curPress').textContent = pressureStr(c.surface_pressure);
+$('#updatedAt').textContent = 'Updated ' + fmtClock(c.time) + ' local';
+$('#heroHigh').textContent = tempStr(day.temperature_2m_max[0]);
+$('#heroLow').textContent = tempStr(day.temperature_2m_min[0]);
+$('#heroSunrise').textContent = fmtClock(day.sunrise[0]);
+updateSaveButton();
+}
+function renderHourly() {
+const d = state.data; if (!d) return;
+const h = d.hourly, start = state.hourIdx;
+const items = [];
+for (let i = 0; i < 24; i++) {
+const idx = start + i;
+if (idx >= h.time.length) break;
+const cond = hourlyCond(h, idx);
+const pop = popBand(cond.key, h.precipitation_probability[idx]);
+const hourWind = isWindy(h.wind_speed_10m ? h.wind_speed_10m[idx] : 0, h.wind_gusts_10m ? h.wind_gusts_10m[idx] : 0);
+let hourKey = cond.key;
+if (hourWind) {
+if (cond.key === 'snow' || cond.key === 'heavy-snow') hourKey = 'blizzard';
+else if (!isWet(cond.key)) hourKey = 'windy';
+}
+items.push({
+i, idx, pop, hourKey, hourWind,
+isDay: h.is_day ? h.is_day[idx] : 1,
+rain: ([56, 57, 66, 67].includes(h.weather_code[idx]) && h.temperature_2m[idx] <= 1)
+? (h.precipitation[idx] || 0)
+: (h.rain ? (h.rain[idx] || 0) : 0) + (h.showers ? (h.showers[idx] || 0) : 0),
+snow: h.snowfall ? (h.snowfall[idx] || 0) : 0
+});
+}
+const LEVEL = { clear: 0, mainly: 1, partly: 2, mostly: 3, cloudy: 4, fog: 4 };
+const LEVEL_KEY = ['clear', 'mainly', 'partly', 'mostly', 'cloudy'];
+for (let i = 1; i < items.length; i++) {
+const a = items[i - 1].hourKey, b = items[i].hourKey;
+if (isWet(a) || isWet(b)) continue;
+const la = LEVEL[a], lb = LEVEL[b];
+if (la == null || lb == null) continue;
+if (Math.abs(lb - la) > 1) {
+items[i].hourKey = LEVEL_KEY[lb < la ? la - 1 : la + 1];
+}
+}
+$('#hourly').innerHTML = items.map((it) => {
+const rainH = barH(it.rain, HOUR_BAR_H);
+const snowH = barH(it.snow, HOUR_BAR_H);
+const bothH = rainH > 0 && snowH > 0;
+const rainLab = rainH > 0 && !bothH ? `<b class="hour-bar-lab">${amountRange(it.rain, 'mm')}</b>` : '';
+const snowLab = snowH > 0 && !bothH ? `<b class="hour-bar-lab">${amountRange(it.snow, 'cm')}</b>` : '';
+const stackH = bothH
+? `<div class="hour-labels" style="bottom:${Math.max(rainH, snowH) + 3}px"><span class="r">${amountRange(it.rain, 'mm')}</span><span class="s">${amountRange(it.snow, 'cm')}</span></div>`
+: '';
+let bars = '';
+if (rainH > 0 && snowH > 0) {
+const back = `<span class="hour-bar rain back" style="height:${rainH.toFixed(1)}px">${rainLab}</span>`;
+const front = `<span class="hour-bar snow front" style="height:${snowH.toFixed(1)}px">${snowLab}</span>`;
+bars = `<div class="hour-precip">${back}${front}${stackH}</div>`;
+} else if (rainH > 0) {
+bars = `<div class="hour-precip"><span class="hour-bar rain" style="height:${rainH.toFixed(1)}px">${rainLab}</span></div>`;
+} else if (snowH > 0) {
+bars = `<div class="hour-precip"><span class="hour-bar snow" style="height:${snowH.toFixed(1)}px">${snowLab}</span></div>`;
+}
+return `<div class="hour${it.i === 0 ? ' now' : ''}">
+<div class="h-time">${it.i === 0 ? 'Now' : fmtHour(h.time[it.idx])}</div>
+<span class="wx-wrap">${wxImg(it.hourKey, it.isDay, 'wx-img')}${it.hourWind && it.hourKey !== 'windy' && it.hourKey !== 'blizzard' ? windBadge('') : ''}</span>
+<div class="h-pop">${icon('i-drop', '')}${it.pop}%</div>
+<div class="h-temp">${tempStr(h.temperature_2m[it.idx])}</div>
+${bars}
+</div>`;
+}).join('');
+$('#hourlySub').innerHTML = 'Next 24 hours · <b style="color:var(--navy-2)">' + esc(placeLabel(state.place)) + '</b>';
+}
+function blockStats(h, idxs, isDay) {
+const mid = idxs[Math.floor(idxs.length / 2)];
+const conds = idxs.map((i) => hourlyCond(h, i));
+const keyCounts = {};
+conds.forEach((c) => { keyCounts[c.key] = (keyCounts[c.key] || 0) + 1; });
+const baseKey = Object.keys(keyCounts).sort((a, b) => keyCounts[b] - keyCounts[a])[0] || 'cloudy';
+const baseCond = conds.find((c) => c.key === baseKey) || makeCondition(baseKey, isDay);
+const temps = idxs.map((i) => h.temperature_2m[i]).filter((v) => v != null);
+const feels = idxs.map((i) => h.apparent_temperature[i]).filter((v) => v != null);
+const humidity = idxs.map((i) => h.relative_humidity_2m[i]).filter((v) => v != null);
+const gusts = idxs.map((i) => h.wind_gusts_10m ? h.wind_gusts_10m[i] : 0).filter((v) => v != null);
+const winds = idxs.map((i) => h.wind_speed_10m ? h.wind_speed_10m[i] : 0).filter((v) => v != null);
+const pops = idxs.map((i) => h.precipitation_probability ? h.precipitation_probability[i] : null).filter((v) => v != null);
+let rain = 0, snow = 0, ice = 0;
+for (const i of idxs) {
+rain += (h.rain ? (h.rain[i] || 0) : 0) + (h.showers ? (h.showers[i] || 0) : 0);
+snow += h.snowfall ? (h.snowfall[i] || 0) : 0;
+if ([56, 57, 66, 67].includes(h.weather_code[i]) && h.temperature_2m[i] <= 1) {
+ice += h.precipitation[i] || 0;
+rain += h.precipitation[i] || 0;
+}
+}
+const blockTempMin = temps.length ? Math.min.apply(null, temps) : null;
+const subzero = blockTempMin != null && blockTempMin < -1;
+let rainExpected = rain > 0.02 || conds.some((c) => ['drizzle', 'rain', 'heavy-rain'].includes(c.key));
+let snowExpected = snow > 0.02 || conds.some((c) => ['snow', 'heavy-snow'].includes(c.key));
+if (subzero) {
+rainExpected = false;
+snowExpected = snow > 0.02 || conds.some((c) => ['snow', 'heavy-snow', 'mixed', 'sleet'].includes(c.key));
+}
+const storm = conds.some((c) => c.key === 'storm');
+const clearSky = conds.some((c) => CLEAR_SKY_KEYS.includes(c.key));
+const wind = winds.length ? winds.reduce((a, v) => a + v, 0) / winds.length : 0;
+const gustPeak = gusts.length ? Math.max.apply(null, gusts) : 0;
+const gustMean = gusts.length ? gusts.reduce((a, v) => a + v, 0) / gusts.length : 0;
+const windy = isWindy(wind, gustMean);
+const stats = {
+rain: rainExpected, snow: snowExpected, ice: ice > 0.02,
+storm, clearSky, windy, wind, gust: gustMean, gustPeak,
+rainTotal: subzero && snow > 0.02 ? 0 : rain, snowTotal: snow, iceTotal: ice,
+pop: pops.length ? Math.max.apply(null, pops) : null,
+feels: feels.length ? feels.reduce((a, v) => a + v, 0) / feels.length : null,
+humidity: humidity.length ? humidity.reduce((a, v) => a + v, 0) / humidity.length : null,
+dir: h.wind_direction_10m ? h.wind_direction_10m[mid] : null
+};
+const sunHours = isDay ? idxs.filter((i) => (h.cloud_cover ? (h.cloud_cover[i] == null ? 100 : h.cloud_cover[i]) : 100) < 60).length : null;
+return { baseCond, baseKey: baseCond.key, stats, idxs, sunHours, mid, isDay: h.is_day ? h.is_day[mid] : isDay };
+}
+function computePeriods() {
+const d = state.data, h = d.hourly, nowIso = d.current.time;
+const labels = ['Night', 'Morn', 'Aft', 'Eve'];
+const dates = [...new Set(h.time.map((x) => x.slice(0, 10)))].slice(0, 4);
+const periods = [];
+for (const date of dates) {
+for (let b = 0; b < 4; b++) {
+const idxs = [];
+h.time.forEach((tm, i) => {
+if (tm.slice(0, 10) !== date) return;
+const hh = +tm.slice(11, 13);
+if (hh >= b * 6 && hh < (b + 1) * 6) idxs.push(i);
+});
+if (!idxs.length) continue;
+const endIso = date + 'T' + String(b * 6 + 6).padStart(2, '0') + ':00';
+if (endIso <= nowIso) continue;
+const isDay = h.is_day ? h.is_day[idxs[Math.floor(idxs.length / 2)]] : 1;
+const block = blockStats(h, idxs, isDay);
+const baseKey = block.baseKey;
+const iconKey = chanceIconKey(baseKey, block.stats);
+const cond = makeCondition(iconKey === 'blizzard' ? 'snow' : iconKey, block.isDay);
+if (CHANCE_LABELS[iconKey]) {
+cond.label = CHANCE_LABELS[iconKey];
+} else if (iconKey === 'windy') {
+cond.label = 'Windy';
+} else if (iconKey === 'blizzard') {
+cond.label = 'Blizzard';
+} else if (iconKey === 'mixed') {
+cond.label = 'Rain & snow mixed';
+}
+const temps = idxs.map((i) => h.temperature_2m[i]).filter((v) => v != null);
+const pops = idxs.map((i) => h.precipitation_probability[i]).filter((v) => v != null);
+const mms = idxs.map((i) => h.precipitation[i]).filter((v) => v != null);
+const pop = popBand(iconKey, pops.length ? Math.max.apply(null, pops) : null);
+const period = {
+label: labels[b],
+day: date === d.daily.time[0] ? 'Today' : weekday(date),
+temp: temps.length ? temps.reduce((a, v) => a + v, 0) / temps.length : null,
+pop,
+mm: mms.reduce((a, v) => a + v, 0),
+cond,
+iconKey,
+stats: Object.assign({}, block.stats, { pop, dir: block.stats.dir }),
+idxs,
+isDay: block.isDay,
+today: date === d.daily.time[0]
+};
+periods.push(period);
+if (periods.length === 4) break;
+}
+if (periods.length === 4) break;
+}
+return periods;
+}
+function amountRange(total, unit) {
+  if (total < 0.05) return 'None';
+  if (state.precipUnit === 'imperial') {
+    const inches = unit === 'mm' ? total / 25.4 : total / 2.54;
+    return (inches < 0.1 ? inches.toFixed(2) : inches.toFixed(1)) + ' in';
+  }
+  return ACC_RANGES[accIndex(total)] + ' ' + unit;
+}
+function barH(total, table) {
+if (!(total > 0.02)) return 0;
+return table[Math.min(accIndex(total), table.length - 1)];
+}
+function renderPeriodDetail(period) {
+const s = period.stats;
+const windText = s.wind ? (dirName(s.dir) + ' ' + windStr(s.wind)).trim() : 'Calm';
+const detailIcon = '<div class="st-detail-icon">' + wxImg(period.iconKey, period.isDay, '') +
+(s.windy && period.iconKey !== 'windy' && period.iconKey !== 'blizzard' ? windBadge('') : '') + '</div>';
+return `<div class="st-detail" id="stDetail">
+<div class="st-detail-head">
+${detailIcon}
+<div class="dh-main">
+<div class="dh-period">${period.label} · ${period.day}</div>
+<h3>${period.cond.label}</h3>
+<div class="dh-feels">Feels like <b>${tempStr(s.feels)}</b></div>
+</div>
+<button class="st-detail-close" id="stDetailClose" aria-label="Close details"><svg><use href="#i-chev"/></svg></button>
+</div>
+<div class="st-detail-grid">
+<div class="st-detail-item"><span class="di">${icon('i-wind', '')}</span><div><b>${windText}</b><span>Wind</span></div></div>
+<div class="st-detail-item"><span class="di">${icon('i-gauge', '')}</span><div><b>${windStr(s.gust)}</b><span>Gusts</span></div></div>
+<div class="st-detail-item"><span class="di">${icon('i-drop', '')}</span><div><b>${period.pop}%</b><span>Precip chance</span></div></div>
+<div class="st-detail-item"><span class="di">${icon('i-drop', '')}</span><div><b>${amountRange(s.rainTotal, 'mm')}</b><span>Rain</span></div></div>
+<div class="st-detail-item"><span class="di">${icon('i-snow', '')}</span><div><b>${amountRange(s.snowTotal, 'cm')}</b><span>Snow</span></div></div>
+<div class="st-detail-item"><span class="di">${icon('i-eye', '')}</span><div><b>${Math.round(s.humidity)}%</b><span>Humidity</span></div></div>
+</div>
+<div class="st-detail-hum">${icon('i-drop', '')}Humidity <b>${s.humidity == null ? '—' : Math.round(s.humidity) + '%'}</b></div>
+</div>`;
+}
+function renderShortTerm() {
+state.periods = computePeriods();
+const periods = state.periods;
+if (!periods.length) { $('#shortTerm').innerHTML = ''; if ($('#stDetail')) $('#stDetail').hidden = true; return; }
+$('#shortTerm').innerHTML = periods.map((p, idx) => {
+const rain = p.stats.rainTotal || 0;
+const snow = p.stats.snowTotal || 0;
+const rainH = barH(rain, BAR_H);
+const snowH = barH(snow, BAR_H);
+const both = rainH > 0 && snowH > 0;
+const rainLab = rainH > 0 && !both ? `<b class="st-bar-lab">${amountRange(rain, 'mm')}</b>` : '';
+const snowLab = snowH > 0 && !both ? `<b class="st-bar-lab">${amountRange(snow, 'cm')}</b>` : '';
+const stack = both
+? `<div class="st-labels" style="bottom:${Math.max(rainH, snowH) + 4}px"><span class="r">${amountRange(rain, 'mm')}</span><span class="s">${amountRange(snow, 'cm')}</span></div>`
+: '';
+let bars = '';
+if (rainH > 0 && snowH > 0) {
+const back = `<span class="st-bar rain back" style="height:${rainH.toFixed(1)}px">${rainLab}</span>`;
+const front = `<span class="st-bar snow front" style="height:${snowH.toFixed(1)}px">${snowLab}</span>`;
+bars = `<div class="st-precip">${back}${front}${stack}</div>`;
+} else if (rainH > 0) {
+bars = `<div class="st-precip"><span class="st-bar rain" style="height:${rainH.toFixed(1)}px">${rainLab}</span></div>`;
+} else if (snowH > 0) {
+bars = `<div class="st-precip"><span class="st-bar snow" style="height:${snowH.toFixed(1)}px">${snowLab}</span></div>`;
+}
+const open = state.openPeriod === idx;
+return `<div class="st${p.today ? ' today' : ''}${open ? ' open' : ''}${rainH === 0 && snowH === 0 ? ' no-precip' : ''}" data-idx="${idx}" role="button" tabindex="0" aria-expanded="${open}">
+<div class="st-name">${p.label}</div>
+<div class="st-day">${p.day}</div>
+<span class="wx-wrap">${wxImg(p.iconKey, p.isDay, 'wx-img')}${p.stats.windy && p.iconKey !== 'windy' && p.iconKey !== 'blizzard' ? windBadge('') : ''}</span>
+<div class="st-temp">${tempStr(p.temp)}</div>
+<div class="st-pop">${icon('i-drop', '')}${p.pop}%</div>
+${bars}
+</div>`;
+}).join('');
+const detail = $('#stDetail');
+if (detail) {
+if (state.openPeriod != null && periods[state.openPeriod]) {
+detail.outerHTML = renderPeriodDetail(periods[state.openPeriod]);
+const d2 = $('#stDetail');
+d2.hidden = false;
+const close = $('#stDetailClose');
+if (close) close.addEventListener('click', (e) => {
+e.stopPropagation();
+state.openPeriod = null;
+renderShortTerm();
+});
+} else {
+detail.hidden = true;
+detail.innerHTML = '';
+}
+}
+}
+$('#shortTerm').addEventListener('click', (e) => {
+const card = e.target.closest('.st');
+if (!card) return;
+const idx = +card.dataset.idx;
+state.openPeriod = state.openPeriod === idx ? null : idx;
+renderShortTerm();
+});
+$('#shortTerm').addEventListener('keydown', (e) => {
+if (e.key !== 'Enter' && e.key !== ' ') return;
+const card = e.target.closest('.st');
+if (!card) return;
+e.preventDefault();
+const idx = +card.dataset.idx;
+state.openPeriod = state.openPeriod === idx ? null : idx;
+renderShortTerm();
+});
+function dayNightFor(date) {
+const h = state.data.hourly;
+const dayIdxs = [], nightIdxs = [];
+h.time.forEach((tm, i) => {
+if (tm.slice(0, 10) !== date) return;
+const hh = +tm.slice(11, 13);
+if (hh >= 6 && hh < 19) dayIdxs.push(i); else nightIdxs.push(i);
+});
+return {
+day: dayIdxs.length ? blockStats(h, dayIdxs, 1) : null,
+night: nightIdxs.length ? blockStats(h, nightIdxs, 0) : null
+};
+}
+function phraseFor(key, isDay) {
+const map = {
+clear: isDay ? 'Sunny' : 'Clear', mainly: isDay ? 'Mainly sunny' : 'Mainly clear',
+partly: isDay ? 'Partly sunny' : 'Partly cloudy', mostly: 'Mostly cloudy', cloudy: 'Cloudy',
+fog: 'Foggy', drizzle: 'Light drizzle', rain: 'Rain', 'heavy-rain': 'Heavy rain',
+snow: 'Snow', 'heavy-snow': 'Heavy snow', sleet: 'Freezing rain', storm: 'Thunderstorms',
+mixed: 'Rain and snow mixed', blizzard: 'Blizzard', windy: 'Windy'
+};
+return map[key] || 'Cloudy';
+}
+function dayDescription(block, isDay, iconKey) {
+if (!block) return '';
+const s = block.stats;
+const h = state.data.hourly;
+const WET_BASE = ['drizzle', 'rain', 'heavy-rain', 'snow', 'heavy-snow', 'sleet', 'storm', 'mixed', 'blizzard'];
+let text = phraseFor(block.baseKey, isDay);
+const wet = (s.pop != null && s.pop >= 30) || s.rainTotal > 0.1 || s.snowTotal > 0.1;
+const tempsAll = (block.idxs || []).map((i) => h.temperature_2m[i]).filter((v) => v != null);
+const subzero = tempsAll.length && Math.min.apply(null, tempsAll) < -1;
+const mixed = (s.rainTotal > 0.05 && s.snowTotal > 0.05) || iconKey === 'chance-rain-snow' || block.baseKey === 'mixed';
+if (wet) {
+if (!WET_BASE.includes(block.baseKey)) {
+if (mixed) text += ' with rain and snow';
+else if (subzero) text += (s.snowTotal > 0.02 || ['snow', 'heavy-snow', 'blizzard'].includes(block.baseKey)) ? ' with snow' : ' with freezing rain';
+else if (block.baseKey === 'sleet') text += ' with freezing rain';
+else if (s.snowTotal > 0.5 || ['snow', 'heavy-snow', 'blizzard'].includes(block.baseKey)) text += (s.snowTotal || 0) >= 2 ? ' with periods of snow' : ' with light snow';
+else if (s.rainTotal > 4) text += ' with steady rain';
+else if (s.rainTotal > 0.2 || (s.pop || 0) >= 40) text += ' with scattered showers';
+else text += ' with a chance of showers';
+}
+const wetHours = (block.idxs || []).filter((i) => (h.precipitation[i] || 0) > 0.05).length;
+const frac = block.idxs && block.idxs.length ? wetHours / block.idxs.length : 0;
+text += frac >= 0.6
+? (isDay ? ' for most of the day.' : ' for most of the night.')
+: (isDay ? ' for part of the day.' : ' for part of the night.');
+} else {
+text += '.';
+}
+if (isDay && block.idxs && block.idxs.length) {
+const date = h.time[block.idxs[0]].slice(0, 10);
+const allIdxs = [];
+h.time.forEach((tm, i) => { if (tm.slice(0, 10) === date) allIdxs.push(i); });
+const allTemps = allIdxs.map((i) => h.temperature_2m[i]).filter((v) => v != null);
+if (allTemps.length >= 6) {
+const maxT = Math.max.apply(null, allTemps);
+const aftIdx = allIdxs.find((i) => +h.time[i].slice(11, 13) === 15);
+const aftTemp = aftIdx != null ? h.temperature_2m[aftIdx] : null;
+const aftSnow = allIdxs.some((i) => {
+const hr = +h.time[i].slice(11, 13);
+return hr >= 12 && hr <= 18 && (h.snowfall[i] || 0) > 0.02;
+});
+if (maxT > 12 && aftTemp != null && aftTemp <= 2 && aftSnow && (s.snowTotal || 0) >= 0.1) {
+text += ' Temperatures drop quickly through the day.';
+}
+}
+}
+return text;
+}
+function ddSection(label, block, temp, isDay) {
+if (!block) return '';
+const s = block.stats;
+const iconKey = chanceIconKey(block.baseKey, s);
+const pop = popBand(iconKey, s.pop);
+const wind = s.wind ? (dirName(s.dir) + ' ' + windStr(s.wind)).trim() : 'Calm';
+const tempsS = (block.idxs || []).map((i) => state.data.hourly.temperature_2m[i]).filter((v) => v != null);
+const subzeroS = tempsS.length && Math.min.apply(null, tempsS) < -1;
+return `<div class="dd-sec">
+<div class="dd-label">${label}</div>
+<div class="dd-grid">
+<div class="dd-main">
+<span class="wx-wrap">${wxImg(iconKey, isDay ? 1 : 0, 'wx-img')}${s.windy && iconKey !== 'windy' && iconKey !== 'blizzard' ? windBadge('') : ''}</span>
+<div>
+<div class="dd-temp">${tempStr(temp)}</div>
+<div class="dd-feels">Feels like<b>${s.feels == null ? '—' : tempStr(s.feels)}</b></div>
+</div>
+</div>
+<div class="dd-list">
+<span>${icon('i-wind', '')}${wind}</span>
+<span>${icon('i-gauge', '')}${windStr(s.gust)}</span>
+${isDay ? `<span>${icon('i-uv', '')}${block.sunHours || 0} hrs</span>` : ''}
+</div>
+<div class="dd-list">
+<span>${icon('i-drop', '')}${pop}%</span>
+${s.rainTotal > 0.05 ? `<span>${icon('i-drop', '')}${amountRange(s.rainTotal, 'mm')}</span>` : ''}
+${s.snowTotal > 0.05 ? `<span>${icon('i-snow', '')}${amountRange(s.snowTotal, 'cm')}</span>` : ''}
+</div>
+</div>
+<div class="dd-desc">${dayDescription(block, isDay, iconKey)}</div>
+</div>`;
+}
+function renderDayDetail(i) {
+const dy = state.data.daily;
+const date = dy.time[i];
+const dn = dayNightFor(date);
+const name = i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : weekday(date);
+return `<div class="day-detail">
+<div class="dd-title">${name} ${monthDay(date)}</div>
+${ddSection('Day', dn.day, dy.temperature_2m_max[i], true)}
+${ddSection('Night', dn.night, dy.temperature_2m_min[i], false)}
+</div>`;
+}
+function renderDaily() {
+const d = state.data; if (!d) return;
+const dy = d.daily;
+const narrow = window.matchMedia('(max-width: 860px)').matches;
+$('#daily').innerHTML = dy.time.map((date, i) => {
+const hi = dy.temperature_2m_max[i], lo = dy.temperature_2m_min[i];
+const rain = (dy.rain_sum ? (dy.rain_sum[i] || 0) : 0) + (dy.showers_sum ? (dy.showers_sum[i] || 0) : 0);
+const snow = dy.snowfall_sum ? (dy.snowfall_sum[i] || 0) : 0;
+const dn = dayNightFor(date);
+const dayIcon = dn.day ? chanceIconKey(dn.day.baseKey, dn.day.stats) : 'cloudy';
+const nightIcon = dn.night ? chanceIconKey(dn.night.baseKey, dn.night.stats) : 'cloudy';
+const pop = popBand(dayIcon, dy.precipitation_probability_max ? dy.precipitation_probability_max[i] : null);
+const name = i === 0 ? 'Today' : i === 1 ? (narrow ? 'Tmrw' : 'Tomorrow') : weekday(date);
+const open = state.openDay === i;
+return `<div class="day${open ? ' open' : ''}" data-day="${i}">
+<div class="day-row" role="button" tabindex="0" aria-expanded="${open}">
+<div class="d-name">${name}<small>${monthDay(date)}</small></div>
+<div class="d-pair">
+<div class="d-cell"><span class="wx-wrap">${wxImg(dayIcon, 1, 'wx-img')}</span><b class="d-temp">${tempStr(hi)}</b></div>
+<div class="d-cell"><span class="wx-wrap">${wxImg(nightIcon, 0, 'wx-img')}</span><b class="d-temp lo">${tempStr(lo)}</b></div>
+</div>
+<div class="d-pop${pop < 20 ? ' low' : ''}">${pop}%</div>
+<div class="d-amts">
+${rain > 0.05 ? `<div class="d-amt rain">${icon('i-drop', '')}${amountRange(rain, 'mm')}</div>` : ''}
+${snow > 0.05 ? `<div class="d-amt snow">${icon('i-snow', '')}${amountRange(snow, 'cm')}</div>` : ''}
+</div>
+<span class="d-chev">${icon('i-chev', '')}</span>
+</div>
+${open ? renderDayDetail(i) : ''}
+</div>`;
+}).join('');
+}
+$('#daily').addEventListener('click', (e) => {
+const row = e.target.closest('.day-row');
+if (!row) return;
+const day = row.closest('.day');
+const i = +day.dataset.day;
+state.openDay = state.openDay === i ? null : i;
+renderDaily();
+});
+$('#daily').addEventListener('keydown', (e) => {
+if (e.key !== 'Enter' && e.key !== ' ') return;
+const row = e.target.closest('.day-row');
+if (!row) return;
+e.preventDefault();
+const day = row.closest('.day');
+const i = +day.dataset.day;
+state.openDay = state.openDay === i ? null : i;
+renderDaily();
+});
+function tile(o) {
+return `<div class="tile">
+<span class="t-ico">${icon(o.icon, '')}</span>
+<div class="t-val">${o.value}${o.unit ? '<small>' + o.unit + '</small>' : ''}</div>
+<div class="t-label">${o.label}</div>
+${o.meter != null ? `<div class="t-meter${o.warm ? ' warm' : ''}"><i style="width:${clamp(o.meter, 2, 100)}%"></i></div>` : ''}
+</div>`;
+}
+function renderAir() {
+const d = state.data; if (!d) return;
+const c = d.current, h = d.hourly, i = state.hourIdx;
+const uv = h.uv_index ? (h.uv_index[i] || 0) : 0;
+const vis = h.visibility ? h.visibility[i] : null;
+$('#airHint').textContent = 'Updated ' + fmtClock(c.time);
+$('#airGrid').innerHTML = [
+tile({ icon: 'i-thermo', value: tempStr(c.apparent_temperature), label: 'Feels like' }),
+tile({ icon: 'i-drop', value: Math.round(c.relative_humidity_2m), unit: '%', label: 'Humidity', meter: c.relative_humidity_2m }),
+tile({ icon: 'i-wind', value: windStr(c.wind_gusts_10m), label: 'Wind gusts' }),
+tile({ icon: 'i-uv', value: uv.toFixed(1), label: 'UV index', meter: (uv / 11) * 100, warm: uv >= 6 }),
+tile({ icon: 'i-eye', value: vis == null ? '—' : Math.round(vis / 1000), unit: vis == null ? '' : 'km', label: 'Visibility' }),
+tile({ icon: 'i-gauge', value: Math.round(c.surface_pressure), unit: 'hPa', label: 'Pressure', meter: ((c.surface_pressure - 960) / 80) * 100 })
+].join('');
+}
+function sunArcMarkup(uid) {
+const d = state.data; if (!d) return '';
+const dy = d.daily, rise = dy.sunrise[0], set = dy.sunset[0];
+const riseM = toMin(rise), setM = toMin(set);
+const frac = setM > riseM ? clamp((toMin(d.current.time) - riseM) / (setM - riseM), 0, 1) : 0;
+const total = Math.PI * 106;
+const angle = Math.PI * frac;
+const sx = (120 - 106 * Math.cos(angle)).toFixed(1);
+const sy = (112 - 106 * Math.sin(angle)).toFixed(1);
+const gid = 'arcGrad-' + (uid || 'home');
+return `<svg class="arc" viewBox="0 0 240 132" role="img" aria-label="Sun position through the day">
+<defs>
+<linearGradient id="${gid}" x1="0" y1="0" x2="1" y2="0">
+<stop offset="0%" stop-color="#9FD8FF"/><stop offset="55%" stop-color="#5BB4F0"/><stop offset="100%" stop-color="#0F7BD6"/>
+</linearGradient>
+</defs>
+<path d="M14 112A106 106 0 0 1 226 112" fill="none" stroke="#EAF3FB" stroke-width="10" stroke-linecap="round"/>
+<path d="M14 112A106 106 0 0 1 226 112" fill="none" stroke="url(#${gid})" stroke-width="10" stroke-linecap="round"
+stroke-dasharray="${(total * frac).toFixed(1)} ${total.toFixed(1)}"/>
+<line x1="4" y1="112" x2="236" y2="112" stroke="#E3EFF9" stroke-width="2" stroke-linecap="round"/>
+<circle cx="${sx}" cy="${sy}" r="13" fill="#FFD34D" opacity=".22"/>
+<circle cx="${sx}" cy="${sy}" r="7.5" fill="url(#gSun)" stroke="#fff" stroke-width="2"/>
+<text x="120" y="106" text-anchor="middle" font-size="10" font-weight="700" fill="#8AA3BB" font-family="Plus Jakarta Sans, sans-serif">${fmtClock(d.current.time)}</text>
+</svg>`;
+}
+function renderSun() {
+const d = state.data; if (!d) return;
+const dy = d.daily, rise = dy.sunrise[0], set = dy.sunset[0];
+const riseM = toMin(rise), setM = toMin(set);
+const dayMin = Math.max(0, setM - riseM);
+$('#daylightLen').textContent = Math.floor(dayMin / 60) + 'h ' + (dayMin % 60) + 'm daylight';
+$('#sunWrap').innerHTML = sunArcMarkup('home');
+$('#sunrise').textContent = fmtClock(rise);
+$('#sunset').textContent = fmtClock(set);
+const uv = dy.uv_index_max[0];
+$('#uvMax').textContent = uv == null ? '—' : uv.toFixed(1);
+$('#uvNote').innerHTML = '<b>' + uvText(uv) + '</b> UV';
+}
+function uvText(uv) {
+if (uv == null) return '—';
+return uv < 3 ? 'Low' : uv < 6 ? 'Moderate' : uv < 8 ? 'High' : uv < 11 ? 'Very high' : 'Extreme';
+}
+function precipBarsMarkup(rainVals, snowVals, labels) {
+const maxR = Math.max(0.2, ...rainVals);
+const maxS = Math.max(0.2, ...snowVals);
+return rainVals.map((r, i) => {
+const sn = snowVals[i] || 0;
+const both = r > 0.02 && sn > 0.02;
+const rw = both ? 42 : 66;
+const sw = both ? 42 : 66;
+const rh = r > 0.02 ? Math.max(4, Math.round((r / maxR) * 100)) : 0;
+const sh = sn > 0.02 ? Math.max(4, Math.round((sn / maxS) * 100)) : 0;
+return `<div class="pcol">
+<div class="pbars" style="display:flex;align-items:flex-end;justify-content:center;gap:3px;height:104px;width:100%">
+${rh ? `<span class="pbar rain" style="height:${rh}%;width:${rw}%;border-radius:4px 4px 0 0;background:linear-gradient(180deg,#B7E2FF 0%,#59AEEE 45%,#0F6FC8 100%)"></span>` : ''}
+${sh ? `<span class="pbar snow" style="height:${sh}%;width:${sw}%;border-radius:4px 4px 0 0;background:linear-gradient(180deg,#F1F4F6 0%,#D6DDE2 50%,#B3BFC8 100%);border:1px solid #C0CBD4;border-bottom:0"></span>` : ''}
+</div>
+<span class="plab${i === 0 ? ' now' : ''}">${labels[i]}</span>
+</div>`;
+}).join('');
+}
+function renderPrecip() {
+if (!state.data) return;
+const h = state.data.hourly;
+const start = state.hourIdx;
+const n = Math.min(12, h.precipitation.length - start);
+const rainVals = [], snowVals = [], labels = [];
+for (let i = 0; i < n; i++) {
+const idx = start + i;
+rainVals.push((h.rain ? (h.rain[idx] || 0) : 0) + (h.showers ? (h.showers[idx] || 0) : 0));
+snowVals.push(h.snowfall ? (h.snowfall[idx] || 0) : 0);
+labels.push(i === 0 ? 'Now' : fmtHour(h.time[idx]));
+}
+const totalRain = rainVals.reduce((a, v) => a + v, 0);
+const totalSnow = snowVals.reduce((a, v) => a + v, 0);
+const sum = document.getElementById('precipSum');
+if (sum) sum.innerHTML = precipStr(totalRain, 'mm') + ' <small>rain</small>' + (totalSnow > 0.05 ? ' · ' + precipStr(totalSnow, 'cm') + ' <small>snow</small>' : '');
+const legend = document.getElementById('precipLegend');
+if (legend) {
+const parts = [];
+if (totalRain > 0.05) parts.push('<span><i class="lg-rain"></i>Rain (' + (state.precipUnit === 'imperial' ? 'in' : 'mm') + ')</span>');
+if (totalSnow > 0.05) parts.push('<span><i class="lg-snow"></i>Snow (' + (state.precipUnit === 'imperial' ? 'in' : 'cm') + ')</span>');
+legend.innerHTML = parts.join('');
+legend.hidden = !parts.length;
+}
+document.getElementById('precipChart').innerHTML = precipBarsMarkup(rainVals, snowVals, labels);
+}
+function computeAdvisory() {
+const d = state.data; if (!d) return null;
+const c = d.current, h = d.hourly, i = state.hourIdx, dy = d.daily;
+const cond = currentCond(c);
+const pop6raw = Math.max.apply(null, h.precipitation_probability.slice(i, i + 6).map((v) => v || 0));
+const pop6 = popBand(cond.key, pop6raw);
+const mm6 = h.precipitation.slice(i, i + 6).reduce((a, v) => a + (v || 0), 0);
+const nextKeys = h.time.slice(i, i + 6).map((_, k) => hourlyCond(h, i + k).key);
+const gust = c.wind_gusts_10m || 0;
+const uv = dy.uv_index_max[0] || 0;
+const temp = c.temperature_2m;
+const place = state.place ? state.place.name : 'your area';
+let kind = '', iconId = 'i-check', eyebrow = 'Maple Advisory', title = 'All clear', body = '';
+const tips = [
+'Chance of precipitation: ' + pop6 + '% over the next 6 hours',
+'Expected precipitation: ' + round1(mm6) + ' mm',
+'Wind gusts: ' + windStr(gust),
+'UV index today: ' + (uv == null ? '—' : uv.toFixed(1))
+];
+if (cond.key === 'storm' || nextKeys.includes('storm')) {
+kind = 'danger'; iconId = 'i-alert'; eyebrow = 'Storm watch'; title = 'Thunderstorm risk';
+body = 'Thunderstorms are possible around ' + esc(place) + '. Keep an eye on the live radar and avoid open ground during lightning.';
+} else if (cond.key === 'snow' || cond.key === 'heavy-snow' || (mm6 > 1 && temp <= 1)) {
+kind = 'blue'; iconId = 'ico-snow'; eyebrow = 'Winter weather'; title = 'Snow on the way';
+body = 'About ' + Math.max(0.1, round1(mm6)) + ' mm of precipitation is expected in the next 6 hours with temperatures near freezing — allow extra travel time.';
+} else if (pop6raw >= 55 || mm6 > 0.8 || ['rain', 'heavy-rain', 'drizzle'].includes(cond.key)) {
+kind = 'blue'; iconId = 'i-umbrella'; eyebrow = 'Precipitation'; title = 'Umbrella recommended';
+body = 'A ' + pop6 + '% chance of precipitation in the next 6 hours, with roughly ' + Math.max(0.1, round1(mm6)) + ' mm expected in ' + esc(place) + '.';
+} else if (gust >= 50) {
+kind = ''; iconId = 'i-wind'; eyebrow = 'Wind'; title = 'Gusty conditions';
+body = 'Gusts are reaching ' + windStr(gust) + '. Secure loose items outdoors and expect a breezy commute.';
+} else if (temp <= 0) {
+kind = ''; iconId = 'i-thermo'; eyebrow = 'Cold weather'; title = 'Frost advisory';
+body = 'Temperatures are hovering near ' + tempStr(temp) + '. Watch for icy patches and protect sensitive plants overnight.';
+} else if (temp >= 29) {
+kind = ''; iconId = 'i-uv'; eyebrow = 'Heat'; title = 'Heat caution';
+body = 'It feels like ' + tempStr(c.apparent_temperature) + ' in ' + esc(place) + '. Hydrate often and take shade breaks during the afternoon.';
+} else if (uv >= 6) {
+kind = 'blue'; iconId = 'i-uv'; eyebrow = 'Sun safety'; title = 'High UV index';
+body = 'UV peaks at ' + uv.toFixed(1) + ' today. Sunscreen, a hat and shade around midday are a good idea.';
+} else if (cond.key === 'fog') {
+kind = ''; iconId = 'i-eye'; eyebrow = 'Visibility'; title = 'Low visibility';
+body = 'Fog is reducing visibility around ' + esc(place) + '. Use low beams and leave extra distance.';
+} else {
+kind = 'calm'; iconId = 'i-check'; eyebrow = 'Maple Advisory'; title = 'All clear';
+body = esc(place) + ' looks settled for the next few hours. A good window to get outside.';
+}
+return { kind, iconId, eyebrow, title, body, tips };
+}
+function renderAdvisory() {
+const a = computeAdvisory(); if (!a) return;
+const card = $('#advisoryCard');
+card.className = 'card card-pad advisory fade-up ' + a.kind;
+$('#advIcon').innerHTML = icon(a.iconId, '');
+$('#advEyebrow').textContent = a.eyebrow;
+$('#advTitle').textContent = a.title;
+$('#advBody').textContent = a.body;
+}
+
+const CITIES_KEY = 'mw:cities';
+const PLACE_KEY = 'mw:place';
+function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+function lsSet(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
+function cookieGet(k) {
+try {
+const m = document.cookie.match(new RegExp('(?:^|; )' + k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '=([^;]*)'));
+return m ? decodeURIComponent(m[1]) : null;
+} catch (e) { return null; }
+}
+function cookieSet(k, v) {
+try {
+if (v.length > 3500) return false; // cookie limit
+const secure = location.protocol === 'https:' ? '; Secure' : '';
+const same = secure ? 'None' : 'Lax';
+document.cookie = k + '=' + encodeURIComponent(v) + '; max-age=31536000; path=/; SameSite=' + same + secure;
+return true;
+} catch (e) { return false; }
+}
+function readStored(k) {
+const v = lsGet(k);
+if (v != null && v !== '') return v;
+return cookieGet(k);
+}
+function writeStored(k, v) {
+const a = lsSet(k, v);
+const b = cookieSet(k, v);
+return a || b;
+}
+let idbPromise = null;
+function idbOpen() {
+if (!('indexedDB' in window)) return Promise.reject(new Error('no idb'));
+if (idbPromise) return idbPromise;
+idbPromise = new Promise((resolve, reject) => {
+const req = indexedDB.open('mapleWeather', 1);
+req.onupgradeneeded = () => { if (!req.result.objectStoreNames.contains('kv')) req.result.createObjectStore('kv'); };
+req.onsuccess = () => resolve(req.result);
+req.onerror = () => reject(req.error);
+});
+return idbPromise;
+}
+function idbSet(k, v) {
+idbOpen().then((db) => {
+try { const tx = db.transaction('kv', 'readwrite'); tx.objectStore('kv').put(v, k); } catch (e) {}
+}).catch(() => {});
+}
+function idbGet(k) {
+return idbOpen().then((db) => new Promise((resolve) => {
+try {
+const req = db.transaction('kv', 'readonly').objectStore('kv').get(k);
+req.onsuccess = () => resolve(req.result == null ? null : req.result);
+req.onerror = () => resolve(null);
+} catch (e) { resolve(null); }
+})).catch(() => null);
+}
+function samePlace(a, b) {
+return a && b && Math.abs(a.lat - b.lat) < 0.02 && Math.abs(a.lon - b.lon) < 0.02;
+}
+function isSavedPlace(p) {
+return !!(p && state.savedCities.some((c) => samePlace(c, p)));
+}
+function saveCitiesToStorage() {
+const val = JSON.stringify(state.savedCities || []);
+writeStored(CITIES_KEY, val);
+idbSet(CITIES_KEY, val);
+}
+function savePlaceToStorage() {
+if (!state.place) return;
+const val = JSON.stringify(state.place);
+writeStored(PLACE_KEY, val);
+idbSet(PLACE_KEY, val);
+}
+function updateSaveButton() {
+const b = $('#saveCityBtn');
+if (!b) return;
+const saved = isSavedPlace(state.place);
+b.classList.toggle('saved', saved);
+b.setAttribute('aria-pressed', saved ? 'true' : 'false');
+b.setAttribute('title', saved ? 'Remove from saved cities' : 'Save this city');
+b.innerHTML = `<svg><use href="#${saved ? 'i-star-fill' : 'i-star'}"/></svg>`;
+}
+function toggleSaveCity() {
+if (!state.place) return;
+const idx = state.savedCities.findIndex((c) => samePlace(c, state.place));
+if (idx >= 0) {
+const removed = state.savedCities.splice(idx, 1)[0];
+toast('Removed ' + removed.name + ' from your cities', 'ok');
+} else {
+state.savedCities.push({
+name: state.place.name, admin: state.place.admin, country: 'Canada',
+lat: state.place.lat, lon: state.place.lon
+});
+toast('Saved ' + state.place.name + ' to your cities', 'ok');
+}
+saveCitiesToStorage();
+updateSaveButton();
+renderCities();
+loadCityTemps();
+}
+function cityCondition(c) {
+if (c.code == null) return makeCondition('cloudy', 1);
+const mult = 4;
+return conditionInfo(c.code, c.isDay, c.cloud, (c.precip || 0) * mult, (c.snow || 0) * mult, c.temp);
+}
+function renderCities() {
+const list = state.savedCities || [];
+const cache = state.cityCache || [];
+if (!list.length) {
+$('#cityList').innerHTML = `<div class="city-empty">
+<span class="ce-ico">${icon('i-cities', '')}</span>
+<b>No saved cities yet</b>
+<span>Save a city with the star button and it will appear here every time you return.</span>
+<button id="emptyAddCity">Add a city</button>
+</div>`;
+const add = document.getElementById('emptyAddCity');
+if (add) add.addEventListener('click', () => { searchInput.focus(); searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+return;
+}
+$('#cityList').innerHTML = list.map((c, i) => {
+const live = cache.find((x) => samePlace(x, c)) || c;
+const cond = cityCondition(live);
+const cWindy = isWindy(live.wind, live.gust);
+let cKey = cond.key;
+if (cWindy) {
+if (cond.key === 'snow' || cond.key === 'heavy-snow') cKey = 'blizzard';
+else if (!isWet(cond.key)) cKey = 'windy';
+}
+const active = state.place && samePlace(state.place, c);
+return `<div class="city-row${active ? ' active' : ''}" data-idx="${i}" role="button" tabindex="0" aria-label="Open ${esc(c.name)}">
+<span class="wx-wrap">${wxImg(cKey, live.isDay, 'wx-img')}${cWindy && cKey !== 'windy' && cKey !== 'blizzard' ? windBadge('') : ''}</span>
+<span class="c-info"><b>${esc(c.name)}</b><span>${cond.label}${cWindy && cKey !== 'windy' && cKey !== 'blizzard' ? ' · Windy' : ''}</span></span>
+<span class="c-temp">${live.temp != null ? t(live.temp) + '°' : '—'}</span>
+<button class="city-del" data-del="${i}" aria-label="Remove ${esc(c.name)}" title="Remove"><svg><use href="#i-close"/></svg></button>
+</div>`;
+}).join('');
+$$('#cityList .city-row').forEach((row) => {
+const open = () => {
+const city = state.savedCities[+row.dataset.idx];
+if (!city) return;
+loadWeather({ name: city.name, admin: city.admin, country: 'Canada', lat: city.lat, lon: city.lon });
+document.getElementById('home').scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
+row.addEventListener('click', (e) => {
+if (e.target.closest('.city-del')) return;
+open();
+});
+row.addEventListener('keydown', (e) => {
+if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+});
+});
+$$('#cityList .city-del').forEach((btn) => btn.addEventListener('click', (e) => {
+e.stopPropagation();
+const i = +btn.dataset.del;
+const removed = state.savedCities.splice(i, 1)[0];
+saveCitiesToStorage();
+updateSaveButton();
+renderCities();
+loadCityTemps();
+if (removed) toast('Removed ' + removed.name + ' from your cities', 'ok');
+}));
+}
+const ACC_RANGES = ['<1', '~1', '1–3', '2–4', '~5', '5–10', '~10', '10–15', '15–20', '20–25', '25–30', '30–40', '40–50', '50+'];
+function accIndex(v) {
+if (v < 1) return 0;
+if (v < 2) return 1;
+if (v < 3) return 2;
+if (v < 4) return 3;
+if (v < 6) return 4;
+if (v < 10) return 5;
+if (v < 11) return 6;
+if (v < 15) return 7;
+if (v < 20) return 8;
+if (v < 25) return 9;
+if (v < 30) return 10;
+if (v < 40) return 11;
+if (v < 50) return 12;
+return 13;
+}
+function accBlock(title, unit, total) {
+const active = accIndex(total);
+return `<div class="acc-block">
+<div class="acc-head"><span class="acc-title">${title}<em>${unit}</em></span><span class="acc-total">${fmtAmount(total, unit)}</span></div>
+<div class="acc-scale">${ACC_RANGES.map((r, i) => `<span class="acc-chip${i === active ? ' on' : ''}">${r}</span>`).join('')}</div>
+</div>`;
+}
+function renderAccumulation() {
+const d = state.data; if (!d) return;
+const h = d.hourly, start = state.hourIdx;
+let rain = 0, snow = 0, ice = 0;
+for (let k = start; k < Math.min(start + 24, h.time.length); k++) {
+rain += (h.rain ? (h.rain[k] || 0) : 0) + (h.showers ? (h.showers[k] || 0) : 0);
+snow += h.snowfall ? (h.snowfall[k] || 0) : 0;
+if ([56, 57, 66, 67].includes(h.weather_code[k])) ice += h.precipitation[k] || 0;
+}
+$('#ipAccum').innerHTML = accBlock('Rainfall', 'mm', rain) + accBlock('Ice', 'mm', ice) + accBlock('Snowfall', 'cm', snow);
+}
+let alertsCache = { key: '', at: 0, list: [] };
+async function alertFetch(url) {
+  try {
+    const r = await fetch(url, { signal: AbortSignal.timeout?.(8000) });
+    if (r.ok) return await r.json();
+  } catch (e) {}
+  const proxies = ['https://api.allorigins.win/raw?url=', 'https://api.codetabs.com/v1/proxy?quest='];
+  for (const base of proxies) {
+    try {
+      const r = await fetch(base + encodeURIComponent(url), { signal: AbortSignal.timeout?.(12000) });
+      if (r.ok) return await r.json();
+    } catch (e) {}
+  }
+  throw new Error('alerts unavailable');
+}
+async function loadAlerts(place, retry) {
+  const box = document.getElementById('heroAlerts');
+  if (!place || !box) return;
+  const plat = Number(place.lat), plon = Number(place.lon);
+  if (!isFinite(plat) || !isFinite(plon)) return;
+  const key = plat.toFixed(2) + ',' + plon.toFixed(2);
+  if (alertsCache.key === key && Date.now() - alertsCache.at < 10 * 60 * 1000) {
+    renderAlerts(alertsCache.list);
+    return;
+  }
+  box.hidden = false;
+  box.innerHTML = '<div class="wx-alert grey"><div class="wa-body"><b>Checking Environment Canada alerts…</b><span>Looking for active alerts for this area.</span></div></div>';
+  const d = 1.0;
+  const bbox = [plon - d, plat - 0.7, plon + d, plat + 0.7].join(',');
+  const url = 'https://api.weather.gc.ca/collections/weather-alerts/items?f=json&limit=50&lang=en&properties=alert_short_name_en,alert_type,risk_colour_en,status_en,alert_text_en,alert_name_en,feature_name_en&bbox=' + bbox;
+  try {
+    const json = await alertFetch(url);
+    const byName = new Map();
+    const normPlace = (v) => (v || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\b(city|town|municipality|county|district|region|of|the|m\.d\.|co\.|r\.m\.|rm|md)\b/g, ' ').replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+    const cityNorm = normPlace(place.name);
+    for (const f of (json.features || [])) {
+      const pr = f.properties || {};
+      const status = (pr.status_en || '').toLowerCase();
+      if (status === 'ended' || status === 'cancelled') continue;
+      const feature = normPlace(pr.feature_name_en);
+      if (!feature || !cityNorm) continue;
+      const parts = feature.split(/\s+-\s+|,| and /).map((x) => normPlace(x));
+      if (feature !== cityNorm && !parts.includes(cityNorm)) continue;
+      const name = pr.alert_short_name_en || pr.alert_name_en || pr.alert_code || 'Weather alert';
+      if (!byName.has(name)) byName.set(name, { pr, score: 0 });
+    }
+    let list = [...byName.values()].map((x) => x.pr);
+    const hasWarning = list.some((p) => ['warning', 'watch'].includes((p.alert_type || '').toLowerCase()));
+    if (hasWarning) list = list.filter((p) => !(p.alert_type || '').toLowerCase().includes('statement'));
+    alertsCache = { key, at: Date.now(), list };
+    renderAlerts(list);
+  } catch (e) {
+    if (retry !== false) setTimeout(() => loadAlerts(place, false), 4000);
+    else box.hidden = true;
+  }
+}
+function alertLevel(p) {
+const type = (p.alert_type || '').toLowerCase();
+const colour = (p.risk_colour_en || '').toLowerCase();
+if (type.includes('statement') || type.includes('special')) return 'grey';
+if (colour.includes('red')) return 'red';
+if (colour.includes('orange')) return 'orange';
+if (colour.includes('yellow')) return 'yellow';
+if (type.includes('warning') || type.includes('watch')) return 'yellow';
+return 'grey';
+}
+function renderAlerts(list) {
+const box = document.getElementById('heroAlerts');
+if (!box) return;
+if (!list || !list.length) { box.hidden = true; box.innerHTML = ''; return; }
+const order = { red: 0, orange: 1, yellow: 2, grey: 3 };
+list.sort((a, b) => (order[alertLevel(a)] - order[alertLevel(b)]));
+box.innerHTML = list.map((p) => {
+const level = alertLevel(p);
+const type = (p.alert_type || '').toLowerCase();
+let title = p.alert_short_name_en || p.alert_name_en || 'Weather alert';
+if (type.includes('statement') || /special weather/i.test(title)) title = 'Special Weather Statement';
+else if (type.includes('watch') && !/watch/i.test(title)) title += ' Watch';
+else if (type.includes('warning') && !/warning/i.test(title)) title += ' Warning';
+const full = (p.alert_text_en || '').replace(/\s+/g, ' ').trim();
+const summary = full.slice(0, 200);
+const expandable = full.length > 200;
+return `<div class="wx-alert ${level}">
+<svg class="wa-ico"><use href="#i-alert"/></svg>
+<div class="wa-body"><b>${esc(title)}</b>${summary ? `<span class="wa-sum">${esc(summary)}${expandable ? '…' : ''}</span>` : ''}${expandable ? `<div class="wa-full">${esc(full)}</div>` : ''}</div>
+${expandable ? `<button class="wa-toggle" type="button" aria-label="Show full alert" aria-expanded="false"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>` : ''}
+</div>`;
+}).join('');
+box.onclick = (e) => {
+const btn = e.target.closest('.wa-toggle');
+if (!btn) return;
+const card = btn.closest('.wx-alert');
+const open = card.classList.toggle('open');
+btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+btn.setAttribute('aria-label', open ? 'Hide full alert' : 'Show full alert');
+};
+}
+function dayRiskValues(i) {
+const d = state.data; if (!d) return null;
+const dy = d.daily, h = d.hourly;
+const date = dy.time[i];
+const idxs = [];
+h.time.forEach((t, k) => { if (t.slice(0, 10) === date) idxs.push(k); });
+const snow = dy.snowfall_sum ? (dy.snowfall_sum[i] || 0) : 0;
+const rain = dy.rain_sum ? (dy.rain_sum[i] || 0) : 0;
+const showers = dy.showers_sum ? (dy.showers_sum[i] || 0) : 0;
+const totalPrecip = dy.precipitation_sum ? (dy.precipitation_sum[i] || 0) : rain + showers + snow * 0.1;
+let ice = 0, capeMax = 0, gustMax = 0;
+let hasThunder = false, severeThunder = false;
+idxs.forEach((k) => {
+const code = h.weather_code[k];
+if ([66, 67].includes(code)) ice += h.precipitation[k] || 0;
+if (h.cape && h.cape[k] != null) capeMax = Math.max(capeMax, h.cape[k]);
+if (h.wind_gusts_10m && h.wind_gusts_10m[k] != null) gustMax = Math.max(gustMax, h.wind_gusts_10m[k]);
+if (code >= 95) hasThunder = true;
+if (code === 96 || code === 99) severeThunder = true;
+});
+const floodAmount = rain + showers + ice;
+const floodLevel = floodAmount >= 60 ? 3 : floodAmount >= 30 ? 2 : floodAmount >= 15 ? 1 : 0;
+const snowLevel = snow >= 35 ? 3 : snow >= 16 ? 2 : snow >= 7 ? 1 : 0;
+const iceLevel = ice >= 20 ? 3 : ice >= 13 ? 2 : ice >= 6 ? 1 : 0;
+let thunderLevel = 0;
+if (severeThunder || capeMax >= 2500 || (hasThunder && gustMax >= 95)) thunderLevel = 3;
+else if (hasThunder || capeMax >= 1200) thunderLevel = 2;
+else if (capeMax >= 500) thunderLevel = 1;
+let tornadoLevel = 0;
+if (thunderLevel >= 3 && capeMax >= 2500 && gustMax >= 90) tornadoLevel = 3;
+else if (thunderLevel >= 3) tornadoLevel = 2;
+else if (thunderLevel >= 2 && capeMax >= 1500) tornadoLevel = 1;
+return { snow, totalPrecip, floodAmount, ice, capeMax, thunderLevel, tornadoLevel, floodLevel, snowLevel, iceLevel };
+}
+function arcPath(cx, cy, r, a0, a1) {
+const x0 = cx + r * Math.cos(a0 * Math.PI / 180), y0 = cy + r * Math.sin(a0 * Math.PI / 180);
+const x1 = cx + r * Math.cos(a1 * Math.PI / 180), y1 = cy + r * Math.sin(a1 * Math.PI / 180);
+return `M ${x0} ${y0} A ${r} ${r} 0 0 1 ${x1} ${y1}`;
+}
+const RISK_LABELS = ['Low', 'Marginal', 'Moderate', 'High'];
+const RISK_FULL = ['Low Risk', 'Marginal Risk', 'Moderate Risk', 'High Risk'];
+const RISK_COLORS = ['#2E9A41', '#F2C230', '#F08A28', '#D9362B'];
+function riskGauge(level) {
+const cx = 170, cy = 168, r = 128;
+const segs = [[180, 225, 0], [225, 270, 1], [270, 315, 2], [315, 360, 3]];
+const arcs = segs.map(([a0, a1, i]) => `
+<path d="${arcPath(cx, cy, r, a0, a1)}" fill="none" stroke="${RISK_COLORS[i]}" stroke-width="30" stroke-linecap="butt" opacity="${level === i ? 1 : .38}"/>
+<path d="${arcPath(cx, cy, r - 17, a0, a1)}" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2"/>`).join('');
+const angle = [202.5, 247.5, 292.5, 337.5][level];
+const nx = cx + (r - 34) * Math.cos(angle * Math.PI / 180);
+const ny = cy + (r - 34) * Math.sin(angle * Math.PI / 180);
+const labels = ['LOW', 'MARGINAL', 'MODERATE', 'HIGH'].map((t, i) => {
+const a = [202.5, 247.5, 292.5, 337.5][i];
+const lx = cx + (r + 18) * Math.cos(a * Math.PI / 180);
+const ly = cy + (r + 18) * Math.sin(a * Math.PI / 180);
+return `<text x="${lx}" y="${ly}" text-anchor="middle" font-size="10" font-weight="800" fill="#5B7188">${t}</text>`;
+}).join('');
+return `<svg viewBox="0 0 340 210" role="img" aria-label="${RISK_FULL[level]}">
+<defs><linearGradient id="gaugeShade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".25"/><stop offset="1" stop-color="#0B2E4A" stop-opacity=".12"/></linearGradient></defs>
+<path d="${arcPath(cx, cy, r, 180, 0)}" fill="none" stroke="#E8F0F7" stroke-width="34" stroke-linecap="butt"/>
+${arcs}
+${labels}
+<line x1="${cx}" y1="${cy}" x2="${nx}" y2="${ny}" stroke="#173B5E" stroke-width="4" stroke-linecap="round"/>
+<circle cx="${cx}" cy="${cy}" r="13" fill="#fff" stroke="${RISK_COLORS[level]}" stroke-width="5"/>
+<text x="${cx}" y="${cy - 36}" text-anchor="middle" font-size="10" font-weight="800" fill="#7890A6" letter-spacing="1.5">SEVERE RISK</text>
+<text x="${cx}" y="${cy + 24}" text-anchor="middle" font-size="13" font-weight="800" fill="${RISK_COLORS[level]}">${RISK_FULL[level]}</text>
+</svg>`;
+}
+function riskValueFor(type, d) {
+if (!d) return { level: 0, text: '' };
+if (type === 'thunder') return { level: d.thunderLevel, text: d.thunderLevel >= 2 ? 'Strong thunderstorms are possible.' : d.thunderLevel === 1 ? 'Non-severe thunderstorms are possible.' : 'No thunderstorms expected.' };
+if (type === 'tornado') return { level: d.tornadoLevel, text: d.tornadoLevel >= 2 ? 'Tornado risk is elevated with severe storms.' : d.tornadoLevel === 1 ? 'A low tornado threat with strong storms.' : 'No tornado threat expected.' };
+if (type === 'flood') return { level: d.floodLevel, text: d.floodAmount > 0.05 ? precipStr(d.floodAmount, 'mm') + ' of rain is expected.' : 'No significant rain expected.' };
+if (type === 'snow') return { level: d.snowLevel, text: d.snow > 0.05 ? precipStr(d.snow, 'cm') + ' of snow is expected.' : 'No significant snow expected.' };
+return { level: d.iceLevel, text: d.ice > 0.05 ? precipStr(d.ice, 'mm') + ' of ice accretion is expected.' : 'No freezing rain expected.' };
+}
+let severeType = 'thunder';
+let severeDays = [];
+function renderSevere() {
+const d = state.data;
+const daysEl = document.getElementById('riskDays');
+if (!d || !daysEl) return;
+severeDays = [0, 1, 2].map((i) => dayRiskValues(i));
+const selected = severeDays.map((x) => riskValueFor(severeType, x));
+let maxLevel = 0;
+selected.forEach((x) => { if (x.level > maxLevel) maxLevel = x.level; });
+const maxIdx = selected.findIndex((x) => x.level === maxLevel);
+document.getElementById('riskGauge').innerHTML = riskGauge(maxLevel);
+const badge = document.getElementById('riskBadge');
+badge.className = 'risk-badge' + (maxLevel === 1 ? ' marg' : maxLevel === 2 ? ' mod' : maxLevel === 3 ? ' high' : '');
+badge.textContent = RISK_FULL[maxLevel];
+const names = { thunder: 'Thunderstorm', tornado: 'Tornado', flood: 'Flooding', snow: 'Snowfall', ice: 'Freezing rain' };
+document.getElementById('riskTitle').textContent = names[severeType] + ' risk';
+const info = selected[maxIdx] || selected[0];
+const dayName = maxIdx === 0 ? 'today' : maxIdx === 1 ? 'tomorrow' : 'in three days';
+document.getElementById('riskDesc').textContent = info.text + (maxLevel > 0 ? ' Highest risk is ' + dayName + '.' : '');
+document.getElementById('severeHint').textContent = 'Next 3 days · ' + names[severeType];
+daysEl.innerHTML = [0, 1, 2].map((i) => {
+const dt = d.daily.time[i];
+const name = i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : weekday(dt);
+const lv = selected[i].level;
+return `<div class="risk-day"><b>${name}</b><span><i style="background:${RISK_COLORS[lv]}"></i>${RISK_LABELS[lv]}</span></div>`;
+}).join('');
+}
+document.addEventListener('click', (e) => {
+const tab = e.target.closest('.page-tabs [data-page]');
+if (tab) {
+  e.preventDefault(); e.stopPropagation();
+  const p = tab.dataset.page;
+  if (p === 'features') showFeaturesPage();
+  else if (p === 'settings') showSettingsPage();
+  else showDashboard();
+  return;
+}
+const home = e.target.closest('[data-page="home"], a[href="#home"]');
+if (home) { e.preventDefault(); e.stopPropagation(); showDashboard(); return; }
+const set = e.target.closest('[data-page="settings"], a[href="#settings"]');
+if (set) { e.preventDefault(); e.stopPropagation(); showSettingsPage(); return; }
+const el = e.target.closest('[data-page="features"], a[href="#features"]');
+if (!el) return;
+e.preventDefault(); e.stopPropagation(); showFeaturesPage();
+}, true);
+document.querySelectorAll('.seg button').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const g = btn.closest('.seg').dataset.setting;
+    const v = btn.dataset.value;
+    if (g === 'temp') { state.unit = v; writeStored('mw:unit', v); }
+    else if (g === 'precip') { state.precipUnit = v; writeStored('mw:precipUnit', v); }
+    else if (g === 'wind') { state.windUnit = v; writeStored('mw:windUnit', v); }
+    else { state.pressUnit = v; writeStored('mw:pressUnit', v); }
+    syncSettings();
+    renderAll();
+  });
+});
+if (location.hash === '#features') setTimeout(showFeaturesPage, 0);
+if (location.hash === '#settings') setTimeout(showSettingsPage, 0);
+window.addEventListener('hashchange', () => { if (location.hash === '#features') showFeaturesPage(); else if (location.hash === '#settings') showSettingsPage(); });
+document.querySelectorAll('.risk-filter').forEach((btn) => {
+btn.addEventListener('click', () => {
+severeType = btn.dataset.risk;
+document.querySelectorAll('.risk-filter').forEach((b) => b.classList.toggle('on', b === btn));
+renderSevere();
+});
+});
+function renderAll() {
+renderPrecip();
+syncSettings();
+renderHero();
+renderHourly();
+renderShortTerm();
+renderDaily();
+renderAir();
+renderSun();
+renderPrecip();
+renderAdvisory();
+renderCities();
+
+renderSevere();
+}
+
+const searchInput = $('#citySearch');
+const suggest = $('#suggest');
+let searchTimer = null, searchToken = 0, searchResults = [];
+function closeSuggest() {
+suggest.classList.remove('open');
+suggest.innerHTML = '';
+searchResults = [];
+}
+function renderSuggestionShell(inner, head) {
+suggest.innerHTML = '<div class="sg-head">' + head + '</div>' + inner;
+suggest.classList.add('open');
+}
+function renderSearchResults() {
+if (!searchResults.length) {
+renderSuggestionShell('<div class="sg-item" style="cursor:default"><span>No matching cities found.</span></div>', 'Search');
+return;
+}
+renderSuggestionShell(searchResults.map((r, i) => `
+<button class="sg-item" data-i="${i}">
+<span class="sg-pin">${icon('i-pin', '')}</span>
+<span><strong>${esc(r.name)}</strong><span>${esc([r.admin1, r.country].filter(Boolean).join(', '))}</span></span>
+</button>`).join(''), 'Matching cities');
+}
+async function runSearch(q) {
+const token = ++searchToken;
+try {
+const url = 'https://geocoding-api.open-meteo.com/v1/search?name=' + encodeURIComponent(q) +
+'&count=8&language=en&format=json&countryCode=CA';
+const res = await fetch(url);
+if (!res.ok) throw new Error('geocoding ' + res.status);
+const data = await res.json();
+if (token !== searchToken) return;
+searchResults = (data.results || []).map((r) => ({
+name: r.name, admin1: r.admin1, country: r.country, lat: r.latitude, lon: r.longitude
+}));
+renderSearchResults();
+} catch (e) {
+if (token !== searchToken) return;
+renderSuggestionShell('<div class="sg-item" style="cursor:default"><span>Search is unavailable right now.</span></div>', 'Search');
+}
+}
+searchInput.addEventListener('input', () => {
+const q = searchInput.value.trim();
+clearTimeout(searchTimer);
+if (q.length < 2) { closeSuggest(); return; }
+searchTimer = setTimeout(() => runSearch(q), 240);
+});
+searchInput.addEventListener('focus', () => {
+if (!searchInput.value.trim()) {
+renderSuggestionShell(`
+<button class="sg-item" data-loc="1">
+<span class="sg-pin">${icon('i-target', '')}</span>
+<span><strong>Use my current location</strong><span>Locate me automatically</span></span>
+</button>`, 'Quick actions');
+}
+});
+searchInput.addEventListener('keydown', (e) => {
+if (e.key === 'Escape') { closeSuggest(); searchInput.blur(); }
+if (e.key === 'Enter') {
+const first = suggest.querySelector('.sg-item[data-i]');
+if (first) first.click();
+}
+});
+suggest.addEventListener('click', (e) => {
+const locBtn = e.target.closest('[data-loc]');
+if (locBtn) { useMyLocation(); return; }
+const btn = e.target.closest('.sg-item[data-i]');
+if (!btn) return;
+const r = searchResults[+btn.dataset.i];
+if (!r) return;
+searchInput.value = '';
+closeSuggest();
+loadWeather({ name: r.name, admin: r.admin1, country: r.country, lat: r.lat, lon: r.lon });
+});
+document.addEventListener('click', (e) => {
+if (!$('#searchWrap').contains(e.target)) closeSuggest();
+});
+document.addEventListener('keydown', (e) => {
+if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+e.preventDefault(); searchInput.focus(); searchInput.select();
+}
+});
+function useMyLocation() {
+if (!navigator.geolocation) { toast('Geolocation is not available in this browser.', 'error'); return; }
+toast('Finding your location…');
+navigator.geolocation.getCurrentPosition(async (pos) => {
+const lat = pos.coords.latitude, lon = pos.coords.longitude;
+let name = 'My location', admin = '', countryCode = '';
+try {
+const res = await fetch('https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=' + lat + '&longitude=' + lon + '&localityLanguage=en');
+const j = await res.json();
+countryCode = j.countryCode || '';
+name = j.city || j.locality || j.principalSubdivision || 'My location';
+admin = j.principalSubdivision || j.countryName || '';
+} catch (err) {  }
+if (countryCode && countryCode !== 'CA') {
+closeSuggest();
+toast('Maple Weather covers Canada only — search for a Canadian city.', 'error');
+return;
+}
+closeSuggest();
+searchInput.value = '';
+loadWeather({ name, admin, country: 'Canada', lat, lon });
+}, () => {
+toast('Location permission denied — search for a city instead.', 'error');
+}, { timeout: 9000, maximumAge: 600000 });
+}
+$('#locChip').addEventListener('click', () => {
+searchInput.focus();
+if (!searchInput.value.trim()) renderSuggestionShell(`
+<button class="sg-item" data-loc="1">
+<span class="sg-pin">${icon('i-target', '')}</span>
+<span><strong>Use my current location</strong><span>Locate me automatically</span></span>
+</button>`, 'Quick actions');
+});
+$('#addCity').addEventListener('click', () => {
+searchInput.focus();
+searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+});
+
+function setUnit(unit) {
+state.unit = unit;
+writeStored('mw:unit', unit);
+$$('#unitToggle span').forEach((s) => s.classList.toggle('on', s.dataset.unit === unit));
+if (state.data) renderAll();
+}
+$$('#unitToggle span').forEach((s) => s.addEventListener('click', () => setUnit(s.dataset.unit)));
+const saveBtnEl = $('#saveCityBtn');
+if (saveBtnEl) saveBtnEl.addEventListener('click', toggleSaveCity);
+const geoBtnEl = $('#geoBtn');
+if (geoBtnEl) geoBtnEl.addEventListener('click', useMyLocation);
+$('#refreshBtn').addEventListener('click', () => {
+if (state.place) loadWeather(state.place);
+loadCityTemps();
+});
+$$('[data-scroll]').forEach((b) => b.addEventListener('click', () => {
+const el = document.getElementById(b.dataset.scroll);
+if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}));
+const navSections = ['home', 'forecast', 'cities', 'radar']
+.map((id) => document.getElementById(id)).filter(Boolean);
+const sectionLinks = $$('#mainNav a, .bottom-nav a');
+let spyPending = false;
+function setNavActive(href) {
+sectionLinks.forEach((a) => a.classList.toggle('active', a.getAttribute('href') === href));
+}
+function setPageTabs(page) {
+  document.querySelectorAll('.page-tabs [data-page]').forEach((b) => b.classList.toggle('on', b.dataset.page === page));
+}
+function syncSettings() {
+  document.querySelectorAll('.seg[data-setting]').forEach((seg) => {
+    const g = seg.dataset.setting;
+    const val = g === 'temp' ? state.unit : g === 'precip' ? state.precipUnit : g === 'wind' ? state.windUnit : state.pressUnit;
+    seg.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.value === val));
+  });
+}
+function showSettingsPage() {
+  const dash = document.getElementById('dashboardPage'); if (dash) dash.hidden = true;
+  const info = document.getElementById('infoPage'); if (info) info.hidden = true;
+  const feat = document.getElementById('featuresPage'); if (feat) feat.hidden = true;
+  const set = document.getElementById('settingsPage'); if (set) set.hidden = false;
+  if (history.replaceState) history.replaceState(null, '', '#settings');
+  setNavActive('#settings');
+  setPageTabs('settings');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  syncSettings();
+}
+
+function showFeaturesPage() {
+const dash = document.getElementById('dashboardPage'); if (dash) dash.hidden = true;
+const info = document.getElementById('infoPage'); if (info) info.hidden = true;
+const feat = document.getElementById('featuresPage'); if (feat) feat.hidden = false;
+const setPage = document.getElementById('settingsPage'); if (setPage) setPage.hidden = true;
+if (history.replaceState) history.replaceState(null, '', '#features');
+setPageTabs('features');
+setNavActive('#features');
+window.scrollTo({ top: 0, behavior: 'smooth' });
+renderSevere();
+}
+function showDashboard() {
+  const dash = document.getElementById('dashboardPage'); if (dash) dash.hidden = false;
+  const feat = document.getElementById('featuresPage'); if (feat) feat.hidden = true;
+  const set = document.getElementById('settingsPage'); if (set) set.hidden = true;
+  const info = document.getElementById('infoPage'); if (info) info.hidden = true;
+  if (history.replaceState) history.replaceState(null, '', '#home');
+  setPageTabs('home');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function updateSpy() {}
+function hexToRgb(hex) {
+const n = parseInt(hex.replace('#', ''), 16);
+return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+function lerpColor(stops, v) {
+v = clamp(v, 0, 1);
+const n = stops.length - 1, seg = v * n, i = Math.min(n - 1, Math.floor(seg)), f = seg - i;
+const a = stops[i], b = stops[i + 1];
+return [Math.round(a[0] + (b[0] - a[0]) * f), Math.round(a[1] + (b[1] - a[1]) * f), Math.round(a[2] + (b[2] - a[2]) * f)];
+}
+function rgbToLightness(r, g, b) {
+r /= 255; g /= 255; b /= 255;
+const max = Math.max(r, g, b), min = Math.min(r, g, b);
+return (max + min) / 2;
+}
+
+$$('#unitToggle span').forEach((s) => s.classList.toggle('on', s.dataset.unit === state.unit));
+let saved = null;
+try { saved = JSON.parse(readStored(PLACE_KEY) || 'null'); } catch (e) {}
+const startPlace = (saved && saved.lat != null) ? saved : DEFAULT_PLACE;
+try {
+const arr = JSON.parse(readStored(CITIES_KEY) || '[]');
+state.savedCities = Array.isArray(arr)
+? arr.filter((c) => c && typeof c.lat === 'number' && typeof c.lon === 'number')
+: [];
+} catch (e) { state.savedCities = []; }
+idbGet(CITIES_KEY).then((raw) => {
+if (!raw) return;
+try {
+const arr = JSON.parse(raw);
+const list = Array.isArray(arr) ? arr.filter((c) => c && typeof c.lat === 'number' && typeof c.lon === 'number') : [];
+if (list.length && JSON.stringify(list) !== JSON.stringify(state.savedCities)) {
+state.savedCities = list;
+saveCitiesToStorage();
+updateSaveButton();
+renderCities();
+loadCityTemps();
+}
+} catch (e) {}
+});
+state.place = startPlace;
+updateSaveButton();
+loadAlerts(startPlace);
+loadWeather(startPlace, { quiet: true }).then(() => loadCityTemps());
+if (location.hash === '#features') showFeaturesPage();
+setInterval(() => { if (state.place) loadWeather(state.place, { quiet: true }); }, 5 * 60 * 1000);
+function flushStorage() { saveCitiesToStorage(); savePlaceToStorage(); }
+window.addEventListener('pagehide', flushStorage);
+window.addEventListener('beforeunload', flushStorage);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushStorage(); });
+window.addEventListener('storage', (e) => {
+if (e.key !== CITIES_KEY || !e.newValue) return;
+try {
+const arr = JSON.parse(e.newValue);
+if (!Array.isArray(arr)) return;
+state.savedCities = arr.filter((c) => c && typeof c.lat === 'number' && typeof c.lon === 'number');
+updateSaveButton();
+renderCities();
+loadCityTemps();
+} catch (err) {}
+});
+})();
+</script>
+</body></html>
